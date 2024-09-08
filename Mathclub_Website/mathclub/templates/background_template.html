@@ -36,9 +36,12 @@
 </head>
 <body>
     <div class="container">
-        <input type="text" placeholder="Username" name="username" required>
-        <input type="password" placeholder="Password" name="password" required>
-        <button type="submit">Login</button>
+        <form method="post" action="{% url 'login_page' %}">
+            {% csrf_token %}
+            <input type="text" placeholder="Username" name="username" required>
+            <input type="password" placeholder="Password" name="password" required>
+            <button type="submit">Login</button>
+        </form>        
     </div>
 </body>
 </html>
