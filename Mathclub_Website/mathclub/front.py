@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.db import connection
+
 
 def my_view(request):
     if request.method == 'POST':
@@ -9,8 +11,15 @@ def my_view(request):
         password = request.POST.get('password')
         
         # Do something with the input data
+        
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("INSERT INTO [USER] (username, password) VALUES (%s, %s)", [input_data, password])
                 
-        return HttpResponse('Data retrieved successfully!')
+            return HttpResponse('Data retrieved successfully!')
+
+        except Exception as e:
+            return HttpResponse('An error occurred while retrieving the data!')
     
     
-    return render(request, 'my_template.html')
+    return render(request, 'background_template.html')
