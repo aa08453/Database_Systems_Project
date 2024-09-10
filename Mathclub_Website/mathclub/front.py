@@ -3,23 +3,49 @@ from django.http import HttpResponse
 from django.db import connection
 
 
-def my_view(request):
+
+
+def login_view(request):
     if request.method == 'POST':
         # Retrieve the data from the form fields
         
         input_data = request.POST.get('username')
         password = request.POST.get('password')
         
-        # Do something with the input data
+        print(input_data)
+        print(password)
+       
+        try:
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM [USER] WHERE USERNAME = %s AND Pass = %s", [input_data, password])
+            row = cursor.fetchone()
+            print (row)
+            
+            check_user = row[1]
+            check_pass = row[2]
+            
+            if input_data == check_user and password == check_pass:
+                print("login successful")
+            else:
+                print("login failed")
+            
+        except:
+            print("an error occured")
+
+
+def register(request):
+    
+    
+    if request.method == 'POST':
+        #retrieve data from fields
+        input_data = request.POST.get('username')
+        password = request.POST.get('password')
         
         try:
             with connection.cursor() as cursor:
-                cursor.execute("INSERT INTO [USER] (username, password) VALUES (%s, %s)", [input_data, password])
+                cursor.execute("INSERT INTO [USER] (USERNAME, Pass) VALUES (%s, %s)", [input_data, password])
+                print("data was inserted")
                 
-            return HttpResponse('Data retrieved successfully!')
-
         except Exception as e:
-            return HttpResponse('An error occurred while retrieving the data!')
-    
-    
-    return render(request, 'background_template.html')
+            print("an error occured")
+        
