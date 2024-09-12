@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Team Management - Create and Sign Up for a Team</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            max-width: 600px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Additional Styling */
+        .container {
+            margin: 50px auto;
+            max-width: 900px;
+        }
+
+        .form-section {
+            margin-bottom: 50px;
+        }
+
+        @media (max-width: 768px) {
+            form {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Team Management</h1>
+        
+        <div class="form-section">
+            <h2>Create a Team</h2>
+            <form action="/teams/create" method="POST">
+                <label for="team-name">Team Name:</label>
+                <input type="text" id="team-name" name="team-name" placeholder="Enter the team name" required>
+                
+                <label for="team-description">Team Description:</label>
+                <textarea id="team-description" name="team-description" placeholder="Enter a brief description of the team" required></textarea>
+                
+                <label for="team-limit">Maximum Members:</label>
+                <input type="number" id="team-limit" name="team-limit" placeholder="Enter the team size limit" required>
+                
+                <input type="submit" value="Create Team">
+            </form>
+        </div>
+
+        <div class="form-section">
+            <h2>Sign Up for a Team</h2>
+            <form action="/teams/signup" method="POST">
+                <label for="team-id">Select Team:</label>
+                <select id="team-id" name="team-id" required>
+                    <option value="" disabled selected>Select a team</option>
+                    <option value="1">Team Alpha</option>
+                    <option value="2">Team Beta</option>
+                    <option value="3">Team Gamma</option>
+                </select>
+
+                <label for="player-name">Your Name:</label>
+                <input type="text" id="player-name" name="player-name" placeholder="Enter your name" required>
+
+                <input type="submit" value="Sign Up">
+            </form>
+        </div>
+
+        <div class="form-section">
+            <h2>Manage Teams (Admin Only)</h2>
+            <form action="/teams/update" method="POST">
+                <label for="team-id-update">Team ID:</label>
+                <input type="text" id="team-id-update" name="team-id" placeholder="Enter the team ID to update" required>
+
+                <label for="new-team-lead">New Team Lead:</label>
+                <input type="text" id="new-team-lead" name="new-team-lead" placeholder="Enter the new team lead's name" required>
+
+                <input type="submit" value="Update Team">
+            </form>
+
+            <form action="/teams/delete" method="POST">
+                <label for="team-id-delete">Team ID:</label>
+                <input type="text" id="team-id-delete" name="team-id" placeholder="Enter the team ID to delete" required>
+
+                <input type="submit" value="Delete Team">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

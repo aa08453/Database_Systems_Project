@@ -9,3 +9,6 @@ def login_page(request):
 def register_page(request):
     register(request)
     return render(request, 'register.html') #didnt pass the template folder name becuase it exists within the application
+
+def team_page(request):
+    return render(request, 'teams.html') #didnt pass the template folder name becuase it exists within the application
