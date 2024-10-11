@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approve Event Sign-ups</title>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .event-request {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .approve-btn, .deny-btn {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .approve-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .deny-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Approve Event Sign-ups</h2>
+
+    <div class="event-request">
+        <p>User: John Doe</p>
+        <p>Event: Annual Gala</p>
+        <button class="approve-btn" onclick="approveRequest()">Approve</button>
+        <button class="deny-btn" onclick="denyRequest()">Deny</button>
+    </div>
+    
+    <!-- Add more requests here -->
+
+</div>
+
+<script>
+    function approveRequest() {
+        alert('Request approved!');
+        // Logic for approving request
+    }
+
+    function denyRequest() {
+        alert('Request denied!');
+        // Logic for denying request
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Post Filter by Tags</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 50px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        .filter-section label {
+            font-size: 18px;
+        }
+
+        .filter-section select {
+            padding: 10px;
+            font-size: 16px;
+            margin-left: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .blog-post {
+            margin-bottom: 40px;
+        }
+
+        .blog-post h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .blog-post p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .blog-post .tags {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .blog-post .tags span {
+            background-color: #007bff;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+
+        .no-posts {
+            text-align: center;
+            color: #888;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Blog Posts</h1>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <label for="tag-filter">Filter by Tag:</label>
+            <select id="tag-filter" onchange="filterPostsByTag()">
+                <option value="all">All</option>
+                <option value="technology">Technology</option>
+                <option value="health">Health</option>
+                <option value="finance">Finance</option>
+                <option value="education">Education</option>
+            </select>
+        </div>
+
+        <!-- Blog Posts Section -->
+        <div id="blog-posts">
+            <div class="blog-post" data-tags="technology">
+                <h2>Advancements in AI</h2>
+                <p>Artificial intelligence (AI) continues to evolve at an incredible pace, transforming industries like healthcare, finance, and education...</p>
+                <div class="tags"><span>Technology</span></div>
+            </div>
+
+            <div class="blog-post" data-tags="health">
+                <h2>Maintaining a Healthy Lifestyle</h2>
+                <p>Living a healthy life involves regular exercise, a balanced diet, and mental well-being. Here are some tips to maintain your health...</p>
+                <div class="tags"><span>Health</span></div>
+            </div>
+
+            <div class="blog-post" data-tags="finance">
+                <h2>Understanding Personal Finance</h2>
+                <p>Personal finance is all about managing your income, savings, investments, and expenses. Learn how to build wealth with smart financial decisions...</p>
+                <div class="tags"><span>Finance</span></div>
+            </div>
+
+            <div class="blog-post" data-tags="education">
+                <h2>The Future of Online Learning</h2>
+                <p>With the rise of online education platforms, students can now access quality education from anywhere in the world. Here's what the future holds...</p>
+                <div class="tags"><span>Education</span></div>
+            </div>
+        </div>
+
+        <!-- No Posts Message (Hidden by default) -->
+        <p class="no-posts" id="no-posts" style="display:none;">No posts available for this tag.</p>
+    </div>
+
+    <script>
+        function filterPostsByTag() {
+            var filter = document.getElementById('tag-filter').value;
+            var posts = document.querySelectorAll('.blog-post');
+            var noPosts = document.getElementById('no-posts');
+            var postsFound = false;
+
+            posts.forEach(function(post) {
+                var tags = post.getAttribute('data-tags');
+                if (filter === 'all' || tags.includes(filter)) {
+                    post.style.display = 'block';
+                    postsFound = true;
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+
+            // Display message if no posts are found
+            if (!postsFound) {
+                noPosts.style.display = 'block';
+            } else {
+                noPosts.style.display = 'none';
+            }
+        }
+    </script>
+
+</body>
+</html>
