@@ -49,3 +49,20 @@ def register(request):
         except Exception as e:
             print("an error occured")
         
+
+
+def financial(request):
+    if request.method == 'POST':
+        #retrieve data from fields
+        donator_name = request.Post.get('name')
+        amount = request.Post.get('quantity')
+        
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("INSERT INTO Donations (DonorName, DonationAmount) VALUES (%s, %s)", [donator_name, amount])
+                print("data was inserted")
+                
+        except Exception as e:
+            print("an error occured")
+        
+    return render(request, 'finance.html') #didnt pass the template folder name becuase it exists within the application

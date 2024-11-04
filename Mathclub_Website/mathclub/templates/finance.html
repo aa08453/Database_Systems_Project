@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Finance Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            max-width: 500px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="radio"], input[type="text"], input[type="number"] {
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .radio-group {
+            margin-bottom: 20px;
+        }
+
+        .radio-group label {
+            margin-right: 20px;
+            font-weight: normal;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Additional Styling */
+        .container {
+            margin: 50px auto;
+            max-width: 900px;
+        }
+
+        @media (max-width: 768px) {
+            form {
+                width: 90%;
+            }
+        }
+    </style>
+    <script>
+        function handleSubmit(event, formId) {
+            event.preventDefault();
+            const form = document.getElementById(formId);
+            const formData = new FormData(form);
+
+            // Call your function from front.py here
+            // Example: front.pyFunction(formData);
+
+            // For demonstration, we'll just log the form data
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+
+            // You can replace the above code with the actual function call
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Finance Management</h1>
+        <form id="donationForm" onsubmit="handleSubmit(event, 'donationForm')">
+            {% csrf_token %}
+            <!-- Input for entering the name -->
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+            <!-- Input for entering the donation amount -->
+            <label for="donation">Donation Amount:</label>
+            <input type="number" id="donation" name="donation" placeholder="Enter the donation amount" required>
+
+            <!-- Submit button -->
+            <input type="submit" value="Submit">
+        </form>
+        
+        <form id="transactionForm" onsubmit="handleSubmit(event, 'transactionForm')">
+            {% csrf_token %}
+            <!-- Radio buttons for selecting Expense or Revenue -->
+            <div class="radio-group">
+            <label>Transaction Type:</label>
+            <label for="expense">
+                <input type="radio" id="expense" name="transaction-type" value="expense" required> Expense
+            </label>
+            <label for="revenue">
+                <input type="radio" id="revenue" name="transaction-type" value="revenue" required> Revenue
+            </label>
+            </div>
+
+            <!-- Input for entering the quantity -->
+            <label for="quantity">Amount:</label>
+            <input type="number" id="quantity" name="quantity" placeholder="Enter the amount" required>
+
+            <!-- Submit button -->
+            <input type="submit" value="Submit">
+        </form>
+        
+    </div>
+</body>
+</html>
