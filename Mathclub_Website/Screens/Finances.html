@@ -33,11 +33,45 @@
         button:hover {
             background-color: #0056b3;
         }
+        form {
+            margin-bottom: 20px;
+        }
+        input, select {
+            padding: 10px;
+            margin: 5px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
     <h1>Club Finances</h1>
 
+    <h2>Add New Transaction</h2>
+    <form id="transactionForm">
+        <label for="transactionId">Transaction ID:</label>
+        <input type="text" id="transactionId" name="transactionId" required><br>
+
+        <label for="userId">User ID:</label>
+        <input type="text" id="userId" name="userId" required><br>
+
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" name="amount" required><br>
+
+        <label for="transactionType">Transaction Type:</label>
+        <select id="transactionType" name="transactionType" required>
+            <option value="Incoming">Incoming</option>
+            <option value="Outgoing">Outgoing</option>
+        </select><br>
+
+        <label for="transactionDescription">Transaction Description:</label>
+        <input type="text" id="transactionDescription" name="transactionDescription" required><br>
+
+        <button type="submit">Add Transaction</button>
+    </form>
+
+    <h2>Transaction Table</h2>
     <table>
         <thead>
             <tr>
@@ -48,7 +82,7 @@
                 <th>Transaction Description</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="transactionTable">
             <tr>
                 <td>001</td>
                 <td>001</td>
@@ -68,5 +102,34 @@
 
     <button>Generate Report</button>
 
+    <script>
+        document.getElementById("transactionForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            // Get values from form inputs
+            const transactionId = document.getElementById("transactionId").value;
+            const userId = document.getElementById("userId").value;
+            const amount = document.getElementById("amount").value;
+            const transactionType = document.getElementById("transactionType").value;
+            const transactionDescription = document.getElementById("transactionDescription").value;
+
+            // Create a new row for the transaction table
+            const newRow = document.createElement("tr");
+
+            newRow.innerHTML = `
+                <td>${transactionId}</td>
+                <td>${userId}</td>
+                <td>$${amount}</td>
+                <td>${transactionType}</td>
+                <td>${transactionDescription}</td>
+            `;
+
+            // Append the new row to the table
+            document.getElementById("transactionTable").appendChild(newRow);
+
+            // Reset the form
+            document.getElementById("transactionForm").reset();
+        });
+    </script>
 </body>
 </html>
