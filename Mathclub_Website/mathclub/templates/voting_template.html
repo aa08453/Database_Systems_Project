@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voting Page - Cast Your Vote</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            max-width: 600px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .container {
+            margin: 50px auto;
+            max-width: 900px;
+        }
+
+        .form-section {
+            margin-bottom: 50px;
+        }
+
+        @media (max-width: 768px) {
+            form {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Voting Page</h1>
+        
+        <!-- Voting Form Section -->
+        <div class="form-section">
+            <h2>Cast Your Vote</h2>
+            <form action="/voting/cast" method="POST">
+                <label for="voter-id">Your Voter ID:</label>
+                <input type="text" id="voter-id" name="voter-id" placeholder="Enter your Voter ID" required>
+
+                <label for="election-id">Election:</label>
+                <select id="election-id" name="election-id" required>
+                    <option value="" disabled selected>Select an election</option>
+                    <option value="1">President Election</option>
+                    <option value="2">Vice President Election</option>
+                    <option value="3">Treasurer Election</option>
+                </select>
+
+                <label for="candidate-id">Select Candidate:</label>
+                <select id="candidate-id" name="candidate-id" required>
+                    <option value="" disabled selected>Select a candidate</option>
+                    <option value="101">John Doe</option>
+                    <option value="102">Jane Smith</option>
+                    <option value="103">Alice Johnson</option>
+                </select>
+
+                <input type="submit" value="Submit Vote">
+            </form>
+        </div>
+    </div>
+</body>
+</html>
