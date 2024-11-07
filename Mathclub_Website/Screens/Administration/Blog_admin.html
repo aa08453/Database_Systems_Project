@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Add Blog Post</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #333;
+        }
+
+        input[type="text"], input[type="date"], select, input[type="file"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Add New Blog Post</h1>
+
+    <div class="form-group">
+        <label for="blog-title">Blog Title</label>
+        <input type="text" id="blog-title" placeholder="Enter blog title">
+    </div>
+
+    <div class="form-group">
+        <label for="blog-date">Date</label>
+        <input type="date" id="blog-date">
+    </div>
+
+    <div class="form-group">
+        <label for="author-id">Author (User ID)</label>
+        <input type="text" id="author-id" placeholder="Enter author user ID">
+    </div>
+
+    <div class="form-group">
+        <label for="blog-tag">Blog Tag</label>
+        <select id="blog-tag">
+            <option value="" disabled selected>Select a tag</option>
+            <option value="technology">Technology</option>
+            <option value="health">Health</option>
+            <option value="finance">Finance</option>
+            <option value="education">Education</option>
+            <!-- Add more options as needed -->
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="blog-content">Upload Blog Content (File)</label>
+        <input type="file" id="blog-content">
+    </div>
+
+    <button class="submit-btn" onclick="addBlogPost()">Add Blog Post</button>
+</div>
+
+<script>
+    function addBlogPost() {
+        // Gather input values
+        const title = document.getElementById('blog-title').value;
+        const date = document.getElementById('blog-date').value;
+        const authorId = document.getElementById('author-id').value;
+        const tag = document.getElementById('blog-tag').value;
+        const contentFile = document.getElementById('blog-content').files[0];
+        
+        if (!title || !date || !authorId || !tag || !contentFile) {
+            alert('Please fill out all fields and upload the content file.');
+            return;
+        }
+
+        // Display success message or proceed to save the data
+        alert('Blog post added successfully!');
+        
+        // Logic to send data to server or store it locally can be added here.
+        // For example, you could use a POST request to send data to an API.
+    }
+</script>
+
+</body>
+</html>

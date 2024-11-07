@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club Members Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 50px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .action-btns button {
+            padding: 8px 12px;
+            margin: 0 5px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .update-btn {
+            background-color: #ffc107;
+        }
+
+        .update-btn:hover {
+            background-color: #e0a800;
+        }
+
+        .remove-btn {
+            background-color: #dc3545;
+        }
+
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+
+        .add-member {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .add-member button {
+            padding: 10px 20px;
+            color: white;
+            background-color: #28a745;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-member button:hover {
+            background-color: #218838;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Club Members Management</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Member ID</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Type</th>
+                <th>Date Started</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Example Member Rows -->
+            <tr>
+                <td>001</td>
+                <td>John Doe</td>
+                <td>Treasurer</td>
+                <td>Admin</td>
+                <td>2024-01-10</td>
+                <td class="action-btns">
+                    <button class="update-btn" onclick="updateRole(001)">Update Role</button>
+                    <button class="remove-btn" onclick="removeMember(001)">Remove</button>
+                </td>
+            </tr>
+            <tr>
+                <td>002</td>
+                <td>Jane Smith</td>
+                <td>Design Member</td>
+                <td>Admin</td>
+                <td>2024-03-15</td>
+                <td class="action-btns">
+                    <button class="update-btn" onclick="updateRole(002)">Update Role</button>
+                    <button class="remove-btn" onclick="removeMember(002)">Remove</button>
+                </td>
+            </tr>
+            <!-- Repeat rows for each club member -->
+        </tbody>
+    </table>
+
+    <div class="add-member">
+        <button onclick="addMember()">Add New Member</button>
+    </div>
+</div>
+
+<script>
+    function updateRole(memberId) {
+        // Logic to update the role of a member
+        alert("Update role for Member ID " + memberId);
+        // You would typically open a modal to select a new role and then save it
+    }
+
+    function removeMember(memberId) {
+        // Logic to remove a member from the club
+        if (confirm("Are you sure you want to remove Member ID " + memberId + "?")) {
+            alert("Member " + memberId + " removed.");
+            // Here you would call an API to delete the member from the database
+        }
+    }
+
+    function addMember() {
+        // Logic to add a new member
+        alert("Add a new member.");
+        // You would typically open a form modal to enter the new member's details and then save it
+    }
+</script>
+
+</body>
+</html>

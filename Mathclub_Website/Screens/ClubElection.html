@@ -22,42 +22,90 @@
             display: block;
             margin-bottom: 5px;
         }
-        input[type="radio"] {
-            margin-right: 10px;
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
         }
         button {
-            padding: 10px 20px;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
         }
         button:hover {
             background-color: #0056b3;
+        }
+        .candidates {
+            display: none;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
     <h1>Vote in Club Elections</h1>
 
-    <form>
-        <label for="role">Select Candidate for President</label>
-        <div>
-            <input type="radio" id="candidate1" name="role" value="candidate1">
-            <label for="candidate1">Candidate 1</label>
+    <form id="votingForm">
+        <label for="role">Select Role to Vote For</label>
+        <select id="role" name="role" onchange="showCandidates()">
+            <option value="">-- Select a Role --</option>
+            <option value="president">President</option>
+            <option value="vice_president">Vice President</option>
+            <option value="general_secretary">General Secretary</option>
+            <option value="treasurer">Treasurer</option>
+        </select>
+
+        <!-- Candidate Options for each Role -->
+        <div id="president" class="candidates">
+            <label>Select Candidate for President</label>
+            <input type="radio" id="president1" name="candidate" value="President Candidate 1">
+            <label for="president1">President Candidate 1</label><br>
+            <input type="radio" id="president2" name="candidate" value="President Candidate 2">
+            <label for="president2">President Candidate 2</label><br>
+            <input type="radio" id="president3" name="candidate" value="President Candidate 3">
+            <label for="president3">President Candidate 3</label>
         </div>
-        <div>
-            <input type="radio" id="candidate2" name="role" value="candidate2">
-            <label for="candidate2">Candidate 2</label>
+
+        <div id="vice_president" class="candidates">
+            <label>Select Candidate for Vice President</label>
+            <input type="radio" id="vp1" name="candidate" value="Vice President Candidate 1">
+            <label for="vp1">Vice President Candidate 1</label><br>
+            <input type="radio" id="vp2" name="candidate" value="Vice President Candidate 2">
+            <label for="vp2">Vice President Candidate 2</label>
         </div>
-        <div>
-            <input type="radio" id="candidate3" name="role" value="candidate3">
-            <label for="candidate3">Candidate 3</label>
+
+        <div id="general_secretary" class="candidates">
+            <label>Select Candidate for General Secretary</label>
+            <input type="radio" id="gs1" name="candidate" value="General Secretary Candidate 1">
+            <label for="gs1">General Secretary Candidate 1</label><br>
+            <input type="radio" id="gs2" name="candidate" value="General Secretary Candidate 2">
+            <label for="gs2">General Secretary Candidate 2</label>
+        </div>
+
+        <div id="treasurer" class="candidates">
+            <label>Select Candidate for Treasurer</label>
+            <input type="radio" id="tr1" name="candidate" value="Treasurer Candidate 1">
+            <label for="tr1">Treasurer Candidate 1</label><br>
+            <input type="radio" id="tr2" name="candidate" value="Treasurer Candidate 2">
+            <label for="tr2">Treasurer Candidate 2</label>
         </div>
 
         <button type="submit">Submit Vote</button>
     </form>
 
+    <script>
+        function showCandidates() {
+            // Hide all candidate sections
+            document.querySelectorAll('.candidates').forEach(div => div.style.display = 'none');
+
+            // Show candidates for the selected role
+            const selectedRole = document.getElementById("role").value;
+            if (selectedRole) {
+                document.getElementById(selectedRole).style.display = 'block';
+            }
+        }
+    </script>
 </body>
 </html>
