@@ -34,8 +34,6 @@ def login_view(request):
 
 
 def register(request):
-    
-    
     if request.method == 'POST':
         #retrieve data from fields
         input_data = request.POST.get('username')
@@ -66,3 +64,22 @@ def financial(request):
             print("an error occured")
         
     return render(request, 'finance.html') #didnt pass the template folder name becuase it exists within the application
+
+
+def add_product(request):
+    if request.method == 'POST':
+        name = request.POST.get('item_title')
+        price = request.POST.get('item_price')
+        # TODO Do something about this 
+        # image = request.Post.get()
+
+        print("Data recieved", [name,price])
+        try: 
+            with connection.cursor() as cursor:
+                cursor.execute("""INSERT INTO [Products] (Product_Name, Price) VALUES (%s, %s)""", [name,price])
+                print("Data was inserted (%s, %s)", [name,price])
+        except Exception as e:
+            print("an error ocurred")
+            print(e)
+
+    return render(request, 'additem.html')
