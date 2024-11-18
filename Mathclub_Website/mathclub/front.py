@@ -11,26 +11,45 @@ def login_view(request):
         
         input_data = request.POST.get('username')
         password = request.POST.get('password')
-        
-        print(input_data)
-        print(password)
-       
+         
         try:
             cursor = connection.cursor()
-            cursor.execute("SELECT * FROM [USER] WHERE USERNAME = %s AND Pass = %s", [input_data, password])
+            cursor.execute("SELECT * FROM [USER] WHERE Name = %s AND Password = %s", [input_data, password])
             row = cursor.fetchone()
             print (row)
             
             check_user = row[1]
-            check_pass = row[2]
+            check_pass = row[5]
+            print(check_user)
+            print(check_pass)
             
             if input_data == check_user and password == check_pass:
                 print("login successful")
+                request.session['username'] = check_user
+                request.session['userid'] = row[0]
+                
+                return redirect('Math_club:main_page')
             else:
                 print("login failed")
             
         except:
             print("an error occured")
+    return render(request, 'background_template.html') #didnt pass the template folder name becuase it exists within the application
+
+def main_view(request):
+    # Retrieve userid and username from the session
+    userid = request.session.get('userid')
+    username = request.session.get('username')
+
+    # Check if session data exists; if not, redirect to the login page
+    if not userid or not username:
+        return redirect('Math_club:login_page')
+
+    print(f"UserID: {userid}, Username: {username}")
+
+    # Pass session data to the template
+    return render(request, 'main_page.html', {'userid': userid, 'username': username})
+
 
 
 def register(request):
@@ -61,7 +80,6 @@ def register(request):
             return render(request, 'register.html', {'error': 'Failed to register. Please try again.'})
 
     return render(request, 'register.html')
-
 
 
 

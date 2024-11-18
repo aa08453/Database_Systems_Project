@@ -1,48 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
     <style>
         body {
-            background-image: url("mathclub/images/background.jpg");
-            background-size: cover;
-            background-position: center;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #007BFF, #00C6FF);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
         .container {
-            width: 300px;
-            margin: 0 auto;
-            padding: 20px;
- )           background-color: rgba(255, 255, 100, 0.8);
-            border-radius: 5px;
-            margin-top: 100px;
+            background-color: #fff;
+            padding: 30px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
         }
-        .container input {
+        h1 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .container input[type="text"],
+        .container input[type="password"] {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 3px;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 5px;
             border: 1px solid #ccc;
+            font-size: 1em;
         }
         .container button {
             width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
+            padding: 12px;
+            background-color: #007BFF;
             color: white;
             border: none;
-            border-radius: 3px;
+            border-radius: 5px;
+            font-size: 1em;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .container button:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .footer a {
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <h1>Login</h1>
         <form method="post" action="{% url 'Math_club:login_page' %}">
             {% csrf_token %}
             <input type="text" placeholder="Username" name="username" required>
             <input type="password" placeholder="Password" name="password" required>
             <button type="submit">Login</button>
-        </form>        
+        </form>
+        <div class="footer">
+            <p>Don't have an account? <a href="{% url 'Math_club:register_page' %}">Register</a></p>
+        </div>
     </div>
 </body>
-
 </html>

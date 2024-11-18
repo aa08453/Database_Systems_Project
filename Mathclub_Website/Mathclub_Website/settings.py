@@ -56,7 +56,7 @@ ROOT_URLCONF = 'Mathclub_Website.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'mathclub/templates'],  # Add your path here
+        'DIRS': [BASE_DIR / "mathclub/templates"],  # Add your path here
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

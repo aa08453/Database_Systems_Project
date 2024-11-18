@@ -4,9 +4,13 @@ from .forms import BlogForm
 
 # Create your views here.
 
+def main_page(request):
+    return main_view(request)
+
+
 def login_page(request):
-    login_view(request)
-    return render(request, 'background_template.html') #didnt pass the template folder name becuase it exists within the application
+    return login_view(request)
+    #return render(request, 'background_template.html') #didnt pass the template folder name becuase it exists within the application
 
 def register_page(request):
     return (register(request))
