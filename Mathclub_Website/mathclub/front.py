@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db import connection
-
+from django.urls import *
 
 
 
@@ -34,21 +34,35 @@ def login_view(request):
 
 
 def register(request):
-    
-    
     if request.method == 'POST':
-        #retrieve data from fields
-        input_data = request.POST.get('username')
+        # Retrieve data from form fields
+        username = request.POST.get('username')
         password = request.POST.get('password')
-        
+        contact = request.POST.get('contact')
+        registration_date = request.POST.get('registration_date')
+        account_type = request.POST.get('account_type')
+        privilege = 1 if account_type == "member" else 0
+
         try:
             with connection.cursor() as cursor:
-                cursor.execute("INSERT INTO [USER] (USERNAME, Pass) VALUES (%s, %s)", [input_data, password])
-                print("data was inserted")
-                
+                # Insert data into the database
+                cursor.execute(
+                    """
+                    INSERT INTO [User] (Name, Password, Contact_Number, RegDate, Privilege) 
+                    VALUES (%s, %s, %s, %s, %s)
+                    """,
+                    [username, password, contact, registration_date, privilege]
+                )
+                print(reverse('Math_club:login_page'))
+                return redirect('Math_club:login_page')  # Redirect to login page
+
         except Exception as e:
-            print("an error occured")
-        
+            print(f"An error occurred: {e}")
+            return render(request, 'register.html', {'error': 'Failed to register. Please try again.'})
+
+    return render(request, 'register.html')
+
+
 
 
 def financial(request):

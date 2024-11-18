@@ -36,7 +36,7 @@
 </head>
 <body>
     <div class="container">
-        <form method="post" action="{% url 'login_page' %}">
+        <form method="post" action="{% url 'Math_club:login_page' %}">
             {% csrf_token %}
             <input type="text" placeholder="Username" name="username" required>
             <input type="password" placeholder="Password" name="password" required>

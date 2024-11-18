@@ -34,7 +34,9 @@
             text-align: left;
         }
         input[type="text"],
-        input[type="password"] {
+        input[type="password"],
+        input[type="date"],
+        select {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -59,15 +61,52 @@
     </style>
 </head>
 <body>
-    <form method="POST" action="{% url 'register_page' %}">
+    <form method="POST" action="{% url 'Math_club:register_page' %}">
         {% csrf_token %}
         <h1>Register</h1>
+        
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br>
+        
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required><br>
+    
+        <label for="contact">Contact Number:</label>
+        <input type="text" id="contact" name="contact" placeholder="Enter your contact number" required><br>
+    
+        <label for="registration_date">Registration Date:</label>
+        <input type="date" id="registration_date" name="registration_date" readonly><br>
+    
+        <label for="account_type">Account Type:</label>
+        <select id="account_type" name="account_type" required>
+            <option value="member">Member</option>
+            <option value="outsider">Outsider</option>
+        </select>
+    
+        <div id="additional_fields"></div>
+    
         <input type="submit" value="Register">
-        
     </form>
+    
+    <script>
+        // Set today's date in the Registration Date field
+        document.getElementById('registration_date').value = new Date().toISOString().split('T')[0];
+
+        // Handle dynamic fields based on Account Type
+        const accountType = document.getElementById('account_type');
+        const additionalFields = document.getElementById('additional_fields');
+
+        accountType.addEventListener('change', function () {
+            additionalFields.innerHTML = ''; // Clear existing fields
+
+            if (this.value === 'outsider') {
+                // Add CNIC field for outsiders
+                additionalFields.innerHTML = `
+                    <label for="cnic">CNIC:</label>
+                    <input type="text" id="cnic" name="cnic" placeholder="Enter your CNIC" required>
+                `;
+            }
+        });
+    </script>
 </body>
 </html>

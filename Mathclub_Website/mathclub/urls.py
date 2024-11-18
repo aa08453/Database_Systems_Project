@@ -1,9 +1,12 @@
 from django.urls import path
 from . import views
 
+app_name = 'Math_club'  # Add this line
+
+
 urlpatterns = [
     path('', views.login_page, name='login_page'),  # Serve at root
-    path('register',views.register_page, name='register_page'),
+    path('register/',views.register_page, name='register_page'),
     path('teams',views.team_page, name='teams_page'),
     path ('finance',views.finance_page, name='finance_page'),
     path('finance/submit', views.finance_submit, name='finance_submit'),  # Add this line
