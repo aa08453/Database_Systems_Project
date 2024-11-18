@@ -30,6 +30,9 @@ def finance_submit(request):
 def voting_poll(request):
     return render(request, 'voting_template.html') #didnt pass the template folder name becuase it exists within the application
 
+def add_product_page(request):
+    return add_product(request);
+
 
 def submit_blog(request):
     if request.method == 'POST':
