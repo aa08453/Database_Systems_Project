@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Mathclub_Website',  # Add your app here
+    'mathclub'
 ]
 
 MIDDLEWARE = [
@@ -78,9 +79,9 @@ WSGI_APPLICATION = 'Mathclub_Website.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
-        'NAME': 'Math_club',
-        'USeR': 'sa',
-        'PASSWORD': '123',
+        'NAME': 'CLUBS_DATABASE',
+        'USER': 'sa',
+        'PASSWORD': 'passPASS123',
         'HOST': 'localhost',
         'PORT': '1433',
         'OPTIONS': {

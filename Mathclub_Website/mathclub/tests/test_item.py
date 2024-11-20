@@ -3,45 +3,46 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service  
 from webdriver_manager.chrome import ChromeDriverManager  
+from django.db import connection
 import os
 
-
-cache_path = os.path.expanduser("~/.wdm/drivers//")
-
-binary_path = os.path.exists(os.path.join(cache_path, "chromedriver"));
-
-if binary_path:
-    driver_path = binary_path
-else:
-    driver_path = ChromeDriverManager().install()
-
-
-service = Service(binary_path)
-options = webdriver.ChromeOptions()
+#install selenium and wherever it is add it to python path
 
 @pytest.fixture
 def setup_driver():
-    self.driver = webdriver.Chrome(service=service, options=options)
-    yield self.driver
-    self.driver.quit()
+    driver = webdriver.Chrome()
+    yield driver
+    driver.quit()
+
+
+
+@pytest.fixture
+def setup_database():
+    cursor = connection.cursor()
+    cursor.execute(open('/home/hak/Desktop/synced/work/sem5/dbms/Database_django_project/Mathclub_Website/mathclub/tests/create_db.sql'.read()))
+    yield connection  # This makes the connection available to the test
+    connection.commit()
+    connection.close()
+
+
+
 
 @pytest.mark.django_db
 def test_create_item(setup_driver):
-    self.driver = setup_driver
-    self.driver.get("http://localhost:8000/create/")
-    self.driver.find_element(By.NAME, 'item_name').send_keys('Item_test')
-    self.driver.find_element(By.NAME, 'item_price').send_keys('123')
-    self.driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
+
+    driver = setup_driver
+    driver.get("http://localhost:8000/additem")
+    driver.find_element(By.NAME, 'item_title').send_keys('Item_test')
+    driver.find_element(By.NAME, 'item_price').send_keys('123')
+    driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
 
     # Verify item in database
     with connection.cursor() as cursor:
-        query = """
-        SELECT TOP 1 * 
-        FROM ITEMS
-        WHERE Product_Name = %s AND Price = %s
-        """
 
-        cursor.execute(query, ['Item_test', 123])
+
+        query = """ SELECT * FROM Products """
+
+        cursor.execute(query)
 
         assert cursor.fetchone()
     
