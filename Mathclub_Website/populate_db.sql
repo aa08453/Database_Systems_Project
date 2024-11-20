@@ -3,8 +3,9 @@ IF EXISTS (SELECT * FROM sys.databases WHERE name = 'CLUBS_DATABASE')
     DROP DATABASE CLUBS_DATABASE
 GO
 
-CREATE DATABASE CLUBS_DATABASE;
-USE CLUBS_DATABASE;
+CREATE DATABASE CLUBS_DATABASE
+GO
+USE CLUBS_DATABASE
 GO
 
 CREATE TABLE "Event"(
@@ -185,13 +186,14 @@ CREATE TABLE "Privileges"(
 );
 
 CREATE TABLE "Candidates"(
-    "Candidate_ID" INT IDENTITY(1,1) PRIMARY KEY,
+    "Candidate_ID" INT IDENTITY(1,1),
     "User_ID" INT NOT NULL,
     "Role_ID" INT NOT NULL,
     "Election_ID" INT NOT NULL,
     FOREIGN KEY ("User_ID") REFERENCES "User"("User_ID"),
     FOREIGN KEY ("Role_ID") REFERENCES "Role_types"("Role_Id"),
-    FOREIGN KEY ("Election_ID") REFERENCES "Election"("Election_ID")
+    FOREIGN KEY ("Election_ID") REFERENCES "Election"("Election_ID"),
+    CONSTRAINT "PK_Candidate" PRIMARY KEY ("Candidate_ID", "User_ID", "Role_ID", "Election_ID")
 );
 
 CREATE TABLE "Voting"(
@@ -252,3 +254,4 @@ CREATE TABLE "Inventory"(
     FOREIGN KEY ("Product_ID") REFERENCES "Products"("Product_ID"),
     FOREIGN KEY ("Location_ID") REFERENCES "Locations"("Location_ID")
 );
+
