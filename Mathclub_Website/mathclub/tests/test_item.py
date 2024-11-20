@@ -16,14 +16,6 @@ def setup_driver():
 
 
 
-@pytest.fixture
-def setup_database():
-    cursor = connection.cursor()
-    cursor.execute(open('/home/hak/Desktop/synced/work/sem5/dbms/Database_django_project/Mathclub_Website/mathclub/tests/create_db.sql'.read()))
-    yield connection  # This makes the connection available to the test
-    connection.commit()
-    connection.close()
-
 
 
 
@@ -32,7 +24,7 @@ def test_create_item(setup_driver):
 
     driver = setup_driver
     driver.get("http://localhost:8000/additem")
-    driver.find_element(By.NAME, 'item_title').send_keys('Item_test')
+    driver.find_element(By.NAME, 'item_title').send_keys('abc')
     driver.find_element(By.NAME, 'item_price').send_keys('123')
     driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
 
@@ -40,7 +32,8 @@ def test_create_item(setup_driver):
     with connection.cursor() as cursor:
 
 
-        query = """ SELECT * FROM Products """
+        query = """ SELECT * FROM Products 
+        WHERE product_name = 'abc' AND price = 123 """
 
         cursor.execute(query)
 
