@@ -1,0 +1,17 @@
+Workign on:
+election (C)
+
+
+Unmade:
+voting (CRUD)
+election (CRUD)
+candidates (R)
+leadership (CRUD)
+role_types (CRUD)
+
+Finished:
+
+
+
+
+
