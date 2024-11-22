@@ -11,7 +11,30 @@ role_types (CRUD)
 
 Finished:
 
+=====================
+attendees h/a
+candidates h/a
+finances h/a
+leadership h/a
+election h/a
+majors h/a
+privileges h/a
+responsibility h/a
+role_types h/a
+team_members h/a
+team_roles h/a
+voting h/a
 
+--------------------------
 
-
-
+blog a/u
+club_items a/u
+event_participants a/u
+event_teams a/u
+events a/u
+locations a/u
+order_details a/u
+orders a/u
+products a/u
+tags a/u
+teams a/u

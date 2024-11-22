@@ -1,5 +1,8 @@
 import pytest
 from django.db import connection
+import os
+
+path = os.getcwd()
 
 
 @pytest.fixture(scope='session')
