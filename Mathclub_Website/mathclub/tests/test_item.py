@@ -15,10 +15,6 @@ def setup_driver():
     driver.quit()
 
 
-
-
-
-
 @pytest.mark.django_db
 def test_create_item(setup_driver):
 
