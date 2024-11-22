@@ -1,3 +1,15 @@
+IF exists (SELECT * FROM sys.databases where name = 'CLUBS_DATABASE')
+begin
+
+use master
+drop database clubs_database 
+create database clubs_database
+use clubs_database
+
+end
+
+
+
 -- Check and create "Event" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Event')
 BEGIN

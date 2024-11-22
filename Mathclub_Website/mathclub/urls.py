@@ -14,6 +14,10 @@ urlpatterns = [
     path('submit_blog', views.submit_blog, name='submit_blog'),  # Add this line
     path('additem', views.add_product_page, name='add_product'),  # Add this line
     path('main', views.main_page, name='main_page'),  # Add this line
-    
-    path('tag', views.create_tag_page, name='create_tag_page')
+
+
+
+    #elections
+
+    path('election/create', views.election_create_page, name='election-creation'),  # Add this line
 ]
