@@ -1,0 +1,27 @@
+
+<form method="GET">
+  <input type="text" name="q" placeholder="Search..." value="{{ request.GET.q|default:'' }}">
+  <button type="submit">Search</button>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      {% for column in items.0.keys %}
+      <th>{{ column|title }}</th>
+      {% endfor %}
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in items %}
+    <tr>
+      {% for value in item.values %}
+      <td>{{ value }}</td>
+      {% endfor %}
+      <td>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

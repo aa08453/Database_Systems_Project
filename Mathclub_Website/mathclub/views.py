@@ -1,9 +1,15 @@
 from django.shortcuts import render, redirect
 from .front import *
 from .forms import BlogForm
+from .forms import election_form
 from django.contrib import messages
 from datetime import datetime
 from .myutils import *
+
+from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpResponseRedirect
+from django.views.generic import ListView, TemplateView, FormView, DeleteView
+from django.urls import reverse_lazy
 
 # Create your views here.
 
@@ -74,6 +80,7 @@ def election_create_page(request):
     election = fetch_elections()
     return render(request, 'election/create.html', {"election" : election})
 
+
 def election_retrieve_page(request):
     elections = fetch_elections()
     user_privilege = request.session["privilege"]
@@ -84,8 +91,92 @@ def election_retrieve_page(request):
     return render(request, 'election/retrieve.html', {'elections': elections,
                   'user_has_permission' : user_has_permission})
 
+
 def election_update_page(request):
     return
 
 def election_delete_page(request):
     return
+
+class GenericListView(ListView):
+    template_name = "list_page.html" #TODO: Create a generic list page
+    table_name = None
+    search_field = "name" #We can override this later
+    fields = []
+
+    def get_queryset(self, query=""):
+        with connection.cursor() as cursor:
+            sql = f"select * from {self.table_name} "
+            if query:
+                sql += f"where {self.search_field} like %s"
+                cursor.execute(sql, [f"%{query}%"])
+            else:
+                cursor.execute(sql)
+                
+            columns = [col[0] for col in cursor.description]
+            return [dict(zip(columns, row)) for row in cursor.fetchall()]
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        query = self.request.GET.get("q", "")
+        context["items"] = self.get_queryset(query)
+        context["table_name"] = self.table_name
+        return context
+
+class GenericPageView(TemplateView): #Create/update in one go
+    template_name = "form_page.html"
+    table_name = None
+    fields = []
+    pk_name = ""
+
+    def get_object(self, pk):
+        with connection.cursor() as cursor:
+            sql = f"select * from {self.table_name} where id = %s"
+            cursor.execute(sql, pk)
+            row = cursor.fetchone()
+            if (row is not None):
+                columns = [col[0] for col in cursor.description]
+                return dict(zip(columns,key))
+        return None
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get("pk")
+        context["object"] = self.get_object(pk) if pk else None
+        context["fields"] = self.fields
+        return context
+
+    def post(self, request, *args, **kwargs):
+        data = {field: request.POST[field] for field in self.fields}
+        pk = self.kwargs.get(pk)
+
+        with connection.cursor() as cursor:
+            if pk: #in this case we are updating
+                set_clause = ", ".join([f"{field} = %s" for field in self.fields])
+                sql = f"update {self.table_name} set {set_clause} where {pk_name} = %s"
+                cursor.execute(sql, list(data.values()) + [pk])
+            else:
+                columns = ", ".join(self.fields)
+                placeholders = ", ".join(["%s"] * len(fields))
+                sql = f"insert into {self.table_name} ({columns}) values ({placeholders})"
+                cursor.execute(sql, list(data.values()) + [pk])
+
+        # return redirect("list_items") #TODO: Figure out where to redirect to 
+
+    
+class DeleteView(TemplateView):
+    table_name = None
+
+    def post(self, request, pk):
+        with connection.cursor() as cursor:
+            sql = f"delete from {self.table_name} where id = %s"
+            cursor.execute(sql, [pk])
+
+        # return redirect("list_items")
+
+
+    
+class ElectionListView(GenericListView):
+    table_name = "elections"
+    search_field = "start_date" #We can override this later
+    fields = ["start_date", "end_date"]
+

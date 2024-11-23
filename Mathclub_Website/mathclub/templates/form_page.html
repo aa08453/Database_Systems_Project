@@ -1,0 +1,19 @@
+
+<form method="POST">
+  {% csrf_token %}
+  {% for field in fields %}
+  <div>
+    <label for="{{ field }}">{{ field|title }}</label>
+    <input type="text" name="{{ field }}" id="{{ field }}"
+           value="{{ object|get:field|default:'' }}">
+  </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+{% if object %}
+<form method="POST" action="{% url 'delete_item' object.id %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Delete</button>
+</form>
+{% endif %}

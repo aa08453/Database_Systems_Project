@@ -1,7 +1,9 @@
 from django.urls import path
 from django.urls import reverse
 from . import views
-
+from .views import (
+    ElectionListView
+)
 
 urlpatterns = [
     path('', views.login_page, name='login_page'),  # Serve at root
@@ -17,8 +19,12 @@ urlpatterns = [
 
 
     #elections. We delete through the update.
-    path('election/create', views.election_create_page, name='election_create'),  # Add this line
-    path('election/retrieve', views.election_retrieve_page, name='election_view'),  # Add this line
-    path('election/update/<int:election_id>/', views.election_update_page, name='election_update'),  # Add this line
+    # path('election/create', views.election_create_page, name='election_create'),  # Add this line
+    # path('election/retrieve', views.election_retrieve_page, name='election_view'),  # Add this line
+    # path('election/update/<int:election_id>/', views.election_update_page, name='election_update'),  # Add this line
+
+
+    # path('election', views.election_test, name='test')
+    path('elections/', ElectionListView.as_view(), name='list_elections')
 ]
 
