@@ -105,6 +105,8 @@ class GenericListView(ListView):
     fields = []
     pk_field = ""
 
+    #TODO: Make a insertion check hook
+
     def get_queryset(self, query=""):
         with connection.cursor() as cursor:
             sql = f"select * from {self.table_name} "
@@ -163,7 +165,7 @@ class GenericPageView(TemplateView): #Create/update in one go
         with connection.cursor() as cursor:
             if pk: #in this case we are updating
                 set_clause = ", ".join([f"{field} = %s" for field in self.fields])
-                sql = f"update {self.table_name} set {set_clause} where {self.pk_field} = %s"
+                sql = f"update {self.table_name} set {set_clause} where {selfpk_field} = %s"
                 cursor.execute(sql, list(data.values()) + [pk])
             else:
                 columns = ", ".join(self.fields)
@@ -172,7 +174,7 @@ class GenericPageView(TemplateView): #Create/update in one go
                 print(sql)
                 cursor.execute(sql, list(data.values()))
 
-        return redirect("list_elections") #TODO: Figure out where to redirect to 
+        return redirect("list_elections") #TODO: Make redirect a class
 
     
 class GenericDeleteView(View):

@@ -1,12 +1,70 @@
 
-<form method="POST">
-  {% csrf_token %}
-  {% for field in fields %}
-  <div>
-    <label for="{{ field }}">{{ field|title }}</label>
-    <input type="text" name="{{ field }}" id="{{ field }}"
-           value="{{ object.field|default:'' }}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Information</title>
+
+  <!-- Include Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom Styles for Buttons -->
+  <style>
+    .btn-gradient-success {
+      background: linear-gradient(to right, #56ab2f, #a8e063);
+      color: white;
+      border: none;
+    }
+
+    .form-control {
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card {
+      border-radius: 15px;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Optional: Center align the form for small screens */
+    .form-container {
+      max-width: 600px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container mt-5">
+
+  <!-- Form Container -->
+  <div class="form-container">
+    <form method="POST" class="p-4 border rounded shadow-sm bg-light">
+      {% csrf_token %}
+
+      <!-- Form Heading -->
+      <h2 class="mb-4 text-center text-primary">Update Information</h2>
+
+      {% for field in fields %}
+      <div class="mb-3">
+        <label for="{{ field }}" class="form-label">{{ field|title }}</label>
+        <input type="text" name="{{ field }}" id="{{ field }}" class="form-control" 
+               value="{{ object.field|default:'' }}" placeholder="Enter {{ field|title }}">
+      </div>
+      {% endfor %}
+
+      <!-- Submit Button -->
+      <div class="text-center">
+        <button type="submit" class="btn btn-gradient-success btn-lg w-100">Save</button>
+      </div>
+    </form>
   </div>
-  {% endfor %}
-  <button type="submit" class="btn btn-primary">Save</button>
-</form>
+
+</div>
+
+<!-- Include Bootstrap JS for responsiveness -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
