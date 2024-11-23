@@ -37,20 +37,15 @@
     </style>
 </head>
 <body>
-<form method="POST" action="{% url 'Math_club:register_page' %}">
+<form method="POST" action="{% url 'Math_club:event_signup_page' %}">
     {% csrf_token %}
     <h2>Event Sign-up</h2>
 
     <label for="attendee">User ID</label>
     <input type="text" id="attendee" placeholder="Enter your ID">
 
-
-    <label for="event">Event</label>
-    <select id="event" name="event" required>
-        <option value="">Event 1</option>
-        <option value="outsider">Event 2</option>
-    </select>
-
+    <label for="event">Event ID</label>
+    <input type="text" id="event" placeholder="Enter the Event ID">
 
     <input type="submit" value="Event_Signup">
 </form>
