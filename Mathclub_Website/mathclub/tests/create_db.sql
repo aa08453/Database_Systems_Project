@@ -245,6 +245,7 @@ BEGIN
         ('Hackathon', '2024-02-20', '2024-02-22', 2, 4, 'A 48-hour coding competition');
 END;
 
+
 -- Populate "Products" table if empty
 IF NOT EXISTS (SELECT * FROM Products)
 BEGIN
@@ -263,15 +264,104 @@ BEGIN
         ('Electrical Engineering');
 END;
 
--- Populate "TransactionTypes" table if empty
-IF NOT EXISTS (SELECT * FROM TransactionTypes)
+-- Populate "TransactionType" table if empty
+IF NOT EXISTS (SELECT * FROM TransactionType)
 BEGIN
-    INSERT INTO TransactionTypes (Type_Name)
+    INSERT INTO TransactionType (Type_Name)
     VALUES 
         ('Purchase'),
         ('Donation');
 END;
 
+-- Populate "Team_Roles" table if empty
+IF NOT EXISTS (SELECT * FROM Team_Roles)
+BEGIN
+    INSERT INTO Team_Roles (role_name, role_description)
+    VALUES 
+        ('Leader', 'Responsible for team management'),
+        ('Member', 'Assist in team activities');
+END;
+
+-- Populate "Role_types" table if empty
+IF NOT EXISTS (SELECT * FROM Role_types)
+BEGIN
+    INSERT INTO Role_types (Role_Name)
+    VALUES 
+        ('Admin'),
+        ('User');
+END;
+
+-- Populate "Tags" table if empty
+IF NOT EXISTS (SELECT * FROM Tags)
+BEGIN
+    INSERT INTO Tags (Tag_Name)
+    VALUES 
+        ('Technology'),
+        ('Education');
+END;
+
+-- Populate "Attendee_type" table if empty
+IF NOT EXISTS (SELECT * FROM Attendee_type)
+BEGIN
+    INSERT INTO Attendee_type (attendee_type)
+    VALUES 
+        ('Student'),
+        ('Professional');
+END;
+
+-- Populate "Responsibility" table if empty
+IF NOT EXISTS (SELECT * FROM Responsibility)
+BEGIN
+    INSERT INTO Responsibility (Person_Responsible, StartDate, EndDate)
+    VALUES 
+        (1, '2024-01-01', '2024-06-01'),
+        (2, '2024-02-01', '2024-07-01');
+END;
+
+-- Populate "Election" table if empty
+IF NOT EXISTS (SELECT * FROM Election)
+BEGIN
+    INSERT INTO Election (Start_Date, End_Date)
+    VALUES 
+        ('2024-03-01', '2024-03-15'),
+        ('2024-09-01', '2024-09-15');
+END;
+
+-- Populate "Club_Items" table if empty
+IF NOT EXISTS (SELECT * FROM Club_Items)
+BEGIN
+    INSERT INTO Club_Items (Item_Name, Storage)
+    VALUES 
+        ('Projector', 'Main Office'),
+        ('Chairs', 'Event Hall');
+END;
+
+-- Populate "Order_Details" table if empty
+IF NOT EXISTS (SELECT * FROM Order_Details)
+BEGIN
+    INSERT INTO Order_Details (Product_ID, Quantity)
+    VALUES 
+        (1, 50),
+        (2, 100);
+END;
+
+-- Populate "Event_Teams" table if empty
+IF NOT EXISTS (SELECT * FROM Event_Teams)
+BEGIN
+    INSERT INTO Event_Teams (Event_ID, Team_ID)
+    VALUES 
+        (1, 1),
+        (2, 2);
+END;
+
+-- Populate "Locations" table if empty
+IF NOT EXISTS (SELECT * FROM Locations)
+BEGIN
+    INSERT INTO Locations (Location_Name)
+    VALUES 
+        ('Conference Room A'),
+        ('Main Hall');
+END;
 -- Populate "Users" table if empty
 IF NOT EXISTS (SELECT * FROM Users)
 BEGIN

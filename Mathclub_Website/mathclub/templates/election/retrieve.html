@@ -69,7 +69,9 @@
                 <th>ID</th>
                 <th>Start Date</th>
                 <th>End Date</th>
+                {% if user_has_permission %}
                 <th>Actions</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -89,7 +91,7 @@
         </tbody>
     </table>
     {% if user_has_permission %}
-    <a href="{% url 'election_create' %}" class="btn">Create New Election</a>
+            <a href="{% url 'election_create' %}" class="btn">Create New Election</a>
     {% endif %}
 </div>
 

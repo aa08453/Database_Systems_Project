@@ -4,7 +4,7 @@ import uuid
 
 def fetch_elections():
     with connection.cursor() as cursor:
-        cursor.execute("select election_id, start_date, end_date from election")
+        cursor.execute("select election_id, start_date, end_date from elections")
         elections = cursor.fetchall()
         return [
             {"id" : row[0], "start_date" : row[1], "end_date" : row[2]}

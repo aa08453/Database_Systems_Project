@@ -61,11 +61,10 @@ def election_create_page(request):
         print(start_date.replace("T", " "))
         print(end_date.replace("T", " "))
 
-        user_privilege = request.session["privilege"]
 
         try:
             with connection.cursor() as cursor:
-                cursor.execute(""" insert into election (start_date, end_date)
+                cursor.execute(""" insert into elections (start_date, end_date)
                 values (%s, %s) """, [start_date.replace("T", " "),
                                       end_date.replace("T", " ")])
         except Exception as e:
@@ -77,9 +76,13 @@ def election_create_page(request):
 
 def election_retrieve_page(request):
     elections = fetch_elections()
-    user_has_privs = (request.session['privilege'] == 2)
-    return render(request, 'election/retrieve.html', {'elections': elections},
-                  {'user_has_privileges' : user_has_privs})
+    user_privilege = request.session["privilege"]
+    print("User has privs", user_privilege)
+    user_has_permission = (user_privilege == 1)
+
+
+    return render(request, 'election/retrieve.html', {'elections': elections,
+                  'user_has_permission' : user_has_permission})
 
 def election_update_page(request):
     return
