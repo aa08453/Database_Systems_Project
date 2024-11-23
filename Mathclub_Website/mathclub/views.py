@@ -85,3 +85,13 @@ def election_create_page(request):
 
     election = fetch_elections()
     return render(request, 'election/create.html', {"election" : election})
+
+def election_retrieve_page(request):
+    elections = fetch_elections()
+    return render(request, 'election/retrieve.html', {'elections': elections})
+
+def election_update_page(request):
+    return
+
+def election_delete_page(request):
+    return

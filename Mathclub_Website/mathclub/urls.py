@@ -1,7 +1,6 @@
 from django.urls import path
+from django.urls import reverse
 from . import views
-
-app_name = 'Math_club'  # Add this line
 
 
 urlpatterns = [
@@ -17,7 +16,9 @@ urlpatterns = [
 
 
 
-    #elections
-
-    path('election/create', views.election_create_page, name='election-creation'),  # Add this line
+    #elections. We delete through the update.
+    path('election/create', views.election_create_page, name='election_create'),  # Add this line
+    path('election/retrieve', views.election_retrieve_page, name='election_view'),  # Add this line
+    path('election/update/<int:election_id>/', views.election_update_page, name='election_update'),  # Add this line
 ]
+
