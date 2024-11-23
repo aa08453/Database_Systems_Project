@@ -226,15 +226,33 @@ BEGIN
     );
 END;
 
--- Check and create "Sessions" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Sessions')
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Roles')
 BEGIN
-    CREATE TABLE Sessions(
-        SESSION_KEY VARCHAR(255) PRIMARY KEY,
-        USER_ID INT NOT NULL,
-        FOREIGN KEY (User_ID) REFERENCES Users(User_ID)
+    CREATE TABLE Blogs(
+        Role_ID INT IDENTITY(1,1) PRIMARY KEY,
+        Role_Name VARCHAR(20) NOT NULL,
     );
 END;
+
+
+
+
+-- Check and create "Blogs" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Candidates')
+BEGIN
+    CREATE TABLE Blogs(
+        Candidate_ID INT IDENTITY(1,1) PRIMARY KEY,
+        Role_ID INT NOT NULL,
+        Election_ID INT NOT NULL,
+        User_ID INT NOT NULL,
+        FOREIGN KEY (User_ID) REFERENCES Users(User_ID)
+        FOREIGN KEY (Role_ID) REFERENCES Roles(Role_ID)
+        FOREIGN KEY (Election_ID) REFERENCES Elections(Election_ID)
+    );
+END;
+
+
 
 -- Populate "Events" table if empty
 IF NOT EXISTS (SELECT * FROM Events)
@@ -316,6 +334,15 @@ BEGIN
     VALUES 
         (1, '2024-01-01', '2024-06-01'),
         (2, '2024-02-01', '2024-07-01');
+END;
+
+-- Populate "Blog_Content" table if empty
+IF NOT EXISTS (SELECT * FROM Blog_Content)
+BEGIN
+    INSERT INTO Blog_Content (File_Path, File_Type)
+    VALUES 
+        (1, 'Text'),
+        (2, 'Image');
 END;
 
 -- Populate "Election" table if empty
