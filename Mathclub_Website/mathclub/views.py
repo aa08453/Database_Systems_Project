@@ -142,6 +142,7 @@ class GenericPageView(TemplateView): #Create/update in one go
     table_name = None
     fields = []
     pk_field = ""
+    redirect_to = ""
 
     def get_object(self, pk):
         with connection.cursor() as cursor:
@@ -179,19 +180,20 @@ class GenericPageView(TemplateView): #Create/update in one go
                 print(sql)
                 cursor.execute(sql, list(data.values()))
 
-        return redirect("list_elections") #TODO: Make redirect a class
+        return redirect(self.redirec_to)
 
     
 class GenericDeleteView(View):
     table_name = None
-    pk_field = "Election_ID"
+    pk_field = ""
+    redirect_to = ""
 
     def post(self, request, pk):
         with connection.cursor() as cursor:
             sql = f"delete from {self.table_name} where {self.pk_field} = %s"
             cursor.execute(sql, [pk])
 
-        return redirect("list_elections")
+        return redirect(self.redirect_to)
 
 
     
@@ -206,8 +208,10 @@ class ElectionsPageView(GenericPageView):
     search_field = "start_date"
     fields = ["start_date", "end_date"]
     pk_field = "Election_ID"
+    redirect_to = "list_elections"
 
 class ElectionsDeleteView(GenericDeleteView):
     table_name = "elections"
     pk_field = "Election_ID"
+    redirect_to = "list_elections"
 
