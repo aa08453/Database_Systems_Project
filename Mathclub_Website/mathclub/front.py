@@ -9,24 +9,27 @@ def login_view(request):
     if request.method == 'POST':
         # Retrieve the data from the form fields
         
-        input_data = request.POST.get('username')
-        password = request.POST.get('password')
+        username_try = request.POST.get('username')
+        password_try = request.POST.get('password')
          
         try:
             cursor = connection.cursor()
-            cursor.execute("SELECT * FROM [USER] WHERE Name = %s AND Password = %s", [input_data, password])
+            cursor.execute("""select user_id, name, password, privilege FROM [USER] WHERE Name = %s AND Password = %s""", [username_try, password_try])
             row = cursor.fetchone()
-            print (row)
+            print(row)
+            if (row is None):
+                print("No such user exists") #TODO: Make this a more convincing message w redirect
+                return
+            user_id = row[0]
+            username = row[1]
+            password = row[2]
+            privilege = row[3]
             
-            check_user = row[1]
-            check_pass = row[5]
-            print(check_user)
-            print(check_pass)
-            
-            if input_data == check_user and password == check_pass:
+            if username_try == username and password_try == password:
                 print("login successful")
-                request.session['username'] = check_user
-                request.session['userid'] = row[0]
+                request.session['username'] = username #TODO: Move away from django ORM and use our own custom functions
+                request.session['user_id'] = user_id
+                request.session['privilege'] = privilege
                 
                 return redirect('Math_club:main_page')
             else:
@@ -34,21 +37,23 @@ def login_view(request):
             
         except:
             print("an error occured")
+            print(username_try)
+            print(password_try)
     return render(request, 'background_template.html') #didnt pass the template folder name becuase it exists within the application
 
 def main_view(request):
     # Retrieve userid and username from the session
-    userid = request.session.get('userid')
+    user_id = request.session.get('user_id')
     username = request.session.get('username')
 
     # Check if session data exists; if not, redirect to the login page
-    if not userid or not username:
+    if not user_id or not username:
         return redirect('Math_club:login_page')
 
-    print(f"UserID: {userid}, Username: {username}")
+    print(f"UserID: {user_id}, Username: {username}")
 
     # Pass session data to the template
-    return render(request, 'main_page.html', {'userid': userid, 'username': username})
+    return render(request, 'main_page.html', {'user_id': user_id, 'username': username})
 
 
 
@@ -60,7 +65,7 @@ def register(request):
         contact = request.POST.get('contact')
         registration_date = request.POST.get('registration_date')
         account_type = request.POST.get('account_type')
-        privilege = 1 if account_type == "member" else 0
+        privilege = 1 if account_type == "member" else 0 #TODO: Add more logic to update privilege
 
         try:
             with connection.cursor() as cursor:

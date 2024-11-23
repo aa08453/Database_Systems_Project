@@ -19,6 +19,7 @@ from django.urls import path, include
 import sys
 import os
 
+app_name = 'Math_club'  # Add this line
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.abspath(os.path.join(BASE_DIR, '../')))
 

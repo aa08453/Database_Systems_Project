@@ -78,11 +78,19 @@
                 <td>{{ election.id }}</td>
                 <td>{{ election.start_date }}</td>
                 <td>{{ election.end_date }}</td>
+                {% if user_has_permission %}
+                <td>
+                    <a href="{% url 'election_update' election.id %}" class="btn">Edit</a>
+                    <a href="{% url 'election_delete' election.id %}" class="btn btn-danger">Delete</a>
+                </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% if user_has_permission %}
     <a href="{% url 'election_create' %}" class="btn">Create New Election</a>
+    {% endif %}
 </div>
 
 </body>

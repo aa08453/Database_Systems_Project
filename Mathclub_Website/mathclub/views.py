@@ -3,6 +3,7 @@ from .front import *
 from .forms import BlogForm
 from django.contrib import messages
 from datetime import datetime
+from .myutils import *
 
 # Create your views here.
 
@@ -55,16 +56,6 @@ def submit_blog(request):
 
 
 
-def fetch_elections():
-    with connection.cursor() as cursor:
-        cursor.execute("select election_id, start_date, end_date from election")
-        elections = cursor.fetchall()
-        return [
-            {"id" : row[0], "start_date" : row[1], "end_date" : row[2]}
-            for row in elections
-        ]
-
-
 def election_create_page(request):
     if request.method == 'POST':
         start_date = request.POST.get('start_date')
@@ -73,6 +64,7 @@ def election_create_page(request):
         print(start_date.replace("T", " "))
         print(end_date.replace("T", " "))
 
+        user_privilege = request.session["privilege"]
 
         try:
             with connection.cursor() as cursor:
@@ -88,7 +80,9 @@ def election_create_page(request):
 
 def election_retrieve_page(request):
     elections = fetch_elections()
-    return render(request, 'election/retrieve.html', {'elections': elections})
+    user_has_privs = (request.session['privilege'] == 2)
+    return render(request, 'election/retrieve.html', {'elections': elections},
+                  {'user_has_privileges' : user_has_privs})
 
 def election_update_page(request):
     return
