@@ -21,7 +21,7 @@
       <td>{{ value }}</td>
       {% endfor %}
       <td>
-        <a href="{{ update_url|add:item.pk_field }}">Edit</a>
+        <a href="{{ update_url }}{{ item.pk_field }}">Edit</a>
       </td>
     </tr>
     {% endfor %}

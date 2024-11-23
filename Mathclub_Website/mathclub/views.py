@@ -119,9 +119,6 @@ class GenericListView(ListView):
                 if columns[x] == self.pk_field:
                     columns[x] = "pk_field"
 
-
-
-            print(columns)
             return [dict(zip(columns, row)) for row in cursor.fetchall()]
     
     def get_context_data(self, **kwargs):
@@ -131,6 +128,7 @@ class GenericListView(ListView):
         context["table_name"] = self.table_name
         context["create_url"] = f"/{self.table_name}/create/"
         context["update_url"] = f"/{self.table_name}/update/"
+        print(context)
         return context
 
 class GenericPageView(TemplateView): #Create/update in one go
@@ -146,18 +144,19 @@ class GenericPageView(TemplateView): #Create/update in one go
             row = cursor.fetchone()
             if (row is not None):
                 columns = [col[0] for col in cursor.description]
-                return dict(zip(columns,key))
+                return dict(zip(columns,row))
         return None
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        pk = self.kwargs.get("pk")
+        pk = self.kwargs.get("pk", None)
         context["object"] = self.get_object(pk) if pk else None
         context["fields"] = self.fields
         return context
 
     def post(self, request, *args, **kwargs):
         data = {field: request.POST[field] for field in self.fields}
-        pk = self.kwargs.get(pk)
+        pk = self.kwargs.get("pk")
 
         with connection.cursor() as cursor:
             if pk: #in this case we are updating
