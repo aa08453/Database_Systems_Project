@@ -277,8 +277,8 @@ IF NOT EXISTS (SELECT * FROM Users)
 BEGIN
     INSERT INTO Users (Name, RegDate, Contact_Number, Privilege, Password)
     VALUES 
-        ('John Doe', '2024-01-01', '3001234567', 1, 'hashedpassword123'),
-        ('Jane Smith', '2024-01-02', '3007654321', 2, 'hashedpassword456');
+        ('admin', '2024-01-01', '3001234567', 1, '123'),
+        ('user', '2024-01-02', '3007654321', 2, '123');
 END;
 
 -- Populate "Blog_Contents" table if empty

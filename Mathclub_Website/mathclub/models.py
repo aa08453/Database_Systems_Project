@@ -7,256 +7,220 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
-class AttendeeType(models.Model):
+
+class AttendeeTypes(models.Model):
     type_id = models.AutoField(primary_key=True)
-    attendee_type = models.CharField(max_length=255)
+    attendee_type = models.CharField(max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')
 
     class Meta:
-        db_table = 'attendee_type'
+        managed = False
+        db_table = 'Attendee_Types'
 
 
-class Attendee(models.Model):
-    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='user_id')
-    event = models.ForeignKey('Event', on_delete=models.CASCADE, db_column='event_id')
-    type = models.ForeignKey(AttendeeType, on_delete=models.SET_NULL, null=True)
-
-    class Meta:
-        db_table = 'attendees'
-        unique_together = (('user', 'event'),)
-    # Making user_event pair unique with user being the primary key
-
-
-class Blog(models.Model):
-    post_id = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=255)
-    date_created = models.DateTimeField()
-    user = models.ForeignKey('User', on_delete=models.CASCADE)
+class BlogContents(models.Model):
+    post_id = models.AutoField(db_column='Post_ID', primary_key=True)  # Field name made lowercase.
+    file_path = models.CharField(db_column='File_Path', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    file_type = models.CharField(db_column='File_Type', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
 
     class Meta:
-        db_table = 'blog'
+        managed = False
+        db_table = 'Blog_Contents'
 
 
-class BlogContent(models.Model):
-    post = models.ForeignKey(Blog, on_delete=models.CASCADE, db_column='post_id')
-    file = models.IntegerField()
-    file_type = models.CharField(max_length=255)
-
-    class Meta:
-        db_table = 'blog_content'
-
-
-class BlogTag(models.Model):
-    post = models.ForeignKey(Blog, on_delete=models.CASCADE, db_column='post_id')
-    tag = models.ForeignKey('Tag', on_delete=models.CASCADE, db_column='tag_id')
+class Blogs(models.Model):
+    post_id = models.AutoField(db_column='Post_ID', primary_key=True)  # Field name made lowercase.
+    title = models.CharField(db_column='Title', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+    date_created = models.DateTimeField(db_column='Date_Created')  # Field name made lowercase.
+    user = models.ForeignKey('Users', models.DO_NOTHING, db_column='User_ID')  # Field name made lowercase.
 
     class Meta:
-        db_table = 'blog_tags'
-        unique_together = (('post', 'tag'),)
+        managed = False
+        db_table = 'Blogs'
 
 
-class Candidate(models.Model):
-    candidate_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey('User', on_delete=models.CASCADE)
-    role = models.ForeignKey('RoleType', on_delete=models.CASCADE)
-    election = models.ForeignKey('Election', on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = 'candidates'
-        unique_together = (('user', 'role', 'election'),)
-    # Making user_role_election composite unique with candidate_id as primary key
-
-
-class ClubItem(models.Model):
-    item_id = models.AutoField(primary_key=True)
-    item_name = models.CharField(max_length=255)
-    storage = models.CharField(max_length=255)
+class ClubItems(models.Model):
+    item_id = models.AutoField(db_column='Item_ID', primary_key=True)  # Field name made lowercase.
+    item_name = models.CharField(db_column='Item_Name', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+    storage = models.CharField(db_column='Storage', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
 
     class Meta:
-        db_table = 'club_items'
+        managed = False
+        db_table = 'Club_Items'
 
 
-class Election(models.Model):
-    election_id = models.AutoField(primary_key=True)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-
-    class Meta:
-        db_table = 'election'
-
-
-class Event(models.Model):
-    event_id = models.AutoField(primary_key=True)
-    event_name = models.CharField(max_length=255)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    location = models.ForeignKey('Location', on_delete=models.CASCADE)
-    scale = models.IntegerField()
-    description = models.TextField()
+class Elections(models.Model):
+    election_id = models.AutoField(db_column='Election_ID', primary_key=True)  # Field name made lowercase.
+    start_date = models.DateTimeField(db_column='Start_Date')  # Field name made lowercase.
+    end_date = models.DateTimeField(db_column='End_Date')  # Field name made lowercase.
 
     class Meta:
-        db_table = 'event'
+        managed = False
+        db_table = 'Elections'
 
 
-class EventLeader(models.Model):
-    event = models.OneToOneField(Event, on_delete=models.CASCADE)
-    event_lead = models.ForeignKey('User', on_delete=models.CASCADE)
+class EventLeaders(models.Model):
+    event = models.OneToOneField('Events', models.DO_NOTHING, db_column='Event_ID', primary_key=True)  # Field name made lowercase. The composite primary key (Event_ID, Event_Lead) found, that is not supported. The first column is selected.
+    event_lead = models.ForeignKey('Users', models.DO_NOTHING, db_column='Event_Lead')  # Field name made lowercase.
 
     class Meta:
-        db_table = 'event_leaders'
+        managed = False
+        db_table = 'Event_Leaders'
         unique_together = (('event', 'event_lead'),)
-    # Making the event_lead unique together with event by making event_lead primary key
 
 
-class Inventory(models.Model):
-    product = models.ForeignKey('Product', on_delete=models.CASCADE, db_column='product_id')
-    quantity_in_stock = models.IntegerField()
-    location = models.ForeignKey('Location', on_delete=models.CASCADE)
+class EventParticipations(models.Model):
+    event = models.OneToOneField('Events', models.DO_NOTHING, db_column='Event_ID', primary_key=True)  # Field name made lowercase. The composite primary key (Event_ID, Attendee) found, that is not supported. The first column is selected.
+    attendee = models.ForeignKey('Users', models.DO_NOTHING, db_column='Attendee')  # Field name made lowercase.
 
     class Meta:
-        db_table = 'inventory'
-        unique_together = (('product', 'location'),)
-    # Making product_location unique with product as the primary key
+        managed = False
+        db_table = 'Event_Participations'
+        unique_together = (('event', 'attendee'),)
 
 
-class Leadership(models.Model):
-    user = models.ForeignKey('User', on_delete=models.CASCADE)
-    role = models.ForeignKey('RoleType', on_delete=models.CASCADE)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+class EventTeams(models.Model):
+    event_id = models.IntegerField(db_column='Event_ID', primary_key=True)  # Field name made lowercase. The composite primary key (Event_ID, Team_ID) found, that is not supported. The first column is selected.
+    team_id = models.IntegerField(db_column='Team_ID')  # Field name made lowercase.
 
     class Meta:
-        db_table = 'leadership'
-        unique_together = (('user', 'role', 'start_date'),)
-    # Making user_role_start_date composite unique with user as the primary key
+        managed = False
+        db_table = 'Event_Teams'
+        unique_together = (('event_id', 'team_id'),)
 
 
-class Location(models.Model):
-    location_id = models.AutoField(primary_key=True)
-    location_name = models.CharField(max_length=255)
-
-    class Meta:
-        db_table = 'locations'
-
-
-class Major(models.Model):
-    major_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255)
+class Events(models.Model):
+    event_id = models.AutoField(db_column='Event_ID', primary_key=True)  # Field name made lowercase.
+    event_name = models.CharField(db_column='Event_Name', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+    start_date = models.DateTimeField(db_column='Start_Date')  # Field name made lowercase.
+    end_date = models.DateTimeField(db_column='End_Date')  # Field name made lowercase.
+    location = models.IntegerField(db_column='Location')  # Field name made lowercase.
+    scale = models.IntegerField(db_column='Scale')  # Field name made lowercase.
+    description = models.CharField(db_column='Description', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
 
     class Meta:
-        db_table = 'majors'
+        managed = False
+        db_table = 'Events'
 
 
-class Order(models.Model):
-    order_id = models.AutoField(primary_key=True)
-    customer = models.ForeignKey('User', on_delete=models.CASCADE)
-    order_date = models.DateField()
-    delivery_date = models.DateField()
-
-    class Meta:
-        db_table = 'orders'
-
-
-class OrderDetail(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+class Locations(models.Model):
+    location_id = models.AutoField(db_column='Location_ID', primary_key=True)  # Field name made lowercase.
+    location_name = models.CharField(db_column='Location_Name', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
 
     class Meta:
-        db_table = 'order_details'
-        unique_together = (('order', 'product'),)
-    # Making order_product unique with order as the primary key
+        managed = False
+        db_table = 'Locations'
 
 
-class Privilege(models.Model):
-    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='privileges')
-    start_date = models.DateField()
-    privilege = models.CharField(max_length=255)
-    end_date = models.DateField()
+class Majors(models.Model):
+    major_id = models.AutoField(db_column='Major_ID', primary_key=True)  # Field name made lowercase.
+    name = models.CharField(db_column='Name', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
 
     class Meta:
-        db_table = 'privileges'
-        unique_together = (('user', 'start_date'),)
-    # Making user_start_date unique with user as the primary key
+        managed = False
+        db_table = 'Majors'
 
 
-class Product(models.Model):
-    product_id = models.AutoField(primary_key=True)
-    product_name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+class OrderDetails(models.Model):
+    order_id = models.AutoField(db_column='Order_ID', primary_key=True)  # Field name made lowercase.
+    product_id = models.IntegerField(db_column='Product_ID')  # Field name made lowercase.
+    quantity = models.IntegerField(db_column='Quantity')  # Field name made lowercase.
 
     class Meta:
-        db_table = 'products'
+        managed = False
+        db_table = 'Order_Details'
 
 
-class RoleType(models.Model):
+class Products(models.Model):
+    product_id = models.AutoField(db_column='Product_ID', primary_key=True)  # Field name made lowercase.
+    product_name = models.CharField(db_column='Product_Name', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+    price = models.IntegerField(db_column='Price')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Products'
+
+
+class Responsibilities(models.Model):
+    item_id = models.AutoField(db_column='Item_ID', primary_key=True)  # Field name made lowercase.
+    person_responsible = models.IntegerField(db_column='Person_Responsible')  # Field name made lowercase.
+    startdate = models.DateField(db_column='StartDate')  # Field name made lowercase.
+    enddate = models.DateField(db_column='EndDate')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Responsibilities'
+
+
+class RoleTypes(models.Model):
+    role_id = models.AutoField(db_column='Role_Id', primary_key=True)  # Field name made lowercase.
+    role_name = models.CharField(db_column='Role_Name', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Role_Types'
+
+
+class Sessions(models.Model):
+    session_key = models.CharField(db_column='SESSION_KEY', primary_key=True, max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+    user = models.ForeignKey('Users', models.DO_NOTHING, db_column='USER_ID')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Sessions'
+
+
+class Tags(models.Model):
+    tag_id = models.AutoField(db_column='Tag_ID', primary_key=True)  # Field name made lowercase.
+    tag_name = models.CharField(db_column='Tag_Name', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Tags'
+
+
+class TeamRoles(models.Model):
     role_id = models.AutoField(primary_key=True)
-    role_name = models.CharField(max_length=255)
+    role_name = models.CharField(max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')
+    role_description = models.TextField(db_collation='SQL_Latin1_General_CP1_CI_AS')  # This field type is a guess.
 
     class Meta:
-        db_table = 'role_types'
+        managed = False
+        db_table = 'Team_Roles'
 
 
-class Sale(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    sale_date = models.DateTimeField()
-
-    class Meta:
-        db_table = 'sales'
-        unique_together = (('product', 'sale_date'),)
-    # Making product_sale_date unique with product as the primary key
-
-
-class Tag(models.Model):
-    tag_id = models.AutoField(primary_key=True)
-    tag_name = models.CharField(max_length=255)
+class Transactiontypes(models.Model):
+    type_id = models.AutoField(db_column='Type_ID', primary_key=True)  # Field name made lowercase.
+    type_name = models.CharField(db_column='Type_Name', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
 
     class Meta:
-        db_table = 'tags'
+        managed = False
+        db_table = 'TransactionTypes'
 
 
-class Team(models.Model):
-    team_id = models.AutoField(primary_key=True)
-    team_name = models.CharField(max_length=255)
-    team_lead = models.ForeignKey('User', on_delete=models.CASCADE)
-    date_created = models.DateTimeField()
-
-    class Meta:
-        db_table = 'team'
-
-
-class TeamMember(models.Model):
-    user = models.ForeignKey('User', on_delete=models.CASCADE)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    role = models.ForeignKey('TeamRole', on_delete=models.SET_NULL, null=True)
-    date_started = models.DateField()
-    date_ended = models.DateField(null=True, blank=True)
-    is_leader = models.BooleanField()
+class UserMajors(models.Model):
+    user = models.OneToOneField('Users', models.DO_NOTHING, db_column='User_ID', primary_key=True)  # Field name made lowercase. The composite primary key (User_ID, Major_ID, StartDate) found, that is not supported. The first column is selected.
+    major = models.ForeignKey(Majors, models.DO_NOTHING, db_column='Major_ID')  # Field name made lowercase.
+    startdate = models.DateField(db_column='StartDate')  # Field name made lowercase.
+    enddate = models.DateField(db_column='EndDate')  # Field name made lowercase.
 
     class Meta:
-        db_table = 'team_members'
-        unique_together = (('user', 'team'),)
-    # Making user_team unique with user as the primary key
+        managed = False
+        db_table = 'User_Majors'
+        unique_together = (('user', 'major', 'startdate'),)
 
 
-class TeamRole(models.Model):
-    role_id = models.AutoField(primary_key=True)
-    role_name = models.CharField(max_length=255)
-    role_description = models.TextField()
-
-    class Meta:
-        db_table = 'team_roles'
-
-
-class User(models.Model):
-    user_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    reg_date = models.DateTimeField()
-    contact_number = models.CharField(max_length=15)
-    privilege = models.CharField(max_length=255)
-    password = models.CharField(max_length=255)
-    address = models.CharField(max_length=255, null=True, blank=True)
-    cnic = models.CharField(max_length=13, null=True, blank=True)
+class Users(models.Model):
+    user_id = models.AutoField(db_column='User_ID', primary_key=True)  # Field name made lowercase.
+    name = models.CharField(db_column='Name', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+    regdate = models.DateTimeField(db_column='RegDate')  # Field name made lowercase.
+    contact_number = models.CharField(db_column='Contact_Number', max_length=10, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+    privilege = models.IntegerField(db_column='Privilege')  # Field name made lowercase.
+    password = models.CharField(db_column='Password', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+    address = models.CharField(db_column='Address', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    cnic = models.CharField(db_column='CNIC', max_length=255, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    year = models.IntegerField(db_column='Year', blank=True, null=True)  # Field name made lowercase.
+    huid = models.IntegerField(db_column='HUID', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        db_table = 'user'
+        managed = False
+        db_table = 'Users'

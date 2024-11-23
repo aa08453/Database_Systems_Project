@@ -13,19 +13,16 @@ def main_page(request):
 
 def login_page(request):
     return login_view(request)
-    #return render(request, 'background_template.html') #didnt pass the template folder name becuase it exists within the application
 
 def register_page(request):
     return (register(request))
-    ##use this to redirect to the desired page dont call the render again 
-    #return render(request, 'register.html') #didnt pass the template folder name becuase it exists within the application
 
 def team_page(request):
-    return redirect('Math_club:register_page') #didnt pass the template folder name becuase it exists within the application
+    return redirect('Math_club:register_page') 
 
 
 def finance_page(request):
-    return render(request, 'finance.html') #didnt pass the template folder name becuase it exists within the application
+    return render(request, 'finance.html') 
 
 # In your views.py
 

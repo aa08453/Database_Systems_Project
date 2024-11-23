@@ -26,7 +26,7 @@ def generate_session_key():
     return str(uuid.uuid4())
 
 def create_session(user_id):
-    session_key = generate_session_key() #TODO: Implement
+    session_key = generate_session_key() 
 
     with connection.cursor() as cursor:
         cursor.execute(
@@ -35,6 +35,19 @@ def create_session(user_id):
             """, [session_key, user_id]
         )
     return session_key
+
+def is_logged_in(user_id):
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            select session_key, user_id from sessions where user_id = %s
+            """, [user_id]
+        )
+        if cursor.fetchone() is not None: 
+            return True
+        else:
+            return False
+
 
 def delete_session(session_key):
     with connection.cursor() as cursor:

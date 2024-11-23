@@ -14,7 +14,8 @@ def login_view(request):
          
         try:
             cursor = connection.cursor()
-            cursor.execute("""select user_id, name, password, privilege FROM [USER] WHERE Name = %s AND Password = %s""", [username_try, password_try])
+            cursor.execute("""select user_id, name, password, privilege FROM
+            users WHERE Name = %s AND Password = %s""", [username_try, password_try])
             row = cursor.fetchone()
             print(row)
             if (row is None):
@@ -27,18 +28,19 @@ def login_view(request):
             
             if username_try == username and password_try == password:
                 print("login successful")
-                request.session['username'] = username #TODO: Move away from django ORM and use our own custom functions
+                request.session['username'] = username 
                 request.session['user_id'] = user_id
                 request.session['privilege'] = privilege
                 
-                return redirect('Math_club:main_page')
+                return redirect('main_page')
             else:
                 print("login failed")
             
-        except:
+        except Exception as e:
             print("an error occured")
             print(username_try)
             print(password_try)
+            print(e)
     return render(request, 'background_template.html') #didnt pass the template folder name becuase it exists within the application
 
 def main_view(request):
