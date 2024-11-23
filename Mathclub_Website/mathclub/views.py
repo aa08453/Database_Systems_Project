@@ -131,6 +131,9 @@ class GenericListView(ListView):
         context["create_url"] = f"/{self.table_name}/create/"
         context["update_url"] = f"/{self.table_name}/update/"
         context["delete_url"] = f"/{self.table_name}/delete/"
+        user_privilege = self.request.session.get("privilege", None)
+        print(user_privilege)
+        context["has_privilege"] = user_privilege == 1  # Only show actions if privilege is 1
         print(context)
         return context
 
@@ -156,6 +159,8 @@ class GenericPageView(TemplateView): #Create/update in one go
         print("I've got pk", pk)
         context["object"] = self.get_object(pk) if pk else None
         context["fields"] = self.fields
+        user_privilege = self.request.session.get("privilege", None)
+        context["has_privilege"] = user_privilege == 1  # Only show actions if privilege is 1
         return context
 
     def post(self, request, *args, **kwargs):
