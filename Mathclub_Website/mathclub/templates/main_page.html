@@ -55,6 +55,12 @@
         .options button:hover {
             background-color: #0056b3;
         }
+        .logout-btn {
+            background-color: #FF5733;
+        }
+        .logout-btn:hover {
+            background-color: #C70039;
+        }
         .user-id {
             font-size: 1.1em;
             font-style: italic;
@@ -71,6 +77,8 @@
         <div class="options">
             <button onclick="redirectTo('merchandise')">Explore Merchandise</button>
             <button onclick="redirectTo('blogs')">Read Blogs</button>
+            <button onclick="redirectTo('teams')">Create Team</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
         <p class="user-id">Your User ID: {{ userid }}</p>
     </div>
@@ -86,7 +94,15 @@
                 window.location.href = '/merchandise/'; // Update this with the correct URL
             } else if (page === 'blogs') {
                 window.location.href = '/blogs/'; // Update this with the correct URL
+            } else if (page === 'teams') {
+                window.location.href = '/teams/'; // Update this with the correct URL
             }
+        }
+
+        // Logout function
+        function logout() {
+            // Redirect to the login page (update the URL as needed)
+            window.location.href = '/logout/'; // Ensure the backend handles this route
         }
     </script>
 </body>

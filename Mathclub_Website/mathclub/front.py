@@ -5,6 +5,31 @@ from django.urls import *
 
 
 
+
+def teams(request):
+    if request.method == "POST":
+        team_name = request.POST.get("team-name")
+        team_lead = request.POST.get("team-lead")
+        date_created = request.POST.get("creation-date")
+        
+        try:
+            print("HI")
+            cursor = connection.cursor()
+            cursor.execute(
+                    """
+                    INSERT INTO Team (Team_Name, Team_Lead, Date_Created) 
+                    VALUES (%s, %s, %s)
+                    """,
+                    [team_name, team_lead, date_created]
+                )
+            print("insertion is done")
+        
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        
+    return render(request, "teams.html")
+
+
 def login_view(request):
     if request.method == 'POST':
         # Retrieve the data from the form fields

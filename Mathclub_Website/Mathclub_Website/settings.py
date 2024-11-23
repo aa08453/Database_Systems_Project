@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'Mathclub_Website.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
-        'NAME': 'CLUBS_DATABASE',
+        'NAME': 'Math_club',
         'USER': 'sa',
         'PASSWORD': 'passPASS123',
         'HOST': 'localhost',

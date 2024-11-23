@@ -10,7 +10,7 @@
             padding: 0;
         }
 
-        h1, h2 {
+        h1 {
             color: #333;
             text-align: center;
         }
@@ -23,6 +23,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 60%;
             max-width: 600px;
+            display: none;
         }
 
         label {
@@ -31,7 +32,7 @@
             font-weight: bold;
         }
 
-        input[type="text"], input[type="number"], textarea, select {
+        input[type="text"], input[type="number"], input[type="date"], textarea, select {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
@@ -55,80 +56,158 @@
             background-color: #45a049;
         }
 
-        /* Additional Styling */
-        .container {
-            margin: 50px auto;
-            max-width: 900px;
+        .toggle-buttons {
+            text-align: center;
+            margin: 20px auto;
         }
 
-        .form-section {
-            margin-bottom: 50px;
+        .toggle-buttons button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #ddd;
         }
 
-        @media (max-width: 768px) {
-            form {
-                width: 90%;
-            }
+        .toggle-buttons .active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Team Management</h1>
+
+        <!-- Buttons to toggle between forms -->
+        <div class="toggle-buttons">
+            <button id="create-team-btn" class="active">Create Team</button>
+            <button id="join-team-btn">Join Team</button>
+        </div>
+
+        <!-- Create Team Form -->
+        <form id="create-team-form" action="/teams/" method="POST" onsubmit="return handleSubmit(event)">
+            {% csrf_token %}
+            <label for="team-name">Team Name:</label>
+            <input type="text" id="team-name" name="team-name" placeholder="Enter the team name" required>
         
-        <div class="form-section">
-            <h2>Create a Team</h2>
-            <form action="/teams/create" method="POST">
-                <label for="team-name">Team Name:</label>
-                <input type="text" id="team-name" name="team-name" placeholder="Enter the team name" required>
-                
-                <label for="team-description">Team Description:</label>
-                <textarea id="team-description" name="team-description" placeholder="Enter a brief description of the team" required></textarea>
-                
-                <label for="team-limit">Maximum Members:</label>
-                <input type="number" id="team-limit" name="team-limit" placeholder="Enter the team size limit" required>
-                
-                <input type="submit" value="Create Team">
-            </form>
-        </div>
+            <label for="team-lead">Team Lead:</label>
+            <input type="text" id="team-lead" name="team-lead" placeholder="Enter the team lead's name" required>
+        
+            <label for="team-limit">Maximum Members:</label>
+            <input type="number" id="team-limit" name="team-limit" placeholder="Enter the team size limit" required>
+        
+            <label for="creation-date">Date:</label>
+            <input type="date" id="creation-date" name="creation-date" value="{{ today_date }}" readonly>
+        
+            <input type="submit" value="Create Team">
+        </form>
 
-        <div class="form-section">
-            <h2>Sign Up for a Team</h2>
-            <form action="/teams/signup" method="POST">
-                <label for="team-id">Select Team:</label>
-                <select id="team-id" name="team-id" required>
-                    <option value="" disabled selected>Select a team</option>
-                    <option value="1">Team Alpha</option>
-                    <option value="2">Team Beta</option>
-                    <option value="3">Team Gamma</option>
-                </select>
+        <!-- Join Team Form -->
+        <form id="join-team-form">
+            <label for="team-id">Select Team:</label>
+            <select id="team-id" name="team-id" required>
+                <option value="" disabled selected>Select a team</option>
+                <option value="1">Team Alpha</option>
+                <option value="2">Team Beta</option>
+                <option value="3">Team Gamma</option>
+            </select>
 
-                <label for="player-name">Your Name:</label>
-                <input type="text" id="player-name" name="player-name" placeholder="Enter your name" required>
+            <label for="player-name">Your Name:</label>
+            <input type="text" id="player-name" name="player-name" placeholder="Enter your name" required>
 
-                <input type="submit" value="Sign Up">
-            </form>
-        </div>
+            <input type="submit" value="Join Team">
+        </form>
+    </div>
 
-        <div class="form-section">
-            <h2>Manage Teams (Admin Only)</h2>
-            <form action="/teams/update" method="POST">
-                <label for="team-id-update">Team ID:</label>
-                <input type="text" id="team-id-update" name="team-id" placeholder="Enter the team ID to update" required>
-
-                <label for="new-team-lead">New Team Lead:</label>
-                <input type="text" id="new-team-lead" name="new-team-lead" placeholder="Enter the new team lead's name" required>
-
-                <input type="submit" value="Update Team">
-            </form>
-
-            <form action="/teams/delete" method="POST">
-                <label for="team-id-delete">Team ID:</label>
-                <input type="text" id="team-id-delete" name="team-id" placeholder="Enter the team ID to delete" required>
-
-                <input type="submit" value="Delete Team">
-            </form>
+    <!-- Modal -->
+    <div id="success-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p>Team was inserted successfully!</p>
         </div>
     </div>
+
+    <script>
+        // Elements
+        const createTeamBtn = document.getElementById('create-team-btn');
+        const joinTeamBtn = document.getElementById('join-team-btn');
+        const createTeamForm = document.getElementById('create-team-form');
+        const joinTeamForm = document.getElementById('join-team-form');
+        const modal = document.getElementById('success-modal');
+
+        // Set current date for the Create Team form
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('creation-date').value = today;
+
+        // Event listeners for buttons
+        createTeamBtn.addEventListener('click', () => {
+            createTeamBtn.classList.add('active');
+            joinTeamBtn.classList.remove('active');
+            createTeamForm.style.display = 'block';
+            joinTeamForm.style.display = 'none';
+        });
+
+        joinTeamBtn.addEventListener('click', () => {
+            joinTeamBtn.classList.add('active');
+            createTeamBtn.classList.remove('active');
+            createTeamForm.style.display = 'none';
+            joinTeamForm.style.display = 'block';
+        });
+
+        // Initialize with Create Team form visible
+        createTeamForm.style.display = 'block';
+
+        // Handle form submission
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent default form submission
+            // Simulate a successful database insertion
+            modal.style.display = 'block'; // Show success modal
+            return false;
+        }
+
+        // Close modal function
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+    </script>
 </body>
 </html>

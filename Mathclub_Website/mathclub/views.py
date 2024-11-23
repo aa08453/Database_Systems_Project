@@ -7,6 +7,8 @@ from .forms import BlogForm
 def main_page(request):
     return main_view(request)
 
+def logout_view(request):
+    return(redirect('Math_club:login_page'))
 
 def login_page(request):
     return login_view(request)
@@ -18,7 +20,8 @@ def register_page(request):
     #return render(request, 'register.html') #didnt pass the template folder name becuase it exists within the application
 
 def team_page(request):
-    return redirect('Math_club:register_page') #didnt pass the template folder name becuase it exists within the application
+    return (teams(request))
+    #return redirect('Math_club:register_page') #didnt pass the template folder name becuase it exists within the application
 
 
 def finance_page(request):
