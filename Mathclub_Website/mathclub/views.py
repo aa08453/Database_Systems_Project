@@ -8,7 +8,7 @@ from .myutils import *
 
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect
-from django.views.generic import ListView, TemplateView, FormView, DeleteView
+from django.views.generic import ListView, TemplateView, FormView, DeleteView, View
 from django.urls import reverse_lazy
 
 # Create your views here.
@@ -128,6 +128,7 @@ class GenericListView(ListView):
         context["table_name"] = self.table_name
         context["create_url"] = f"/{self.table_name}/create/"
         context["update_url"] = f"/{self.table_name}/update/"
+        context["delete_url"] = f"/{self.table_name}/delete/"
         print(context)
         return context
 
@@ -139,8 +140,8 @@ class GenericPageView(TemplateView): #Create/update in one go
 
     def get_object(self, pk):
         with connection.cursor() as cursor:
-            sql = f"select * from {self.table_name} where id = %s"
-            cursor.execute(sql, pk)
+            sql = f"select * from {self.table_name} where {self.pk_field} = %s"
+            cursor.execute(sql, [pk])
             row = cursor.fetchone()
             if (row is not None):
                 columns = [col[0] for col in cursor.description]
@@ -150,6 +151,7 @@ class GenericPageView(TemplateView): #Create/update in one go
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         pk = self.kwargs.get("pk", None)
+        print("I've got pk", pk)
         context["object"] = self.get_object(pk) if pk else None
         context["fields"] = self.fields
         return context
@@ -161,26 +163,28 @@ class GenericPageView(TemplateView): #Create/update in one go
         with connection.cursor() as cursor:
             if pk: #in this case we are updating
                 set_clause = ", ".join([f"{field} = %s" for field in self.fields])
-                sql = f"update {self.table_name} set {set_clause} where {pk_field} = %s"
+                sql = f"update {self.table_name} set {set_clause} where {self.pk_field} = %s"
                 cursor.execute(sql, list(data.values()) + [pk])
             else:
                 columns = ", ".join(self.fields)
-                placeholders = ", ".join(["%s"] * len(fields))
+                placeholders = ", ".join(["%s"] * len(self.fields))
                 sql = f"insert into {self.table_name} ({columns}) values ({placeholders})"
-                cursor.execute(sql, list(data.values()) + [pk])
+                print(sql)
+                cursor.execute(sql, list(data.values()))
 
-        # return redirect("list_items") #TODO: Figure out where to redirect to 
+        return redirect("list_elections") #TODO: Figure out where to redirect to 
 
     
-class GenericDeleteView(TemplateView):
+class GenericDeleteView(View):
     table_name = None
+    pk_field = "Election_ID"
 
     def post(self, request, pk):
         with connection.cursor() as cursor:
-            sql = f"delete from {self.table_name} where id = %s"
+            sql = f"delete from {self.table_name} where {self.pk_field} = %s"
             cursor.execute(sql, [pk])
 
-        # return redirect("list_items")
+        return redirect("list_elections")
 
 
     
@@ -198,4 +202,5 @@ class ElectionsPageView(GenericPageView):
 
 class ElectionsDeleteView(GenericDeleteView):
     table_name = "elections"
+    pk_field = "Election_ID"
 
