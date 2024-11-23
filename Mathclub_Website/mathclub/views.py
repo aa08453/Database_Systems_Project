@@ -101,8 +101,9 @@ def election_delete_page(request):
 class GenericListView(ListView):
     template_name = "list_page.html" #TODO: Create a generic list page
     table_name = None
-    search_field = "name" #We can override this later
+    search_field = "" #We can override this later
     fields = []
+    pk_field = ""
 
     def get_queryset(self, query=""):
         with connection.cursor() as cursor:
@@ -114,6 +115,13 @@ class GenericListView(ListView):
                 cursor.execute(sql)
                 
             columns = [col[0] for col in cursor.description]
+            for x in range(0, len(columns)):
+                if columns[x] == self.pk_field:
+                    columns[x] = "pk_field"
+
+
+
+            print(columns)
             return [dict(zip(columns, row)) for row in cursor.fetchall()]
     
     def get_context_data(self, **kwargs):
@@ -121,13 +129,15 @@ class GenericListView(ListView):
         query = self.request.GET.get("q", "")
         context["items"] = self.get_queryset(query)
         context["table_name"] = self.table_name
+        context["create_url"] = f"/{self.table_name}/create/"
+        context["update_url"] = f"/{self.table_name}/update/"
         return context
 
 class GenericPageView(TemplateView): #Create/update in one go
     template_name = "form_page.html"
     table_name = None
     fields = []
-    pk_name = ""
+    pk_field = ""
 
     def get_object(self, pk):
         with connection.cursor() as cursor:
@@ -152,7 +162,7 @@ class GenericPageView(TemplateView): #Create/update in one go
         with connection.cursor() as cursor:
             if pk: #in this case we are updating
                 set_clause = ", ".join([f"{field} = %s" for field in self.fields])
-                sql = f"update {self.table_name} set {set_clause} where {pk_name} = %s"
+                sql = f"update {self.table_name} set {set_clause} where {pk_field} = %s"
                 cursor.execute(sql, list(data.values()) + [pk])
             else:
                 columns = ", ".join(self.fields)
@@ -163,7 +173,7 @@ class GenericPageView(TemplateView): #Create/update in one go
         # return redirect("list_items") #TODO: Figure out where to redirect to 
 
     
-class DeleteView(TemplateView):
+class GenericDeleteView(TemplateView):
     table_name = None
 
     def post(self, request, pk):
@@ -175,8 +185,18 @@ class DeleteView(TemplateView):
 
 
     
-class ElectionListView(GenericListView):
+class ElectionsListView(GenericListView):
     table_name = "elections"
     search_field = "start_date" #We can override this later
     fields = ["start_date", "end_date"]
+    pk_field = "Election_ID"
+
+class ElectionsPageView(GenericPageView):
+    table_name = "elections"
+    search_field = "start_date"
+    fields = ["start_date", "end_date"]
+    pk_field = "Election_ID"
+
+class ElectionsDeleteView(GenericDeleteView):
+    table_name = "elections"
 

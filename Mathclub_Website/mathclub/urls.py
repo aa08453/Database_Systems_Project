@@ -2,7 +2,7 @@ from django.urls import path
 from django.urls import reverse
 from . import views
 from .views import (
-    ElectionListView
+    ElectionsListView, ElectionsPageView, ElectionsDeleteView
 )
 
 urlpatterns = [
@@ -25,6 +25,9 @@ urlpatterns = [
 
 
     # path('election', views.election_test, name='test')
-    path('elections/', ElectionListView.as_view(), name='list_elections')
+    path('elections/', ElectionsListView.as_view(), name='list_elections'),
+    path('elections/create/', ElectionsPageView.as_view(), name='create_election'),
+    path('elections/update/<int:pk>/', ElectionsPageView.as_view(), name='update_election'),
+    path('elections/delete/<int:pk>/', ElectionsDeleteView.as_view(), name='delete_election'),
 ]
 

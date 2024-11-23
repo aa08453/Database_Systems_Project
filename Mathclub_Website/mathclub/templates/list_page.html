@@ -2,6 +2,7 @@
 <form method="GET">
   <input type="text" name="q" placeholder="Search..." value="{{ request.GET.q|default:'' }}">
   <button type="submit">Search</button>
+  <a href="{{ create_url }}" class="btn btn-primary">+ Add New</a>
 </form>
 
 <table>
@@ -20,6 +21,7 @@
       <td>{{ value }}</td>
       {% endfor %}
       <td>
+        <a href="{{ update_url|add:item.pk_field }}">Edit</a>
       </td>
     </tr>
     {% endfor %}
