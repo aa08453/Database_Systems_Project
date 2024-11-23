@@ -1,17 +1,16 @@
 import pytest
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service  
-from webdriver_manager.chrome import ChromeDriverManager  
-from selenium.webdriver.common.keys import Keys
 from django.db import connection
 import os
+import sys
 from datetime import datetime
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from myutils import *
 
 live_server_url = "http://localhost:8000"
 
 
-@pytest.fixture
+@pytest.mark.django_db
 def test_create_session():
     user_id = 1
     create_session(user_id)
@@ -19,19 +18,24 @@ def test_create_session():
     with connection.cursor() as cursor:
         cursor.execute(
             """
-            select * from sessions
-            """
-        )
-        print("All sessions")
-        print(cursor.fetchall())
-
-        print("Required session:")
-        cursor.execute(
-            """
             select * from sessions where user_id = %s
             """, [user_id]
         )
-        print(cursor.fetchone())
+        result = cursor.fetchone()
 
+        assert result is not None
+        assert result[1] == user_id
+        session_key = result[0] 
+
+    delete_session(session_key)
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            select * from sessions where session_key = %s
+            """, [session_key]
+        )
+        result = cursor.fetchone()
+        assert result is None
 
 

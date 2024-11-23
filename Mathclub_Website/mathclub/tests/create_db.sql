@@ -1,4 +1,3 @@
--- Check if the database exists
 IF EXISTS (SELECT * FROM sys.databases WHERE name = 'CLUBS_DATABASE')
 BEGIN
     USE master;
@@ -160,17 +159,6 @@ BEGIN
     );
 END;
 
--- Check and create "Products" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Products')
-BEGIN
-    CREATE TABLE Products(
-        Product_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Product_Name VARCHAR(255) NOT NULL,
-        Price INT NOT NULL,
-        Items_In_Stock INT NOT NULL
-    );
-END;
-
 -- Check and create "Users" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Users')
 BEGIN
@@ -238,6 +226,7 @@ BEGIN
     );
 END;
 
+-- Check and create "Sessions" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Sessions')
 BEGIN
     CREATE TABLE Sessions(
@@ -254,4 +243,49 @@ BEGIN
     VALUES 
         ('Tech Conference', '2024-01-10', '2024-01-12', 1, 5, 'A conference about technology innovations'),
         ('Hackathon', '2024-02-20', '2024-02-22', 2, 4, 'A 48-hour coding competition');
+END;
+
+-- Populate "Products" table if empty
+IF NOT EXISTS (SELECT * FROM Products)
+BEGIN
+    INSERT INTO Products (Product_Name, Price)
+    VALUES 
+        ('T-Shirt', 500),
+        ('Notebook', 200);
+END;
+
+-- Populate "Majors" table if empty
+IF NOT EXISTS (SELECT * FROM Majors)
+BEGIN
+    INSERT INTO Majors (Name)
+    VALUES 
+        ('Computer Science'),
+        ('Electrical Engineering');
+END;
+
+-- Populate "TransactionTypes" table if empty
+IF NOT EXISTS (SELECT * FROM TransactionTypes)
+BEGIN
+    INSERT INTO TransactionTypes (Type_Name)
+    VALUES 
+        ('Purchase'),
+        ('Donation');
+END;
+
+-- Populate "Users" table if empty
+IF NOT EXISTS (SELECT * FROM Users)
+BEGIN
+    INSERT INTO Users (Name, RegDate, Contact_Number, Privilege, Password)
+    VALUES 
+        ('John Doe', '2024-01-01', '3001234567', 1, 'hashedpassword123'),
+        ('Jane Smith', '2024-01-02', '3007654321', 2, 'hashedpassword456');
+END;
+
+-- Populate "Blog_Contents" table if empty
+IF NOT EXISTS (SELECT * FROM Blog_Contents)
+BEGIN
+    INSERT INTO Blog_Contents (File_Path, File_Type)
+    VALUES 
+        ('/files/blog1.pdf', 'application/pdf'),
+        ('/files/blog2.docx', 'application/msword');
 END;

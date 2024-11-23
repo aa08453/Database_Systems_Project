@@ -1,8 +1,5 @@
-from django.shortcuts import render, redirect
-from .front import *
-from .forms import BlogForm
-from django.contrib import messages
 from datetime import datetime
+from django.db import connection
 import uuid
 
 def fetch_elections():
@@ -13,8 +10,6 @@ def fetch_elections():
             {"id" : row[0], "start_date" : row[1], "end_date" : row[2]}
             for row in elections
         ]
-
-
 
 
 def fetch_priv(user_id):
@@ -40,14 +35,6 @@ def create_session(user_id):
             """, [session_key, user_id]
         )
     return session_key
-
-# def fetch_session(session_key):
-#     with connection.cursor() as cursor:
-#         cursor.execute(
-#             """
-#             select session_key 
-#             """
-#         )
 
 def delete_session(session_key):
     with connection.cursor() as cursor:
