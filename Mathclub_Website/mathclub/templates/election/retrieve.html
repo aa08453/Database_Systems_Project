@@ -1,67 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elections</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
+{% extends 'base.html' %}
 
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+{% block title %}Elections{% endblock %}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
+{% block content %}
     <h2>Elections</h2>
     <table>
         <thead>
@@ -83,7 +24,6 @@
                 {% if user_has_permission %}
                 <td>
                     <a href="{% url 'election_update' election.id %}" class="btn">Edit</a>
-                    <a href="{% url 'election_delete' election.id %}" class="btn btn-danger">Delete</a>
                 </td>
                 {% endif %}
             </tr>
@@ -91,9 +31,6 @@
         </tbody>
     </table>
     {% if user_has_permission %}
-            <a href="{% url 'election_create' %}" class="btn">Create New Election</a>
+        <a href="{% url 'election_create' %}" class="btn">Create New Election</a>
     {% endif %}
-</div>
-
-</body>
-</html>
+{% endblock %}

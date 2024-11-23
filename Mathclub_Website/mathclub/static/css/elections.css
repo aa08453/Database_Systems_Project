@@ -1,0 +1,70 @@
+
+/* Election-specific Styles */
+
+.elections-container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.election-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.election-header, .election-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr;
+    gap: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid #444;
+}
+
+.election-header {
+    background-color: #222;
+    border-radius: 8px 8px 0 0;
+}
+
+.election-item {
+    background-color: #2a2a2a;
+    border-radius: 0 0 8px 8px;
+}
+
+.election-header .column, .election-item .column {
+    padding: 10px;
+    text-align: left;
+    color: #ccc;
+}
+
+.election-header .column {
+    font-weight: bold;
+    color: #ff4d4d;
+}
+
+.election-item .column a {
+    margin-right: 10px;
+}
+
+.btn {
+    background-color: #dc3545; /* Red buttons */
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #c82333;
+}
+
+.elections-container .btn {
+    margin-top: 20px;
+    display: inline-block;
+}

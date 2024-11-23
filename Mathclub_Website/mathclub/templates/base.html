@@ -1,0 +1,39 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Website{% endblock %}</title>
+
+    <!-- Link to Global Styles -->
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+
+    {% block extra_styles %}
+    <!-- Optionally include election-specific styles only on the election pages -->
+    {% endblock %}
+</head>
+<body>
+
+    <!-- Header with Banner (Global) -->
+    <header class="banner">
+        <div class="banner-container">
+            <a href="{% url 'election_view' %}" class="banner-link">Elections</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content">
+        {% block content %}
+        <!-- Page content will be inserted here -->
+        {% endblock %}
+    </div>
+
+    <!-- Footer (Global) -->
+    <footer class="footer">
+        <p>&copy; 2024 All Rights Reserved</p>
+    </footer>
+
+</body>
+</html>
