@@ -139,5 +139,18 @@ def create_tag(request):
 
 def create_club_item(request):
     if request.method == 'POST':
-        
+        itemname = request.POST.get('itemname')
+        storage = request.POST.get('storage')
+        person_responsible = request.POST.get('person_responsible')
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT [Item_Name] [Storage] VALUES (%s) (%s)
+                    """, [itemname] [storage]
+                )
+                print('CLub item created')
+        except Exception as e:
+            print(f"An error occurred: {e}")
+    return render(request, 'club_items/create.html')
     
