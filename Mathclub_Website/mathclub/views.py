@@ -35,7 +35,7 @@ def voting_poll(request):
     return render(request, 'voting_template.html') #didnt pass the template folder name becuase it exists within the application
 
 def add_product_page(request):
-    return add_product(request);
+    return add_product(request)
 
 
 def submit_blog(request):
@@ -50,3 +50,6 @@ def submit_blog(request):
         form = BlogForm()
     
     return render(request, 'submit_blog.html', {'form': form})
+
+def create_tag_page(request):
+    return create_tag(request)

@@ -117,3 +117,27 @@ def add_product(request):
             print(e)
 
     return render(request, 'additem.html')
+
+#========================= TAGS ==================================================
+
+def create_tag(request):
+    if request.method == 'POST':
+        tagname = request.POST.get('tagname')
+        try:
+            with connection.cursor() as cursor:
+                # Insert data into the database
+                cursor.execute(
+                    """
+                    INSERT INTO [Tags] (Name) 
+                    VALUES (%s) """, [tagname]
+                )
+                print('Tag created')
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            
+    return render(request, 'tags/create.html')
+
+def create_club_item(request):
+    if request.method == 'POST':
+        
+    
