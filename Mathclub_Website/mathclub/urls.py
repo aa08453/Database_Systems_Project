@@ -30,6 +30,9 @@ urlpatterns = [
 
 
     #Candidates
-    path('candidates/create/', CandidatesPageView.as_view(), name='create_candidate')
+    path('candidates/', CandidatesListView.as_view(), name='list_candidates'),
+    path('candidates/create/', CandidatesPageView.as_view(), name='create_candidate'),
+    path('candidates/update/<int:pk>/', CandidatesPageView.as_view(), name='update_candidate'),
+    path('candidates/delete/<int:pk>/', CandidatesDeleteView.as_view(), name='delete_candidate'),
 ]
 

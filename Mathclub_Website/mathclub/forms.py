@@ -35,12 +35,6 @@ class DynamicChoiceField(forms.ChoiceField):
 
 
 class candidates_form(forms.Form):
-    nominee = DynamicChoiceField(
-        query = """
-        select User_ID, Name
-        from Users
-        """
-    )
 
     role = DynamicChoiceField(
         query = """
@@ -53,6 +47,13 @@ class candidates_form(forms.Form):
         query = """
         select Election_ID, Start_Date
         from Elections
+        """
+    )
+
+    nominee = DynamicChoiceField(
+        query = """
+        select User_ID, Name
+        from Users
         """
     )
 

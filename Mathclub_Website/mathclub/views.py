@@ -100,6 +100,7 @@ def election_delete_page(request):
 class GenericListView(ListView):
     template_name = "list_page.html" 
     table_name = None
+    pretty_print = None
     search_field = "" #We can override this later
     fields = []
     pk_field = ""
@@ -108,17 +109,26 @@ class GenericListView(ListView):
 
     def get_queryset(self, query=""):
         with connection.cursor() as cursor:
-            sql = f"select * from {self.table_name} "
-            if query:
-                sql += f"where {self.search_field} like %s"
-                cursor.execute(sql, [f"%{query}%"])
+            if self.pretty_print is None:
+                fields = ", ".join(self.fields)
+                sql = f"select {fields} from {self.table_name} "
+                if query:
+                    sql += f"where {self.search_field} like %s"
+                    cursor.execute(sql, [f"%{query}%"])
+                else:
+                    cursor.execute(sql)
             else:
-                cursor.execute(sql)
-                
+                if query:
+                    sql = self.pretty_print + f"where {self.search_field} like %s"
+                    cursor.execute(sql, [f"%{query}%"])
+                else:
+                    cursor.execute(self.pretty_print)
+
             columns = [col[0] for col in cursor.description]
             for x in range(0, len(columns)):
                 if columns[x] == self.pk_field:
                     columns[x] = "pk_field"
+
 
             return [dict(zip(columns, row)) for row in cursor.fetchall()]
     
@@ -147,6 +157,7 @@ class GenericPageView(TemplateView): #Create/update in one go
     def get_object(self, pk):
         with connection.cursor() as cursor:
             sql = f"select * from {self.table_name} where {self.pk_field} = %s"
+            #TODO: Select from fields here 
             cursor.execute(sql, [pk])
             row = cursor.fetchone()
             if (row is not None):
@@ -178,13 +189,14 @@ class GenericPageView(TemplateView): #Create/update in one go
             with connection.cursor() as cursor:
                 if pk: #in this case we are updating
                     set_clause = ", ".join([f"{field} = %s" for field in self.fields])
-                    sql = f"update {self.table_name} set {set_clause} where {selfpk_field} = %s"
+                    sql = f"update {self.table_name} set {set_clause} where {self.pk_field} = %s"
                     cursor.execute(sql, list(data.values()) + [pk])
                 else:
                     columns = ", ".join(self.fields)
                     placeholders = ", ".join(["%s"] * len(self.fields))
                     sql = f"insert into {self.table_name} ({columns}) values ({placeholders})"
                     print(sql)
+                    print(data.values())
                     cursor.execute(sql, list(data.values()))
 
             return redirect(self.redirect_to)
@@ -226,13 +238,30 @@ class ElectionsDeleteView(GenericDeleteView):
     redirect_to = "list_elections"
 
 
+class CandidatesListView(GenericListView):
+    table_name = "candidates"
+    search_field = "Candidate_ID"
+    fields = ["Candidate_ID", "Role_ID", "Election_ID", "User_ID"]
+    pretty_print = """
+select Candidate_ID, R.Role_Name, E.Start_Date, U.Name
+from Candidates C 
+join Role_Types R on R.Role_ID = C.Role_ID 
+join Elections E on E.Election_ID = C.Election_ID
+join Users U on U.User_ID = C.User_ID
+    """
+    pk_field = "Candidate_ID"
+
 
 class CandidatesPageView(GenericPageView):
     table_name = "candidates"
     search_field = "Candidate_ID"
-    fields = ["Candidate_ID", "Role_ID", "Election_ID", "User_ID"]
+    fields = ["Role_ID", "Election_ID", "User_ID"]
     pk_field = "Candidate_ID"
-    redirect_to = "list_elections"
+    redirect_to = "list_candidates"
     form_class = candidates_form
 
+class CandidatesDeleteView(GenericDeleteView):
+    table_name = "candidates"
+    pk_field = "Candidate_ID"
+    redirect_to = "list_candidates"
 
