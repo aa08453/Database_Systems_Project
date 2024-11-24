@@ -143,6 +143,7 @@ class GenericPageView(TemplateView): #Create/update in one go
     fields = []
     pk_field = ""
     redirect_to = ""
+    form_class = None
 
     def get_object(self, pk):
         with connection.cursor() as cursor:
@@ -162,27 +163,36 @@ class GenericPageView(TemplateView): #Create/update in one go
         context["fields"] = self.fields
         user_privilege = self.request.session.get("privilege", None)
         context["has_privilege"] = user_privilege == 1  # Only show actions if privilege is 1
+
+        obj = self.get_object(pk) if pk else None
+        initial_data = {key: value for key, value in obj.items() if key != self.pk_field} if obj else None
+        context["form"] = self.form_class(initial=initial_data) if obj else self.form_class()
+        print(context)
         return context
 
     def post(self, request, *args, **kwargs):
-        data = {field: request.POST[field] for field in self.fields}
-        pk = self.kwargs.get("pk")
+        form = self.form_class(request.POST)
 
-        with connection.cursor() as cursor:
-            if pk: #in this case we are updating
-                set_clause = ", ".join([f"{field} = %s" for field in self.fields])
-                sql = f"update {self.table_name} set {set_clause} where {selfpk_field} = %s"
-                cursor.execute(sql, list(data.values()) + [pk])
-            else:
-                columns = ", ".join(self.fields)
-                placeholders = ", ".join(["%s"] * len(self.fields))
-                sql = f"insert into {self.table_name} ({columns}) values ({placeholders})"
-                print(sql)
-                cursor.execute(sql, list(data.values()))
+        if form.is_valid(): #If valid do the thing
+            data = form.cleaned_data
+            pk = self.kwargs.get("pk")
+            with connection.cursor() as cursor:
+                if pk: #in this case we are updating
+                    set_clause = ", ".join([f"{field} = %s" for field in self.fields])
+                    sql = f"update {self.table_name} set {set_clause} where {selfpk_field} = %s"
+                    cursor.execute(sql, list(data.values()) + [pk])
+                else:
+                    columns = ", ".join(self.fields)
+                    placeholders = ", ".join(["%s"] * len(self.fields))
+                    sql = f"insert into {self.table_name} ({columns}) values ({placeholders})"
+                    print(sql)
+                    cursor.execute(sql, list(data.values()))
 
-        return redirect(self.redirec_to)
+            return redirect(self.redirect_to)
+        return render(request, self.template_name, {'form' : form}) #Otherwise ask again
 
-    
+
+
 class GenericDeleteView(View):
     table_name = None
     pk_field = ""
@@ -209,9 +219,11 @@ class ElectionsPageView(GenericPageView):
     fields = ["start_date", "end_date"]
     pk_field = "Election_ID"
     redirect_to = "list_elections"
+    form_class = election_form
 
 class ElectionsDeleteView(GenericDeleteView):
     table_name = "elections"
     pk_field = "Election_ID"
     redirect_to = "list_elections"
+
 

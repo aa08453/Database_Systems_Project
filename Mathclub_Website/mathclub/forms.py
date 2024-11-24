@@ -7,11 +7,10 @@ class BlogForm(forms.Form):
     content = forms.CharField(label="Blog Content", widget=forms.Textarea)
 
 class election_form(forms.Form):
-        
-    start_date = forms.DateTimeField(
+    Start_Date = forms.DateTimeField(
             widget=forms.widgets.DateTimeInput(attrs={'type':
                                                       'datetime-local'}))
-    end_date = forms.DateTimeField(
+    End_Date = forms.DateTimeField(
             widget=forms.widgets.DateTimeInput(attrs={'type':
                                                       'datetime-local'}))
 

@@ -1,18 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-<form method="POST" class="p-4 border rounded shadow-sm" style="max-width: 600px; margin: auto;">
-  {% csrf_token %}
-  
-  <h2 class="mb-4 text-center">Update Information</h2>
+        .form-container {
+            background-color: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
 
-  {% for field in fields %}
-  <div class="mb-3">
-    <label for="{{ field }}" class="form-label">{{ field|title }}</label>
-    <input type="text" name="{{ field }}" id="{{ field }}" class="form-control" 
-           value="{{ object.field|default:'' }}" placeholder="Enter {{ field|title }}">
-  </div>
-  {% endfor %}
-  
-  <div class="text-center">
-    <button type="submit" class="btn btn-success btn-lg w-100">Save</button>
-  </div>
-</form>
+        .form-container h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .form-group .error {
+            color: red;
+            font-size: 12px;
+        }
+
+        .form-group .error ul {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .form-group .error {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Form Title</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="error">
+                        <ul>
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit">Save</button>
+    </form>
+</div>
+
+</body>
+</html>
