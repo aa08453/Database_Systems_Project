@@ -295,6 +295,20 @@ BEGIN
     );
 END;
 
+-- Check and create "Leadership" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Leadership')
+BEGIN
+    CREATE TABLE "Leadership"(
+        "User_ID" INT NOT NULL,
+        "Role_ID" INT NOT NULL,
+        "Start_Date" DATE NOT NULL,
+        "End_Date" DATE NOT NULL,
+        PRIMARY KEY ("User_ID", "Role_ID", "Start_Date"),
+        FOREIGN KEY ("Role_ID") REFERENCES "Role_Types" ("Role_ID"),
+        FOREIGN KEY ("User_ID") REFERENCES "Candidates" ("Candidate_ID")
+    );
+END;
+
 -- Check and create "Candidates" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Candidates')
 BEGIN
