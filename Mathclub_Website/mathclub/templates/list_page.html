@@ -46,11 +46,26 @@
     <!-- Search Form Section -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <form method="GET" class="d-flex align-items-center">
-                <input type="text" name="q" class="form-control form-control-lg me-3" placeholder="Search..." 
-                       value="{{ request.GET.q|default:'' }}" aria-label="Search">
-                <button type="submit" class="btn btn-gradient-primary">Search</button>
-            </form>
+
+        <form method="GET" class="d-flex align-items-center">
+            <!-- Search Input -->
+            <input type="text" name="q" class="form-control form-control-lg me-3" placeholder="Search..." 
+                   value="{{ request.GET.q|default:'' }}" aria-label="Search">
+            
+            <!-- Dropdown for selecting column to search -->
+            <select id="column" name="search_field">
+                {% for column in columns %}
+                    {% if column != 'pk_field' %}  <!-- Skip displaying pk_field -->
+                        <option value="{{ column }}" {% if request.GET.search_field == column %}selected{% endif %}>{{ column }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-gradient-primary">Search</button>
+        </form>
+
+
         </div>
     </div>
 

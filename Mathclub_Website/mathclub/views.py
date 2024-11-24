@@ -99,53 +99,51 @@ def election_delete_page(request):
 
 class GenericListView(ListView):
     template_name = "list_page.html" 
-    table_name = None
-    pretty_print = None
-    search_field = "" #We can override this later
-    fields = []
+    sql = None
     pk_field = ""
 
     #TODO: Make a insertion check hook
+    #TODO: Make cascade deletion 
+    #TODO: Make error messages
+
+    def get_search_field(self):
+        return self.request.GET.get("search_field", "name")
 
     def get_queryset(self, query=""):
+        search_field = self.get_search_field()
+        sql = self.sql
         with connection.cursor() as cursor:
-            if self.pretty_print is None:
-                fields = ", ".join(self.fields)
-                sql = f"select {fields} from {self.table_name} "
-                if query:
-                    sql += f"where {self.search_field} like %s"
-                    cursor.execute(sql, [f"%{query}%"])
-                else:
-                    cursor.execute(sql)
+            if query:
+                sql += f"where {search_field} like '%{query}%'"
+                print(sql)
+                cursor.execute(sql)
             else:
-                if query:
-                    sql = self.pretty_print + f"where {self.search_field} like %s"
-                    cursor.execute(sql, [f"%{query}%"])
-                else:
-                    cursor.execute(self.pretty_print)
+                cursor.execute(sql)
 
             columns = [col[0] for col in cursor.description]
             for x in range(0, len(columns)):
                 if columns[x] == self.pk_field:
                     columns[x] = "pk_field"
-
-
-            return [dict(zip(columns, row)) for row in cursor.fetchall()]
+            rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            return columns, rows
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         query = self.request.GET.get("q", "")
-        context["items"] = self.get_queryset(query)
+
+        columns,items = self.get_queryset(query)
+        context["items"] = items
+        context["columns"] = columns
         context["table_name"] = self.table_name
         context["create_url"] = f"/{self.table_name}/create/"
         context["update_url"] = f"/{self.table_name}/update/"
         context["delete_url"] = f"/{self.table_name}/delete/"
         user_privilege = self.request.session.get("privilege", None)
-        print(user_privilege)
+
         context["has_privilege"] = user_privilege == 1  # Only show actions if privilege is 1
-        print(context)
         return context
 
+#TODO: Check for privs in creation and deletion
 class GenericPageView(TemplateView): #Create/update in one go
     template_name = "form_page.html"
     table_name = None
@@ -240,10 +238,8 @@ class ElectionsDeleteView(GenericDeleteView):
 
 class CandidatesListView(GenericListView):
     table_name = "candidates"
-    search_field = "Candidate_ID"
-    fields = ["Candidate_ID", "Role_ID", "Election_ID", "User_ID"]
-    pretty_print = """
-select Candidate_ID, R.Role_Name, E.Start_Date, U.Name
+    sql = """
+select Candidate_ID, R.Role_Name as Role_Name, E.Start_Date as Start_Date, E.End_Date as End_Date, U.Name as Name
 from Candidates C 
 join Role_Types R on R.Role_ID = C.Role_ID 
 join Elections E on E.Election_ID = C.Election_ID
