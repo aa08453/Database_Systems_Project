@@ -1,9 +1,7 @@
 from django.urls import path
 from django.urls import reverse
 from . import views
-from .views import (
-    ElectionsListView, ElectionsPageView, ElectionsDeleteView
-)
+from .views import *
 
 urlpatterns = [
     path('', views.login_page, name='login_page'),  # Serve at root
@@ -29,5 +27,9 @@ urlpatterns = [
     path('elections/create/', ElectionsPageView.as_view(), name='create_election'),
     path('elections/update/<int:pk>/', ElectionsPageView.as_view(), name='update_election'),
     path('elections/delete/<int:pk>/', ElectionsDeleteView.as_view(), name='delete_election'),
+
+
+    #Candidates
+    path('candidates/create/', CandidatesPageView.as_view(), name='create_candidate')
 ]
 

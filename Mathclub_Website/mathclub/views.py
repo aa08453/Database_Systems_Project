@@ -1,7 +1,5 @@
 from django.shortcuts import render, redirect
 from .front import *
-from .forms import BlogForm
-from .forms import election_form
 from django.contrib import messages
 from datetime import datetime
 from .myutils import *
@@ -11,6 +9,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import ListView, TemplateView, FormView, DeleteView, View
 from django.urls import reverse_lazy
 
+from .forms import election_form, candidates_form
 # Create your views here.
 
 def main_page(request):
@@ -99,7 +98,7 @@ def election_delete_page(request):
     return
 
 class GenericListView(ListView):
-    template_name = "list_page.html" #TODO: Create a generic list page
+    template_name = "list_page.html" 
     table_name = None
     search_field = "" #We can override this later
     fields = []
@@ -225,5 +224,15 @@ class ElectionsDeleteView(GenericDeleteView):
     table_name = "elections"
     pk_field = "Election_ID"
     redirect_to = "list_elections"
+
+
+
+class CandidatesPageView(GenericPageView):
+    table_name = "candidates"
+    search_field = "Candidate_ID"
+    fields = ["Candidate_ID", "Role_ID", "Election_ID", "User_ID"]
+    pk_field = "Candidate_ID"
+    redirect_to = "list_elections"
+    form_class = candidates_form
 
 

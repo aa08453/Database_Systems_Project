@@ -241,13 +241,13 @@ END;
 -- Check and create "Blogs" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Candidates')
 BEGIN
-    CREATE TABLE Blogs(
+    CREATE TABLE Candidates(
         Candidate_ID INT IDENTITY(1,1) PRIMARY KEY,
         Role_ID INT NOT NULL,
         Election_ID INT NOT NULL,
         User_ID INT NOT NULL,
-        FOREIGN KEY (User_ID) REFERENCES Users(User_ID)
-        FOREIGN KEY (Role_ID) REFERENCES Roles(Role_ID)
+        FOREIGN KEY (User_ID) REFERENCES Users(User_ID),
+        FOREIGN KEY (Role_ID) REFERENCES Role_Types(Role_ID),
         FOREIGN KEY (Election_ID) REFERENCES Elections(Election_ID)
     );
 END;
@@ -305,8 +305,10 @@ IF NOT EXISTS (SELECT * FROM Role_types)
 BEGIN
     INSERT INTO Role_types (Role_Name)
     VALUES 
-        ('Admin'),
-        ('User');
+        ('Gen. Sec'),
+        ('Treasurer'),
+        ('Vice President'),
+        ('President');
 END;
 
 -- Populate "Tags" table if empty
