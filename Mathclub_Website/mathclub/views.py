@@ -114,9 +114,8 @@ class GenericListView(ListView):
         sql = self.sql
         with connection.cursor() as cursor:
             if query:
-                sql += f"where {search_field} like '%{query}%'"
-                print(sql)
-                cursor.execute(sql)
+                sql += f"where {search_field} like %s"
+                cursor.execute(sql, [f"%{query}%"])
             else:
                 cursor.execute(sql)
 
@@ -218,9 +217,13 @@ class GenericDeleteView(View):
     
 class ElectionsListView(GenericListView):
     table_name = "elections"
-    search_field = "start_date" #We can override this later
-    fields = ["start_date", "end_date"]
+    sql = """
+select Election_ID, Start_Date, End_Date from Elections 
+"""
     pk_field = "Election_ID"
+
+
+
 
 class ElectionsPageView(GenericPageView):
     table_name = "elections"

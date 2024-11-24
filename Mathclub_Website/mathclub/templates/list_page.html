@@ -69,12 +69,6 @@
         </div>
     </div>
 
-    <!-- Add New Button -->
-    {% if has_privilege %}
-    <div class="text-end mb-4">
-        <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add New</a>
-    </div>
-    {% endif %}
 
     <!-- Table Section -->
     <div class="card shadow-sm">
@@ -119,6 +113,14 @@
                     {% endfor %}
                 </tbody>
             </table>
+
+    <!-- Add New Button -->
+    {% if has_privilege %}
+    <div class="text-end mb-4">
+        <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add New</a>
+    </div>
+    {% endif %}
+
         </div>
     </div>
 </div>
