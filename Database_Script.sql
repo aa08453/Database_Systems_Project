@@ -1,3 +1,6 @@
+drop database clubs_database 
+go
+
 CREATE DATABASE CLUBS_DATABASE
 GO 
 
@@ -13,23 +16,31 @@ BEGIN
     );
 END;
 
--- Check and create "User" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'User')
+-- Check and create "Users" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Users')
 BEGIN
-    CREATE TABLE "User"(
+    CREATE TABLE "Users"(
         "User_ID" INT IDENTITY(1,1) PRIMARY KEY,
         "Name" VARCHAR(255) NOT NULL,
         "Reg_Date" DATE NOT NULL,
-        "Contact_Number" INT NOT NULL, 
+        "Contact_Number" NVARCHAR(30) NOT NULL, 
         "Password" NVARCHAR(255) NOT NULL,
         "Address" VARCHAR(255) NULL,
         "CNIC" VARCHAR(255) NULL,
+        "privilege" INT NOT NULL,
         "Year" INT NULL,
         "Major" INT NULL,
         "HUID" INT NULL,
         FOREIGN KEY ("Major") REFERENCES "Majors" ("Major_ID")
     );
 END;
+
+
+INSERT INTO Users (Name, Reg_Date, Contact_Number, Privilege, Password)
+VALUES 
+    ('admin', CAST('2024-01-01' AS DATE), 3001234567, 1, '123'),
+    ('user', CAST('2024-01-02' AS DATE), 3007654321, 2, '123');
+
 
 -- Check and create "Teams" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Teams')
@@ -39,7 +50,7 @@ BEGIN
         "Team_Name" NVARCHAR(255) NOT NULL,
         "Team_Lead" INT NOT NULL,
         "Date_Created" DATE NOT NULL,
-        FOREIGN KEY ("Team_Lead") REFERENCES "User"("User_ID")
+        FOREIGN KEY ("Team_Lead") REFERENCES "Users"("User_ID")
     );
 END;
 
@@ -61,9 +72,9 @@ BEGIN
         "Team_ID" INT NOT NULL,
         "Role" INT NOT NULL,
         "Date_Started" DATE NOT NULL,
-        "Date_Ended" DATE NOT NULL,
+        "Date_Ended" DATE,
         PRIMARY KEY ("User_ID", "Team_ID"),
-        FOREIGN KEY ("User_ID") REFERENCES "User"("User_ID"),
+        FOREIGN KEY ("User_ID") REFERENCES "Users"("User_ID"),
         FOREIGN KEY ("Team_ID") REFERENCES "Teams"("Team_ID"),
         FOREIGN KEY ("Role") REFERENCES "Team_Roles"("Role_ID")
     );
@@ -90,7 +101,7 @@ BEGIN
         "Location" INT NOT NULL,
         "Scale" INT NOT NULL,
         "Description" NVARCHAR(255) NOT NULL,
-        FOREIGN KEY ("Event_Lead") REFERENCES "User"("User_ID"),
+        FOREIGN KEY ("Event_Lead") REFERENCES "Users"("User_ID"),
         FOREIGN KEY ("Location") REFERENCES "Locations"("Location_ID")
     );
 END;
@@ -114,7 +125,7 @@ BEGIN
         PRIMARY KEY ("Event_ID", "Attendee"),
         FOREIGN KEY ("Type_ID") REFERENCES "Attendee_Type" ("Type_ID"),
         FOREIGN KEY ("Event_ID") REFERENCES "Events"("Event_ID"),
-        FOREIGN KEY ("Attendee") REFERENCES "User"("User_ID")
+        FOREIGN KEY ("Attendee") REFERENCES "Users"("User_ID")
     );
 END;
 
@@ -138,7 +149,7 @@ BEGIN
         "Customer_ID" INT NOT NULL,
         "Order_Date" DATE NOT NULL,
         "Delivery_Date" DATE NOT NULL,
-        FOREIGN KEY ("Customer_ID") REFERENCES "User"("User_ID")
+        FOREIGN KEY ("Customer_ID") REFERENCES "Users"("User_ID")
     );
 END;
 
@@ -184,9 +195,9 @@ BEGIN
         "Item_ID" INT NOT NULL,
         "Person_Responsible" INT NOT NULL,
         "StartDate" DATE NOT NULL,
-        "EndDate" DATE NOT NULL,
+        "EndDate" DATE NULL,
         PRIMARY KEY ("Item_ID", "Person_Responsible"),
-        FOREIGN KEY ("Person_Responsible") REFERENCES "User" ("User_ID"),
+        FOREIGN KEY ("Person_Responsible") REFERENCES "Users" ("User_ID"),
         FOREIGN KEY ("Item_ID") REFERENCES "Club_Items" ("Item_ID")
     );
 END;
@@ -199,7 +210,7 @@ BEGIN
         "Title" VARCHAR(255) NOT NULL,
         "Date_Created" DATE NOT NULL,
         "User_ID" INT NOT NULL,
-        FOREIGN KEY ("User_ID") REFERENCES "User"("User_ID")
+        FOREIGN KEY ("User_ID") REFERENCES "Users"("User_ID")
     );
 END;
 
@@ -209,7 +220,7 @@ BEGIN
     CREATE TABLE "Blog_Content"(
         "Post_ID" INT NOT NULL,
         "File_ID" INT NOT NULL,
-        "File" NCHAR(255) NOT NULL,
+        "File_Name" NVARCHAR(255) NOT NULL,
         PRIMARY KEY ("Post_ID", "File_ID"),
         FOREIGN KEY ("Post_ID") REFERENCES "Blog"("Post_ID")        
     );
@@ -236,18 +247,10 @@ BEGIN
     );
 END;
 
--- Check and create "Privileges" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Privileges')
-BEGIN
-    CREATE TABLE "Privileges"(
-        "User_ID" INT NOT NULL,
-        "Privilege" INT NOT NULL,
-        "Start_Date" DATE NOT NULL,
-        "End_Date" DATE NOT NULL,
-        PRIMARY KEY ("User_ID", "Start_Date"),
-        FOREIGN KEY ("User_ID") REFERENCES "User"("User_ID")
-    );
-END;
+
+
+select CAST(GETDATE() AS DATE);
+select CAST(DATEADD(yy, 1, GETDATE()) AS DATE );
 
 -- Check and create "Transaction_Types" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Transaction_Types')
@@ -269,8 +272,8 @@ BEGIN
         "Date" DATE NOT NULL,
         "Description" NVARCHAR(255) NOT NULL,
         PRIMARY KEY ("Transaction_ID", "Responsible_Officer", "User_ID"),
-        FOREIGN KEY ("Responsible_Officer") REFERENCES "User" ("User_ID"),
-        FOREIGN KEY ("User_ID") REFERENCES "User" ("User_ID"),
+        FOREIGN KEY ("Responsible_Officer") REFERENCES "Users" ("User_ID"),
+        FOREIGN KEY ("User_ID") REFERENCES "Users" ("User_ID"),
         FOREIGN KEY ("Transaction_Type") REFERENCES "Transaction_Types" ("Type_ID")
     );
 END;
@@ -295,6 +298,22 @@ BEGIN
     );
 END;
 
+select * from role_types
+-- Check and create "Candidates" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Candidates')
+BEGIN
+    CREATE TABLE "Candidates"(
+        "Candidate_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "User_ID" INT NOT NULL,
+        "Role_ID" INT NOT NULL,
+        "Election_ID" INT NOT NULL,
+        FOREIGN KEY ("Election_ID") REFERENCES "Elections" ("Election_ID"),
+        FOREIGN KEY ("Role_ID") REFERENCES "Role_Types" ("Role_ID"),
+        FOREIGN KEY ("User_ID") REFERENCES "Users" ("User_ID")
+    );
+END;
+
+
 -- Check and create "Leadership" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Leadership')
 BEGIN
@@ -309,19 +328,6 @@ BEGIN
     );
 END;
 
--- Check and create "Candidates" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Candidates')
-BEGIN
-    CREATE TABLE "Candidates"(
-        "Candidate_ID" INT IDENTITY(1,1) PRIMARY KEY,
-        "User_ID" INT NOT NULL,
-        "Role_ID" INT NOT NULL,
-        "Election_ID" INT NOT NULL,
-        FOREIGN KEY ("Election_ID") REFERENCES "Elections" ("Election_ID"),
-        FOREIGN KEY ("Role_ID") REFERENCES "Role_Types" ("Role_ID"),
-        FOREIGN KEY ("User_ID") REFERENCES "User" ("User_ID")
-    );
-END;
 
 -- Check and create "Voting" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Voting')
@@ -330,7 +336,146 @@ BEGIN
         "Voter_ID" INT NOT NULL,
         "Candidate_ID" INT NOT NULL,
         PRIMARY KEY ("Voter_ID", "Candidate_ID"),
-        FOREIGN KEY ("Voter_ID") REFERENCES "User"("User_ID"),
+        FOREIGN KEY ("Voter_ID") REFERENCES "Users"("User_ID"),
         FOREIGN KEY ("Candidate_ID") REFERENCES "Candidates"("Candidate_ID")
     );
 END;
+
+------------------------------------------------------------------------------
+-- Populating Majors table
+INSERT INTO Majors (Name) VALUES
+('Computer Science'),
+('Electrical Engineering'),
+('Mechanical Engineering');
+
+-- Populating Users table
+INSERT INTO Users (Name, Reg_Date, Contact_Number, Password, Privilege, Address, CNIC, Year, Major, HUID) VALUES
+('Admin', '2024-01-01', '3001234567', 'password123', 1, '123 Admin Street', '12345-6789012-3', NULL, NULL, 1001),
+('User1', '2024-01-02', '3007654321', 'user123', 2, '456 User Lane', '98765-4321098-7', 1, 1, 2001),
+('User2', '2024-01-03', '3009988776', 'user456', 2, '789 Common Road', '56789-1234567-9', 2, 2, 2002);
+
+-- Populating Teams table
+INSERT INTO Teams (Team_Name, Team_Lead, Date_Created) VALUES
+('Development', 1, '2024-02-01'),
+('Marketing', 2, '2024-02-05');
+
+-- Populating Team_Roles table
+INSERT INTO Team_Roles (Role_Name, Role_Description) VALUES
+('Team Lead', 'Leader of the team'),
+('Member', 'Regular team member');
+
+-- Populating Team_Members table
+INSERT INTO Team_Members (User_ID, Team_ID, Role, Date_Started, Date_Ended) VALUES
+(2, 1, 2, '2024-02-01', '2024-06-30'),
+(3, 1, 2, '2024-02-01', NULL);
+
+-- Populating Locations table
+INSERT INTO Locations (Location_Name) VALUES
+('Auditorium A'),
+('Hall B'),
+('Open Ground');
+
+-- Populating Events table
+INSERT INTO Events (Event_Lead, Event_Name, Start_Date, End_Date, Location, Scale, Description) VALUES
+(1, 'Tech Conference 2024', '2024-03-15', '2024-03-17', 1, 3, 'Annual technology conference'),
+(2, 'Sports Gala', '2024-04-10', '2024-04-12', 3, 5, 'Inter-departmental sports event');
+
+-- Populating Attendee_Type table
+INSERT INTO Attendee_Type (Type_Name) VALUES
+('Student'),
+('Faculty'),
+('Visitor');
+
+-- Populating Attendees table
+INSERT INTO Attendees (Event_ID, Attendee, Type_ID) VALUES
+(1, 2, 1),
+(1, 3, 2),
+(2, 1, 1);
+
+-- Populating Event_Teams table
+INSERT INTO Event_Teams (Event_ID, Team_ID) VALUES
+(1, 1),
+(2, 2);
+
+-- Populating Products table
+INSERT INTO Products (Product_Name, Price, Items_In_Stock) VALUES
+('T-shirt', 500, 100),
+('Mug', 300, 200),
+('Notebook', 200, 150);
+
+-- Populating Orders table
+INSERT INTO Orders (Customer_ID, Order_Date, Delivery_Date) VALUES
+(2, '2024-03-01', '2024-03-05'),
+(3, '2024-03-02', '2024-03-06');
+
+-- Populating Order_Details table
+INSERT INTO Order_Details (Order_ID, Product_ID, Quantity) VALUES
+(1, 1, 2),
+(1, 2, 1),
+(2, 3, 3);
+
+-- Populating Club_Items table
+INSERT INTO Club_Items (Item_Name, Storage) VALUES
+('Projector', 1),
+('Sound System', 2);
+
+-- Populating Responsibility table
+INSERT INTO Responsibility (Item_ID, Person_Responsible, StartDate, EndDate) VALUES
+(1, 1, '2024-02-01', '2024-06-30'),
+(2, 2, '2024-02-05', NULL);
+
+-- Populating Blog table
+INSERT INTO Blog (Title, Date_Created, User_ID) VALUES
+('Welcome to the Club', '2024-01-15', 1),
+('Upcoming Events', '2024-02-20', 2);
+
+-- Populating Blog_Content table
+INSERT INTO Blog_Content (Post_ID, File_ID, File_Name) VALUES
+(1, 1, 'welcome.pdf'),
+(2, 2, 'events.pdf');
+
+-- Populating Tags table
+INSERT INTO Tags (Tag_Name) VALUES
+('Announcement'),
+('Event'),
+('General');
+
+-- Populating Blog_Tags table
+INSERT INTO Blog_Tags (Post_ID, Tag_ID) VALUES
+(1, 1),
+(2, 2);
+
+-- Populating Transaction_Types table
+INSERT INTO Transaction_Types (Type_Name) VALUES
+('Income'),
+('Expense');
+
+-- Populating Finances table
+INSERT INTO Finances (Transaction_ID, Responsible_Officer, User_ID, Transaction_Type, Date, Description) VALUES
+(1, 1, 2, 1, '2024-01-10', 'Membership Fee'),
+(2, 2, 3, 2, '2024-01-20', 'Event Expense');
+
+-- Populating Elections table
+INSERT INTO Elections (Start_Date, End_Date) VALUES
+('2024-05-01', '2024-05-10');
+
+-- Populating Role_Types table
+INSERT INTO Role_Types (Role_Name) VALUES
+('President'),
+('Secretary');
+
+-- Populating Candidates table
+INSERT INTO Candidates (User_ID, Role_ID, Election_ID) VALUES
+(1, 1, 1),
+(2, 2, 1);
+
+-- Populating Leadership table
+INSERT INTO Leadership (User_ID, Role_ID, Start_Date, End_Date) VALUES
+(1, 1, '2024-05-11', '2025-05-11'),
+(2, 2, '2024-05-11', '2025-05-11');
+
+-- Populating Voting table
+INSERT INTO Voting (Voter_ID, Candidate_ID) VALUES
+(2, 1),
+(3, 2);
+
