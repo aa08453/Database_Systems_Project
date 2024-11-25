@@ -1,410 +1,481 @@
-IF EXISTS (SELECT * FROM sys.databases WHERE name = 'CLUBS_DATABASE')
-BEGIN
-    USE master;
-    DROP DATABASE CLUBS_DATABASE;
-    -- Optionally, wait for a short time before recreating the database
-    WAITFOR DELAY '00:00:05'; -- Wait for 5 seconds
-END
+drop database clubs_database 
+go
 
-CREATE DATABASE CLUBS_DATABASE;
-USE CLUBS_DATABASE;
+CREATE DATABASE CLUBS_DATABASE
+GO 
 
--- Check and create "Events" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Events')
-BEGIN
-    CREATE TABLE Events(
-        Event_ID INT IDENTITY(1,1) NOT NULL,
-        Event_Name VARCHAR(255) NOT NULL,
-        Start_Date DATETIME2 NOT NULL,
-        End_Date DATETIME2 NOT NULL,
-        Location INT NOT NULL,
-        Scale INT NOT NULL,
-        Description VARCHAR(255) NOT NULL,
-        PRIMARY KEY (Event_ID)
-    );
-END;
-
--- Check and create "Products" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Products')
-BEGIN
-    CREATE TABLE Products(
-        Product_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Product_Name VARCHAR(255) NOT NULL,
-        Price INT NOT NULL
-    );
-END;
+USE CLUBS_DATABASE
+GO
 
 -- Check and create "Majors" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Majors')
 BEGIN
-    CREATE TABLE Majors(
-        Major_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Name VARCHAR(255) NOT NULL
-    );
-END;
-
--- Check and create "TransactionTypes" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'TransactionTypes')
-BEGIN
-    CREATE TABLE TransactionTypes(
-        Type_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Type_Name VARCHAR(255) NOT NULL
-    );
-END;
-
--- Check and create "Team_Roles" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Team_Roles')
-BEGIN
-    CREATE TABLE Team_Roles(
-        role_id INT IDENTITY(1,1) PRIMARY KEY,
-        role_name VARCHAR(255) NOT NULL,
-        role_description TEXT NOT NULL
-    );
-END;
-
--- Check and create "Role_Types" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Role_Types')
-BEGIN
-    CREATE TABLE Role_Types(
-        Role_Id INT IDENTITY(1,1) PRIMARY KEY,
-        Role_Name VARCHAR(255) NOT NULL
-    );
-END;
-
--- Check and create "Tags" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Tags')
-BEGIN
-    CREATE TABLE Tags(
-        Tag_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Tag_Name VARCHAR(255) NOT NULL
-    );
-END;
-
--- Check and create "Attendee_Types" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Attendee_Types')
-BEGIN
-    CREATE TABLE Attendee_Types(
-        type_id INT IDENTITY(1,1) PRIMARY KEY,
-        attendee_type VARCHAR(255) NOT NULL
-    );
-END;
-
--- Check and create "Responsibilities" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Responsibilities')
-BEGIN
-    CREATE TABLE Responsibilities(
-        Item_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Person_Responsible INT NOT NULL,
-        StartDate DATE NOT NULL,
-        EndDate DATE NOT NULL
-    );
-END;
-
--- Check and create "Blog_Contents" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Blog_Contents')
-BEGIN
-    CREATE TABLE Blog_Contents(
-        Post_ID INT IDENTITY(1,1) PRIMARY KEY,
-        File_Path VARCHAR(255) NULL,
-        File_Type NCHAR(255) NOT NULL
-    );
-END;
-
--- Check and create "Elections" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Elections')
-BEGIN
-    CREATE TABLE Elections(
-        Election_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Start_Date DATETIME2 NOT NULL,
-        End_Date DATETIME2 NOT NULL
-    );
-END;
-
--- Check and create "Club_Items" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Club_Items')
-BEGIN
-    CREATE TABLE Club_Items(
-        Item_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Item_Name VARCHAR(255) NOT NULL,
-        Storage VARCHAR(255) NOT NULL
-    );
-END;
-
--- Check and create "Order_Details" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Order_Details')
-BEGIN
-    CREATE TABLE Order_Details(
-        Order_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Product_ID INT NOT NULL,
-        Quantity INT NOT NULL
-    );
-END;
-
--- Check and create "Event_Teams" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Event_Teams')
-BEGIN
-    CREATE TABLE Event_Teams(
-        Event_ID INT NOT NULL,
-        Team_ID INT NOT NULL,
-        PRIMARY KEY (Event_ID, Team_ID)
-    );
-END;
-
--- Check and create "Locations" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Locations')
-BEGIN
-    CREATE TABLE Locations(
-        Location_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Location_Name VARCHAR(255) NOT NULL
+    CREATE TABLE "Majors"(
+        "Major_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Name" VARCHAR(255) NOT NULL
     );
 END;
 
 -- Check and create "Users" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Users')
 BEGIN
-    CREATE TABLE Users(
-        User_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Name VARCHAR(255) NOT NULL,
-        RegDate DATETIME2 NOT NULL,
-        Contact_Number VARCHAR(10) NOT NULL,  
-        Privilege INT NOT NULL,
-        Password NVARCHAR(255) NOT NULL,
-        Address VARCHAR(255) NULL,
-        CNIC VARCHAR(255) NULL,
-        Year INT NULL,
-        HUID INT NULL
+    CREATE TABLE "Users"(
+        "User_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Name" VARCHAR(255) NOT NULL,
+        "Reg_Date" DATE NOT NULL,
+        "Contact_Number" NVARCHAR(30) NOT NULL, 
+        "Password" NVARCHAR(255) NOT NULL,
+        "Address" VARCHAR(255) NULL,
+        "CNIC" VARCHAR(255) NULL,
+        "privilege" INT NOT NULL,
+        "Year" INT NULL,
+        "Major" INT NULL,
+        "HUID" INT NULL,
+        FOREIGN KEY ("Major") REFERENCES "Majors" ("Major_ID")
     );
 END;
 
--- Check and create "Event_Leaders" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Event_Leaders')
+
+INSERT INTO Users (Name, Reg_Date, Contact_Number, Privilege, Password)
+VALUES 
+    ('admin', CAST('2024-01-01' AS DATE), 3001234567, 1, '123'),
+    ('user', CAST('2024-01-02' AS DATE), 3007654321, 2, '123');
+
+
+-- Check and create "Teams" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Teams')
 BEGIN
-    CREATE TABLE Event_Leaders(
-        Event_ID INT NOT NULL,
-        Event_Lead INT NOT NULL,
-        PRIMARY KEY (Event_ID, Event_Lead),
-        FOREIGN KEY (Event_ID) REFERENCES Events(Event_ID),
-        FOREIGN KEY (Event_Lead) REFERENCES Users(User_ID)
+    CREATE TABLE "Teams"(
+        "Team_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Team_Name" NVARCHAR(255) NOT NULL,
+        "Team_Lead" INT NOT NULL,
+        "Date_Created" DATE NOT NULL,
+        FOREIGN KEY ("Team_Lead") REFERENCES "Users"("User_ID")
     );
 END;
 
--- Check and create "Event_Participations" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Event_Participations')
+-- Check and create "Team_Roles" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Team_Roles')
 BEGIN
-    CREATE TABLE Event_Participations(
-        Event_ID INT NOT NULL,
-        Attendee INT NOT NULL,
-        PRIMARY KEY (Event_ID, Attendee),
-        FOREIGN KEY (Event_ID) REFERENCES Events(Event_ID),
-        FOREIGN KEY (Attendee) REFERENCES Users(User_ID)
+    CREATE TABLE "Team_Roles"(
+        "Role_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Role_Name" VARCHAR(255) NOT NULL,
+        "Role_Description" TEXT NOT NULL
     );
 END;
 
--- Check and create "User_Majors" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'User_Majors')
+-- Check and create "Team_Members" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Team_Members')
 BEGIN
-    CREATE TABLE User_Majors(
-        User_ID INT NOT NULL,
-        Major_ID INT NOT NULL,
-        StartDate DATE NOT NULL,
-        EndDate DATE NOT NULL,
-        PRIMARY KEY (User_ID, Major_ID, StartDate),
-        FOREIGN KEY (User_ID) REFERENCES Users(User_ID),
-        FOREIGN KEY (Major_ID) REFERENCES Majors(Major_ID)
+    CREATE TABLE "Team_Members"(
+        "User_ID" INT NOT NULL,
+        "Team_ID" INT NOT NULL,
+        "Role" INT NOT NULL,
+        "Date_Started" DATE NOT NULL,
+        "Date_Ended" DATE,
+        PRIMARY KEY ("User_ID", "Team_ID"),
+        FOREIGN KEY ("User_ID") REFERENCES "Users"("User_ID"),
+        FOREIGN KEY ("Team_ID") REFERENCES "Teams"("Team_ID"),
+        FOREIGN KEY ("Role") REFERENCES "Team_Roles"("Role_ID")
     );
 END;
 
--- Check and create "Blogs" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Blogs')
+-- Check and create "Locations" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Locations')
 BEGIN
-    CREATE TABLE Blogs(
-        Post_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Title VARCHAR(255) NOT NULL,
-        Date_Created DATETIME2 NOT NULL,
-        User_ID INT NOT NULL,
-        FOREIGN KEY (User_ID) REFERENCES Users(User_ID)
+    CREATE TABLE "Locations"(
+        "Location_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Location_Name" NVARCHAR(255) NOT NULL
     );
 END;
 
-
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Roles')
+-- Check and create "Events" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Events')
 BEGIN
-    CREATE TABLE Blogs(
-        Role_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Role_Name VARCHAR(20) NOT NULL,
+    CREATE TABLE "Events"(
+        "Event_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Event_Lead" INT NOT NULL,
+        "Event_Name" NVARCHAR(255) NOT NULL,
+        "Start_Date" DATE NOT NULL,
+        "End_Date" DATE NOT NULL,
+        "Location" INT NOT NULL,
+        "Scale" INT NOT NULL,
+        "Description" NVARCHAR(255) NOT NULL,
+        FOREIGN KEY ("Event_Lead") REFERENCES "Users"("User_ID"),
+        FOREIGN KEY ("Location") REFERENCES "Locations"("Location_ID")
+    );
+END;
+
+-- Check and create "Attendee_Type" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Attendee_Type')
+BEGIN
+    CREATE TABLE "Attendee_Type"(
+        "Type_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Type_Name" VARCHAR(255) NOT NULL
+    );
+END;
+
+-- Check and create "Attendees" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Attendees')
+BEGIN
+    CREATE TABLE "Attendees"(
+        "Event_ID" INT NOT NULL,
+        "Attendee" INT NOT NULL,
+        "Type_ID" INT NOT NULL
+        PRIMARY KEY ("Event_ID", "Attendee"),
+        FOREIGN KEY ("Type_ID") REFERENCES "Attendee_Type" ("Type_ID"),
+        FOREIGN KEY ("Event_ID") REFERENCES "Events"("Event_ID"),
+        FOREIGN KEY ("Attendee") REFERENCES "Users"("User_ID")
+    );
+END;
+
+-- Check and create "Event_Teams" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Event_Teams')
+BEGIN
+    CREATE TABLE "Event_Teams"(
+        "Event_ID" INT NOT NULL,
+        "Team_ID" INT NOT NULL,
+        PRIMARY KEY ("Event_ID", "Team_ID"),
+        FOREIGN KEY ("Team_ID") REFERENCES "Teams"("Team_ID"),
+        FOREIGN KEY ("Event_ID") REFERENCES "Events"("Event_ID")
+    );
+END;
+
+-- Check and create "Orders" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Orders')
+BEGIN
+    CREATE TABLE "Orders"(
+        "Order_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Customer_ID" INT NOT NULL,
+        "Order_Date" DATE NOT NULL,
+        "Delivery_Date" DATE NOT NULL,
+        FOREIGN KEY ("Customer_ID") REFERENCES "Users"("User_ID")
+    );
+END;
+
+-- Check and create "Products" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Products')
+BEGIN
+    CREATE TABLE "Products"(
+        "Product_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Product_Name" NVARCHAR(255) NOT NULL,
+        "Price" INT NOT NULL,
+        "Items_In_Stock" INT NOT NULL
+    );
+END;
+
+-- Check and create "Order_Details" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Order_Details')
+BEGIN
+    CREATE TABLE "Order_Details"(
+        "Order_ID" INT NOT NULL,
+        "Product_ID" INT NOT NULL,
+        "Quantity" INT NOT NULL,
+        PRIMARY KEY ("Order_ID", "Product_ID"),
+        FOREIGN KEY ("Order_ID") REFERENCES "Orders"("Order_ID"),
+        FOREIGN KEY ("Product_ID") REFERENCES "Products"("Product_ID")
+    );
+END;
+
+-- Check and create "Club_Items" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Club_Items')
+BEGIN
+    CREATE TABLE "Club_Items"(
+        "Item_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Item_Name" VARCHAR(255) NOT NULL,
+        "Storage" INT NOT NULL,
+        FOREIGN KEY ("Storage") REFERENCES "Locations"("Location_ID")
+    );
+END;
+
+-- Check and create "Responsibility" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Responsibility')
+BEGIN
+    CREATE TABLE "Responsibility"(
+        "Item_ID" INT NOT NULL,
+        "Person_Responsible" INT NOT NULL,
+        "StartDate" DATE NOT NULL,
+        "EndDate" DATE NULL,
+        PRIMARY KEY ("Item_ID", "Person_Responsible"),
+        FOREIGN KEY ("Person_Responsible") REFERENCES "Users" ("User_ID"),
+        FOREIGN KEY ("Item_ID") REFERENCES "Club_Items" ("Item_ID")
+    );
+END;
+
+-- Check and create "Blog" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Blog')
+BEGIN
+    CREATE TABLE "Blog"(
+        "Post_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Title" VARCHAR(255) NOT NULL,
+        "Date_Created" DATE NOT NULL,
+        "User_ID" INT NOT NULL,
+        FOREIGN KEY ("User_ID") REFERENCES "Users"("User_ID")
+    );
+END;
+
+-- Check and create "Blog_Content" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Blog_Content')
+BEGIN
+    CREATE TABLE "Blog_Content"(
+        "Post_ID" INT NOT NULL,
+        "File_ID" INT NOT NULL,
+        "File_Name" NVARCHAR(255) NOT NULL,
+        PRIMARY KEY ("Post_ID", "File_ID"),
+        FOREIGN KEY ("Post_ID") REFERENCES "Blog"("Post_ID")        
+    );
+END;
+
+-- Check and create "Tags" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Tags')
+BEGIN
+    CREATE TABLE "Tags"(
+        "Tag_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Tag_Name" NVARCHAR(255) NOT NULL
+    );
+END;
+
+-- Check and create "Blog_Tags" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Blog_Tags')
+BEGIN
+    CREATE TABLE "Blog_Tags"(
+        "Post_ID" INT NOT NULL,
+        "Tag_ID" INT NOT NULL,
+        PRIMARY KEY ("Post_ID", "Tag_ID"),
+        FOREIGN KEY ("Post_ID") REFERENCES "Blog"("Post_ID"),
+        FOREIGN KEY ("Tag_ID") REFERENCES "Tags"("Tag_ID")
     );
 END;
 
 
 
+select CAST(GETDATE() AS DATE);
+select CAST(DATEADD(yy, 1, GETDATE()) AS DATE );
 
--- Check and create "Blogs" table if it doesn't exist
+-- Check and create "Transaction_Types" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Transaction_Types')
+BEGIN
+    CREATE TABLE "Transaction_Types"(
+        "Type_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Type_Name" VARCHAR(255) NOT NULL
+    );
+END;
+
+-- Check and create "Finances" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Finances')
+BEGIN
+    CREATE TABLE "Finances"(
+        "Transaction_ID" INT NOT NULL,
+        "Responsible_Officer" INT NOT NULL,
+        "User_ID" INT NOT NULL,
+        "Transaction_Type" INT NOT NULL,
+        "Date" DATE NOT NULL,
+        "Description" NVARCHAR(255) NOT NULL,
+        PRIMARY KEY ("Transaction_ID", "Responsible_Officer", "User_ID"),
+        FOREIGN KEY ("Responsible_Officer") REFERENCES "Users" ("User_ID"),
+        FOREIGN KEY ("User_ID") REFERENCES "Users" ("User_ID"),
+        FOREIGN KEY ("Transaction_Type") REFERENCES "Transaction_Types" ("Type_ID")
+    );
+END;
+
+
+-- Check and create "Elections" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Elections')
+BEGIN
+    CREATE TABLE "Elections"(
+        "Election_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Start_Date" DATE NOT NULL,
+        "End_Date" DATE NOT NULL
+    );
+END;
+
+-- Check and create "Role_Types" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Role_Types')
+BEGIN
+    CREATE TABLE "Role_Types"(
+        "Role_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Role_Name" VARCHAR(255) NOT NULL
+    );
+END;
+
+select * from role_types
+-- Check and create "Candidates" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Candidates')
 BEGIN
-    CREATE TABLE Candidates(
-        Candidate_ID INT IDENTITY(1,1) PRIMARY KEY,
-        Role_ID INT NOT NULL,
-        Election_ID INT NOT NULL,
-        User_ID INT NOT NULL,
-        FOREIGN KEY (User_ID) REFERENCES Users(User_ID),
-        FOREIGN KEY (Role_ID) REFERENCES Role_Types(Role_ID),
-        FOREIGN KEY (Election_ID) REFERENCES Elections(Election_ID)
+    CREATE TABLE "Candidates"(
+        "Candidate_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "User_ID" INT NOT NULL,
+        "Role_ID" INT NOT NULL,
+        "Election_ID" INT NOT NULL,
+        FOREIGN KEY ("Election_ID") REFERENCES "Elections" ("Election_ID"),
+        FOREIGN KEY ("Role_ID") REFERENCES "Role_Types" ("Role_ID"),
+        FOREIGN KEY ("User_ID") REFERENCES "Users" ("User_ID")
     );
 END;
 
 
-
--- Populate "Events" table if empty
-IF NOT EXISTS (SELECT * FROM Events)
+-- Check and create "Leadership" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Leadership')
 BEGIN
-    INSERT INTO Events (Event_Name, Start_Date, End_Date, Location, Scale, Description)
-    VALUES 
-        ('Tech Conference', '2024-01-10', '2024-01-12', 1, 5, 'A conference about technology innovations'),
-        ('Hackathon', '2024-02-20', '2024-02-22', 2, 4, 'A 48-hour coding competition');
+    CREATE TABLE "Leadership"(
+        "User_ID" INT NOT NULL,
+        "Role_ID" INT NOT NULL,
+        "Start_Date" DATE NOT NULL,
+        "End_Date" DATE NOT NULL,
+        PRIMARY KEY ("User_ID", "Role_ID", "Start_Date"),
+        FOREIGN KEY ("Role_ID") REFERENCES "Role_Types" ("Role_ID"),
+        FOREIGN KEY ("User_ID") REFERENCES "Candidates" ("Candidate_ID")
+    );
 END;
 
 
--- Populate "Products" table if empty
-IF NOT EXISTS (SELECT * FROM Products)
+-- Check and create "Voting" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Voting')
 BEGIN
-    INSERT INTO Products (Product_Name, Price)
-    VALUES 
-        ('T-Shirt', 500),
-        ('Notebook', 200);
+    CREATE TABLE "Voting"(
+        "Voter_ID" INT NOT NULL,
+        "Candidate_ID" INT NOT NULL,
+        PRIMARY KEY ("Voter_ID", "Candidate_ID"),
+        FOREIGN KEY ("Voter_ID") REFERENCES "Users"("User_ID"),
+        FOREIGN KEY ("Candidate_ID") REFERENCES "Candidates"("Candidate_ID")
+    );
 END;
 
--- Populate "Majors" table if empty
-IF NOT EXISTS (SELECT * FROM Majors)
-BEGIN
-    INSERT INTO Majors (Name)
-    VALUES 
-        ('Computer Science'),
-        ('Electrical Engineering');
-END;
+------------------------------------------------------------------------------
+-- Populating Majors table
+INSERT INTO Majors (Name) VALUES
+('Computer Science'),
+('Electrical Engineering'),
+('Mechanical Engineering');
 
--- Populate "TransactionType" table if empty
-IF NOT EXISTS (SELECT * FROM TransactionType)
-BEGIN
-    INSERT INTO TransactionType (Type_Name)
-    VALUES 
-        ('Purchase'),
-        ('Donation');
-END;
+-- Populating Users table
+INSERT INTO Users (Name, Reg_Date, Contact_Number, Password, Privilege, Address, CNIC, Year, Major, HUID) VALUES
+('Admin', '2024-01-01', '3001234567', 'password123', 1, '123 Admin Street', '12345-6789012-3', NULL, NULL, 1001),
+('User1', '2024-01-02', '3007654321', 'user123', 2, '456 User Lane', '98765-4321098-7', 1, 1, 2001),
+('User2', '2024-01-03', '3009988776', 'user456', 2, '789 Common Road', '56789-1234567-9', 2, 2, 2002);
 
--- Populate "Team_Roles" table if empty
-IF NOT EXISTS (SELECT * FROM Team_Roles)
-BEGIN
-    INSERT INTO Team_Roles (role_name, role_description)
-    VALUES 
-        ('Leader', 'Responsible for team management'),
-        ('Member', 'Assist in team activities');
-END;
+-- Populating Teams table
+INSERT INTO Teams (Team_Name, Team_Lead, Date_Created) VALUES
+('Development', 1, '2024-02-01'),
+('Marketing', 2, '2024-02-05');
 
--- Populate "Role_types" table if empty
-IF NOT EXISTS (SELECT * FROM Role_types)
-BEGIN
-    INSERT INTO Role_types (Role_Name)
-    VALUES 
-        ('Gen. Sec'),
-        ('Treasurer'),
-        ('Vice President'),
-        ('President');
-END;
+-- Populating Team_Roles table
+INSERT INTO Team_Roles (Role_Name, Role_Description) VALUES
+('Team Lead', 'Leader of the team'),
+('Member', 'Regular team member');
 
--- Populate "Tags" table if empty
-IF NOT EXISTS (SELECT * FROM Tags)
-BEGIN
-    INSERT INTO Tags (Tag_Name)
-    VALUES 
-        ('Technology'),
-        ('Education');
-END;
+-- Populating Team_Members table
+INSERT INTO Team_Members (User_ID, Team_ID, Role, Date_Started, Date_Ended) VALUES
+(2, 1, 2, '2024-02-01', '2024-06-30'),
+(3, 1, 2, '2024-02-01', NULL);
 
--- Populate "Attendee_type" table if empty
-IF NOT EXISTS (SELECT * FROM Attendee_type)
-BEGIN
-    INSERT INTO Attendee_type (attendee_type)
-    VALUES 
-        ('Student'),
-        ('Professional');
-END;
+-- Populating Locations table
+INSERT INTO Locations (Location_Name) VALUES
+('Auditorium A'),
+('Hall B'),
+('Open Ground');
 
--- Populate "Responsibility" table if empty
-IF NOT EXISTS (SELECT * FROM Responsibility)
-BEGIN
-    INSERT INTO Responsibility (Person_Responsible, StartDate, EndDate)
-    VALUES 
-        (1, '2024-01-01', '2024-06-01'),
-        (2, '2024-02-01', '2024-07-01');
-END;
+-- Populating Events table
+INSERT INTO Events (Event_Lead, Event_Name, Start_Date, End_Date, Location, Scale, Description) VALUES
+(1, 'Tech Conference 2024', '2024-03-15', '2024-03-17', 1, 3, 'Annual technology conference'),
+(2, 'Sports Gala', '2024-04-10', '2024-04-12', 3, 5, 'Inter-departmental sports event');
 
--- Populate "Blog_Content" table if empty
-IF NOT EXISTS (SELECT * FROM Blog_Content)
-BEGIN
-    INSERT INTO Blog_Content (File_Path, File_Type)
-    VALUES 
-        (1, 'Text'),
-        (2, 'Image');
-END;
+-- Populating Attendee_Type table
+INSERT INTO Attendee_Type (Type_Name) VALUES
+('Student'),
+('Faculty'),
+('Visitor');
 
--- Populate "Election" table if empty
-IF NOT EXISTS (SELECT * FROM Election)
-BEGIN
-    INSERT INTO Election (Start_Date, End_Date)
-    VALUES 
-        ('2024-03-01', '2024-03-15'),
-        ('2024-09-01', '2024-09-15');
-END;
+-- Populating Attendees table
+INSERT INTO Attendees (Event_ID, Attendee, Type_ID) VALUES
+(1, 2, 1),
+(1, 3, 2),
+(2, 1, 1);
 
--- Populate "Club_Items" table if empty
-IF NOT EXISTS (SELECT * FROM Club_Items)
-BEGIN
-    INSERT INTO Club_Items (Item_Name, Storage)
-    VALUES 
-        ('Projector', 'Main Office'),
-        ('Chairs', 'Event Hall');
-END;
+-- Populating Event_Teams table
+INSERT INTO Event_Teams (Event_ID, Team_ID) VALUES
+(1, 1),
+(2, 2);
 
--- Populate "Order_Details" table if empty
-IF NOT EXISTS (SELECT * FROM Order_Details)
-BEGIN
-    INSERT INTO Order_Details (Product_ID, Quantity)
-    VALUES 
-        (1, 50),
-        (2, 100);
-END;
+-- Populating Products table
+INSERT INTO Products (Product_Name, Price, Items_In_Stock) VALUES
+('T-shirt', 500, 100),
+('Mug', 300, 200),
+('Notebook', 200, 150);
 
--- Populate "Event_Teams" table if empty
-IF NOT EXISTS (SELECT * FROM Event_Teams)
-BEGIN
-    INSERT INTO Event_Teams (Event_ID, Team_ID)
-    VALUES 
-        (1, 1),
-        (2, 2);
-END;
+-- Populating Orders table
+INSERT INTO Orders (Customer_ID, Order_Date, Delivery_Date) VALUES
+(2, '2024-03-01', '2024-03-05'),
+(3, '2024-03-02', '2024-03-06');
 
--- Populate "Locations" table if empty
-IF NOT EXISTS (SELECT * FROM Locations)
-BEGIN
-    INSERT INTO Locations (Location_Name)
-    VALUES 
-        ('Conference Room A'),
-        ('Main Hall');
-END;
--- Populate "Users" table if empty
-IF NOT EXISTS (SELECT * FROM Users)
-BEGIN
-    INSERT INTO Users (Name, RegDate, Contact_Number, Privilege, Password)
-    VALUES 
-        ('admin', '2024-01-01', '3001234567', 1, '123'),
-        ('user', '2024-01-02', '3007654321', 2, '123');
-END;
+-- Populating Order_Details table
+INSERT INTO Order_Details (Order_ID, Product_ID, Quantity) VALUES
+(1, 1, 2),
+(1, 2, 1),
+(2, 3, 3);
 
--- Populate "Blog_Contents" table if empty
-IF NOT EXISTS (SELECT * FROM Blog_Contents)
-BEGIN
-    INSERT INTO Blog_Contents (File_Path, File_Type)
-    VALUES 
-        ('/files/blog1.pdf', 'application/pdf'),
-        ('/files/blog2.docx', 'application/msword');
-END;
+-- Populating Club_Items table
+INSERT INTO Club_Items (Item_Name, Storage) VALUES
+('Projector', 1),
+('Sound System', 2);
+
+-- Populating Responsibility table
+INSERT INTO Responsibility (Item_ID, Person_Responsible, StartDate, EndDate) VALUES
+(1, 1, '2024-02-01', '2024-06-30'),
+(2, 2, '2024-02-05', NULL);
+
+-- Populating Blog table
+INSERT INTO Blog (Title, Date_Created, User_ID) VALUES
+('Welcome to the Club', '2024-01-15', 1),
+('Upcoming Events', '2024-02-20', 2);
+
+-- Populating Blog_Content table
+INSERT INTO Blog_Content (Post_ID, File_ID, File_Name) VALUES
+(1, 1, 'welcome.pdf'),
+(2, 2, 'events.pdf');
+
+-- Populating Tags table
+INSERT INTO Tags (Tag_Name) VALUES
+('Announcement'),
+('Event'),
+('General');
+
+-- Populating Blog_Tags table
+INSERT INTO Blog_Tags (Post_ID, Tag_ID) VALUES
+(1, 1),
+(2, 2);
+
+-- Populating Transaction_Types table
+INSERT INTO Transaction_Types (Type_Name) VALUES
+('Income'),
+('Expense');
+
+-- Populating Finances table
+INSERT INTO Finances (Transaction_ID, Responsible_Officer, User_ID, Transaction_Type, Date, Description) VALUES
+(1, 1, 2, 1, '2024-01-10', 'Membership Fee'),
+(2, 2, 3, 2, '2024-01-20', 'Event Expense');
+
+-- Populating Elections table
+INSERT INTO Elections (Start_Date, End_Date) VALUES
+('2024-05-01', '2024-05-10');
+
+-- Populating Role_Types table
+INSERT INTO Role_Types (Role_Name) VALUES
+('President'),
+('Secretary');
+
+-- Populating Candidates table
+INSERT INTO Candidates (User_ID, Role_ID, Election_ID) VALUES
+(1, 1, 1),
+(2, 2, 1);
+
+-- Populating Leadership table
+INSERT INTO Leadership (User_ID, Role_ID, Start_Date, End_Date) VALUES
+(1, 1, '2024-05-11', '2025-05-11'),
+(2, 2, '2024-05-11', '2025-05-11');
+
+-- Populating Voting table
+INSERT INTO Voting (Voter_ID, Candidate_ID) VALUES
+(2, 1),
+(3, 2);
+
