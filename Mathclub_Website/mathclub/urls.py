@@ -34,5 +34,14 @@ urlpatterns = [
     path('candidates/create/', CandidatesPageView.as_view(), name='create_candidate'),
     path('candidates/update/<int:pk>/', CandidatesPageView.as_view(), name='update_candidate'),
     path('candidates/delete/<int:pk>/', CandidatesDeleteView.as_view(), name='delete_candidate'),
+
+
+
+    #Roles
+    path('Role_Types/', Role_TypesListView.as_view(), name='list_Role_Types'),
+    path('Role_Types/create/', Role_TypesPageView.as_view(), name='create_Role_Type'),
+    path('Role_Types/update/<int:pk>/', Role_TypesPageView.as_view(), name='update_Role_Type'),
+    path('Role_Types/delete/<int:pk>/', Role_TypesDeleteView.as_view(), name='delete_Role_Type'),
+
 ]
 

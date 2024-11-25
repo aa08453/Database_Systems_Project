@@ -43,7 +43,7 @@ class candidates_form(forms.Form):
         """
     )
 
-    election = DynamicChoiceField(
+    elections = DynamicChoiceField(
         query = """
         select Election_ID, Start_Date
         from Elections
@@ -57,5 +57,9 @@ class candidates_form(forms.Form):
         """
     )
 
+class Role_Types_form(forms.Form):
+    role = forms.CharField(
+        widget=forms.TextInput()
+    )
 
 

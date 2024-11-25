@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import ListView, TemplateView, FormView, DeleteView, View
 from django.urls import reverse_lazy
 
-from .forms import election_form, candidates_form
+from .forms import election_form, candidates_form, Role_Types_form
 # Create your views here.
 
 def main_page(request):
@@ -175,6 +175,7 @@ class GenericPageView(TemplateView): #Create/update in one go
         initial_data = {key: value for key, value in obj.items() if key != self.pk_field} if obj else None
         context["form"] = self.form_class(initial=initial_data) if obj else self.form_class()
         print(context)
+        print(initial_data)
         return context
 
     def post(self, request, *args, **kwargs):
@@ -210,7 +211,6 @@ class GenericDeleteView(View):
         with connection.cursor() as cursor:
             sql = f"delete from {self.table_name} where {self.pk_field} = %s"
             cursor.execute(sql, [pk])
-
         return redirect(self.redirect_to)
 
 
@@ -221,8 +221,6 @@ class ElectionsListView(GenericListView):
 select Election_ID, Start_Date, End_Date from Elections 
 """
     pk_field = "Election_ID"
-
-
 
 
 class ElectionsPageView(GenericPageView):
@@ -250,7 +248,6 @@ join Users U on U.User_ID = C.User_ID
     """
     pk_field = "Candidate_ID"
 
-
 class CandidatesPageView(GenericPageView):
     table_name = "candidates"
     search_field = "Candidate_ID"
@@ -264,3 +261,24 @@ class CandidatesDeleteView(GenericDeleteView):
     pk_field = "Candidate_ID"
     redirect_to = "list_candidates"
 
+
+class Role_TypesListView(GenericListView):
+    table_name = "Role_Types"
+    sql = """
+    select Role_ID, Role_Name
+    from Role_Types
+    """
+    pk_field = "Role_ID"
+
+class Role_TypesPageView(GenericPageView):
+    table_name = "Role_Types"
+    search_field = "Role_ID"
+    fields = ["Role_Name"]
+    pk_field = "Role_ID"
+    redirect_to = "list_Role_Types"
+    form_class = Role_Types_form
+
+class Role_TypesDeleteView(GenericDeleteView):
+    table_name = "Role_Types"
+    pk_field = "Role_ID"
+    redirect_to = "list_Role_Types"
