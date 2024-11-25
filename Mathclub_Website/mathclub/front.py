@@ -2,46 +2,38 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db import connection
 from django.urls import *
-
-
+from django.contrib import messages
 
 def login_view(request):
     if request.method == 'POST':
-        # Retrieve the data from the form fields
-        
         username_try = request.POST.get('username')
         password_try = request.POST.get('password')
-         
+        
         try:
-            cursor = connection.cursor()
-            cursor.execute("""select user_id, name, password, privilege FROM
-            users WHERE Name = %s AND Password = %s""", [username_try, password_try])
-            row = cursor.fetchone()
-            print(row)
-            if (row is None):
-                print("No such user exists") #TODO: Make this a more convincing message w redirect
-                return
-            user_id = row[0]
-            username = row[1]
-            password = row[2]
-            privilege = row[3]
-            
-            if username_try == username and password_try == password:
-                print("login successful")
-                request.session['username'] = username 
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT user_id, name, password, privilege 
+                    FROM users 
+                    WHERE Name = %s AND Password = %s
+                """, [username_try, password_try])
+                row = cursor.fetchone()
+                
+            if row:
+                user_id, username, password, privilege = row
+                
+                # Set session variables
+                request.session['username'] = username
                 request.session['user_id'] = user_id
                 request.session['privilege'] = privilege
                 
                 return redirect('main_page')
             else:
-                print("login failed")
-            
+                messages.error(request, "Invalid username or password. Please try again.")
+        
         except Exception as e:
-            print("an error occured")
-            print(username_try)
-            print(password_try)
-            print(e)
-    return render(request, 'background_template.html') #didnt pass the template folder name becuase it exists within the application
+            messages.error(request, f"An error occurred: {str(e)}")
+    
+    return render(request, 'background_template.html')
 
 def main_view(request):
     # Retrieve userid and username from the session
@@ -58,31 +50,68 @@ def main_view(request):
     return render(request, 'main_page.html', {'user_id': user_id, 'username': username})
 
 
-
 def register(request):
     if request.method == 'POST':
-        # Retrieve data from form fields
+        # Retrieve common fields from form
         username = request.POST.get('username')
         password = request.POST.get('password')
         contact = request.POST.get('contact')
         registration_date = request.POST.get('registration_date')
         account_type = request.POST.get('account_type')
-        privilege = 1 if account_type == "member" else 0 #TODO: Add more logic to update privilege
 
         try:
             with connection.cursor() as cursor:
-                # Insert data into the database
-                cursor.execute(
-                    """
-                    INSERT INTO [User] (Name, Password, Contact_Number, RegDate, Privilege) 
-                    VALUES (%s, %s, %s, %s, %s)
-                    """,
-                    [username, password, contact, registration_date, privilege]
-                )
-                print(reverse('Math_club:login_page'))
-                return redirect('Math_club:login_page')  # Redirect to login page
+                if account_type == 'outsider':
+                    # Retrieve outsider-specific fields
+                    cnic = request.POST.get('cnic')
+                    privilege = 0  # Outsiders have a different privilege level
+                    
+                    # Insert into User table and Outsider table
+                    cursor.execute(
+                        """
+                        INSERT INTO [User] (Name, Password, Contact_Number, RegDate, Privilege)
+                        VALUES (%s, %s, %s, %s, %s)
+                        """,
+                        [username, password, contact, registration_date, privilege]
+                    )
+                    user_id = cursor.lastrowid  # Retrieve the auto-generated user_id
+                    cursor.execute(
+                        """
+                        INSERT INTO [Outsider] (User_ID, CNIC)
+                        VALUES (%s, %s)
+                        """,
+                        [user_id, cnic]
+                    )
+                elif account_type == 'member':
+                    # Retrieve member-specific fields
+                    major = request.POST.get('major')
+                    hu_id = request.POST.get('hu_id')
+                    privilege = 1  # Members have a different privilege level
+
+                    # Insert into User table and Member table
+                    cursor.execute(
+                        """
+                        INSERT INTO [User] (Name, Password, Contact_Number, RegDate, Privilege)
+                        VALUES (%s, %s, %s, %s, %s)
+                        """,
+                        [username, password, contact, registration_date, privilege]
+                    )
+                    user_id = cursor.lastrowid  # Retrieve the auto-generated user_id
+                    cursor.execute(
+                        """
+                        INSERT INTO [Member] (User_ID, Major, HU_ID)
+                        VALUES (%s, %s, %s)
+                        """,
+                        [user_id, major, hu_id]
+                    )
+                else:
+                    return render(request, 'register.html', {'error': 'Invalid account type.'})
+
+                # Redirect to the main page on successful registration
+                return redirect('main_page')
 
         except Exception as e:
+            # Handle errors and display message on failure
             print(f"An error occurred: {e}")
             return render(request, 'register.html', {'error': 'Failed to register. Please try again.'})
 

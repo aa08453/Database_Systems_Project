@@ -42,6 +42,30 @@ urlpatterns = [
     path('Role_Types/create/', Role_TypesPageView.as_view(), name='create_Role_Type'),
     path('Role_Types/update/<int:pk>/', Role_TypesPageView.as_view(), name='update_Role_Type'),
     path('Role_Types/delete/<int:pk>/', Role_TypesDeleteView.as_view(), name='delete_Role_Type'),
+    
+    #Locations
+    path('Locations/', Locations_ListView.as_view(), name='list_locations'),
+    path('Locations/create/', Locations_PageView.as_view(), name='create_locations'),
+    path('Locations/update/<int:pk>/', Locations_PageView.as_view(), name='update_locations'),
+    # delete constraint 
+    # need to delete from tables where it is referred to as FK
+    path('Locations/delete/<int:pk>/', Locations_DeleteView.as_view(), name='delete_locations'),
+    
+    #Majors
+    path('Majors/', Majors_ListView.as_view(), name='list_majors'),
+    path('Majors/create/', Majors_PageView.as_view(), name='create_majors'),
+    path('Majors/update/<int:pk>/', Majors_PageView.as_view(), name='update_majors'),
+    # delete constraint 
+    # need to delete from tables where it is referred to as FK
+    path('Majors/delete/<int:pk>/', Majors_DeleteView.as_view(), name='delete_majors'),
+    
+    #Tags
+    path('Tags/', Tags_ListView.as_view(), name='list_tags'),
+    path('Tags/create/', Tags_PageView.as_view(), name='create_tags'),
+    path('Tags/update/<int:pk>/', Tags_PageView.as_view(), name='update_tags'),
+    # delete constraint 
+    # need to delete from tables where it is referred to as FK
+    path('Tags/delete/<int:pk>/', Tags_DeleteView.as_view(), name='delete_tags'),
 
 ]
 

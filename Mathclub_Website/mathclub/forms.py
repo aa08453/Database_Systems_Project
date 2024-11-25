@@ -62,4 +62,17 @@ class Role_Types_form(forms.Form):
         widget=forms.TextInput()
     )
 
-
+class Locations_form(forms.Form):
+    location = forms.CharField(
+        widget=forms.TextInput()
+    )
+    
+class Majors_form(forms.Form):
+    major = forms.CharField(
+        widget=forms.TextInput()
+    )   
+    
+class Tags_form(forms.Form):
+    tag = forms.CharField(
+        widget=forms.TextInput()
+    )  

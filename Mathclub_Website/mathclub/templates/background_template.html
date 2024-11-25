@@ -50,19 +50,6 @@
         .container button:hover {
             background-color: #0056b3;
         }
-        .footer {
-            margin-top: 15px;
-            font-size: 0.9em;
-            color: #666;
-        }
-        .footer a {
-            color: #007BFF;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .footer a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
@@ -78,5 +65,12 @@
             <p>Don't have an account? <a href="{% url 'register_page' %}">Register</a></p>
         </div>
     </div>
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                alert("{{ message }}");
+            {% endfor %}
+        {% endif %}
+    </script>
 </body>
 </html>

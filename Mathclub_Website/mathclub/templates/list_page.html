@@ -1,74 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern List Page</title>
+{% extends "base.html" %}
 
-    <!-- Include Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Include Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+{% block title %}List View{% endblock %}
 
-    <!-- Custom Styles for Buttons -->
-    <style>
-        .btn-gradient-primary {
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            color: white;
-            border: none;
-        }
-
-        .btn-gradient-success {
-            background: linear-gradient(to right, #56ab2f, #a8e063);
-            color: white;
-            border: none;
-        }
-
-        .card {
-            border-radius: 15px;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Optional: Add some padding and center align for form fields */
-        .form-control {
-            border-radius: 10px;
-        }
-
-        table th, table td {
-            vertical-align: middle;
-        }
-    </style>
-</head>
-<body>
-
+{% block content %}
 <div class="container mt-4">
     <!-- Search Form Section -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-
-        <form method="GET" class="d-flex align-items-center">
-            <!-- Search Input -->
-            <input type="text" name="q" class="form-control form-control-lg me-3" placeholder="Search..." 
-                   value="{{ request.GET.q|default:'' }}" aria-label="Search">
-            
-            <!-- Dropdown for selecting column to search -->
-            <select id="column" name="search_field">
-                {% for column in columns %}
-                    {% if column != 'pk_field' %}  <!-- Skip displaying pk_field -->
-                        <option value="{{ column }}" {% if request.GET.search_field == column %}selected{% endif %}>{{ column }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-gradient-primary">Search</button>
-        </form>
-
-
+            <form method="GET" class="d-flex align-items-center">
+                <input type="text" name="q" class="form-control form-control-lg me-3" placeholder="Search..." 
+                       value="{{ request.GET.q|default:'' }}" aria-label="Search">
+                <select id="column" name="search_field" class="form-select me-3">
+                    {% for column in columns %}
+                        {% if column != 'pk_field' %}
+                            <option value="{{ column }}" {% if request.GET.search_field == column %}selected{% endif %}>
+                                {{ column }}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-gradient-primary">Search</button>
+            </form>
         </div>
     </div>
-
 
     <!-- Table Section -->
     <div class="card shadow-sm">
@@ -90,53 +44,32 @@
                         {% for value in item.values %}
                         <td>{{ value }}</td>
                         {% endfor %}
-                        <td class="text-center">
-                            <!-- Edit button with icon -->
                         {% if has_privilege %}
+                        <td class="text-center">
                             <a href="{{ update_url }}{{ item.pk_field }}" class="btn btn-warning btn-sm" 
-                               data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-
-                            <!-- Delete button with icon -->
+                               data-bs-toggle="tooltip" title="Edit"><i class="bi bi-pencil"></i></a>
                             <form method="POST" action="{{ delete_url }}{{ item.pk_field }}/" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger btn-sm" 
                                         onclick="return confirm('Are you sure you want to delete this item?');"
-                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+                                        data-bs-toggle="tooltip" title="Delete">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </form>
-                        {% endif %}
                         </td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
 
-    <!-- Add New Button -->
-    {% if has_privilege %}
-    <div class="text-end mb-4">
-        <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add New</a>
-    </div>
-    {% endif %}
-
+            <!-- Add New Button -->
+            {% if has_privilege %}
+            <div class="text-end mb-4">
+                <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add New</a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
-
-<!-- Include Bootstrap JS for Tooltip functionality -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Initialize tooltips -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-            new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-    });
-</script>
-
-</body>
-</html>
+{% endblock %}

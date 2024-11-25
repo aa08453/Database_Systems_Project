@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import ListView, TemplateView, FormView, DeleteView, View
 from django.urls import reverse_lazy
 
-from .forms import election_form, candidates_form, Role_Types_form
+from .forms import *
 # Create your views here.
 
 def main_page(request):
@@ -213,7 +213,7 @@ class GenericDeleteView(View):
             cursor.execute(sql, [pk])
         return redirect(self.redirect_to)
 
-
+# Elections
     
 class ElectionsListView(GenericListView):
     table_name = "elections"
@@ -236,6 +236,7 @@ class ElectionsDeleteView(GenericDeleteView):
     pk_field = "Election_ID"
     redirect_to = "list_elections"
 
+# Candidates
 
 class CandidatesListView(GenericListView):
     table_name = "candidates"
@@ -261,7 +262,7 @@ class CandidatesDeleteView(GenericDeleteView):
     pk_field = "Candidate_ID"
     redirect_to = "list_candidates"
 
-
+# Role_Types
 class Role_TypesListView(GenericListView):
     table_name = "Role_Types"
     sql = """
@@ -282,3 +283,70 @@ class Role_TypesDeleteView(GenericDeleteView):
     table_name = "Role_Types"
     pk_field = "Role_ID"
     redirect_to = "list_Role_Types"
+
+# Locations
+class Locations_ListView(GenericListView):
+    table_name = "Locations"
+    sql = """
+    select Location_ID, Location_Name
+    from Locations
+    """
+    pk_field = "Location_ID"
+
+class Locations_PageView(GenericPageView):
+    table_name = "Locations"
+    search_field = "Location_ID"
+    fields = ["Location_Name"]
+    pk_field = "Location_ID"
+    redirect_to = "list_locations"
+    form_class = Locations_form
+
+class Locations_DeleteView(GenericDeleteView):
+    table_name = "Locations"
+    pk_field = "Location_ID"
+    redirect_to = "list_locations"
+    
+# Majors
+class Majors_ListView(GenericListView):
+    table_name = "Majors"
+    sql = """
+    select Major_ID, Name
+    from Majors
+    """
+    pk_field = "Major_ID"
+
+class Majors_PageView(GenericPageView):
+    table_name = "Majors"
+    search_field = "Major_ID"
+    fields = ["Name"]
+    pk_field = "Major_ID"
+    redirect_to = "list_majors"
+    form_class = Majors_form
+
+class Majors_DeleteView(GenericDeleteView):
+    table_name = "Majors"
+    pk_field = "Major_ID"
+    redirect_to = "list_majors"
+    
+# Tags
+
+class Tags_ListView(GenericListView):
+    table_name = "Tags"
+    sql = """
+    select Tag_ID, Tag_Name
+    from Tags
+    """
+    pk_field = "Tag_ID"
+
+class Tags_PageView(GenericPageView):
+    table_name = "Tags"
+    search_field = "Tag_ID"
+    fields = ["Tag_Name"]
+    pk_field = "Tag_ID"
+    redirect_to = "list_tags"
+    form_class = Tags_form
+
+class Tags_DeleteView(GenericDeleteView):
+    table_name = "Tags"
+    pk_field = "Tag_ID"
+    redirect_to = "list_tags"

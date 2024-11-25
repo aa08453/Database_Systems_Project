@@ -106,6 +106,15 @@
                     <input type="text" id="cnic" name="cnic" placeholder="Enter your CNIC" required>
                 `;
             }
+            else if (this.value == 'member')
+            {
+                additionalFields.innerHTML = `
+                    <label for="major">Major:</label>
+                    <input type="text" id="major" name="major" placeholder="Enter your Major" required>
+                    <label for="hu_id">HU ID:</label>
+                    <input type="text" id="hu_id" name="hu_id" placeholder="Enter your HU ID" required>
+                `;
+            }
         });
     </script>
 </body>
