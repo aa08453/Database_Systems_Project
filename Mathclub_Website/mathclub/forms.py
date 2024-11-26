@@ -33,6 +33,8 @@ class DynamicChoiceField(forms.ChoiceField):
             return result
         return []
 
+
+
 class Form_Custom(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -385,6 +387,7 @@ def clean(self):
 
 class Voting_form(Form_Custom):
     def __init__(self, *args, **kwargs):
+        self.user_id = kwargs.pop('user_id', None)
         super().__init__(*args, **kwargs)  
         with connection.cursor() as cursor:
             cursor.execute(
@@ -393,7 +396,7 @@ class Voting_form(Form_Custom):
                             SELECT * 
                             FROM elections 
                             WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
-                        (
+                        )(
                             SELECT R.Role_ID, R.Role_Name, CE.Start_Date,
                             CE.End_Date
                             FROM current_elections CE 
@@ -417,7 +420,7 @@ class Voting_form(Form_Custom):
                                                     WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
                                                 )
                                                 (
-                                                    SELECT Candidate_ID, U.Name, R.Role_Name
+                                                    SELECT {self.user_id}, U.Name, U.User_ID
                                                     FROM current_elections CE 
                                                     join candidates C on CE.Election_ID = C.Election_ID
                                                     join users U on C.User_ID = U.User_ID

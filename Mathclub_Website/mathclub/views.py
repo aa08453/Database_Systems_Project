@@ -173,16 +173,20 @@ class GenericPageView(TemplateView): #Create/update in one go
         context["object"] = self.get_object(pk) if pk else None
         context["fields"] = self.fields
         user_privilege = self.request.session.get("privilege", None)
+        user_id = self.request.session.get("user_id", None)
+        print("The user id is ", user_id)
+        context["user_id"] = user_id
         context["has_privilege"] = user_privilege == 1  # Only show actions if privilege is 1
 
         obj = self.get_object(pk) if pk else None
         initial_data = {key: value for key, value in obj.items() if key != self.pk_field} if obj else None
         print(self.form_class)
-        context["form"] = self.form_class(initial=initial_data) if obj else self.form_class()
+        context["form"] = self.form_class(initial=initial_data) if obj else self.form_class(user_id = user_id)
         print("The form with context is ", context["form"].fields)
         return context
 
     def post(self, request, *args, **kwargs):
+        print("I've got it!", self.request.session.get("user_id", None))
         form = self.form_class(request.POST, user_id =
                                self.request.session.get("user_id", None))
         print(f"Current class: {self.__class__.__name__}")  # Debug the class name
@@ -199,6 +203,9 @@ class GenericPageView(TemplateView): #Create/update in one go
                         print("Before", self.fields)
                         self.fields = self.fields[0].split(",")
                         print("After", self.fields)
+                    print("The data I have is", data)
+
+
                     columns = ", ".join(self.fields)
                     placeholders = ", ".join(["%s"] * len(self.fields))
                     sql = f"insert into {self.table_name} ({columns}) values ({placeholders})"
