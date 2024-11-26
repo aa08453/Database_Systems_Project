@@ -76,3 +76,26 @@ class Tags_form(forms.Form):
     tag = forms.CharField(
         widget=forms.TextInput()
     )  
+
+class Blogs_form(forms.Form):
+    title = forms.CharField(
+        widget=forms.TextInput()
+    )
+    date = forms.DateTimeField(
+            widget=forms.widgets.DateTimeInput(attrs={'type':
+                                                      'datetime-local'}))
+    content = forms.CharField(
+        widget=forms.TextInput()
+    )
+    author =  DynamicChoiceField(
+        query = """
+        select User_ID, Name
+        from Users
+        """
+    )
+    tag = DynamicChoiceField(
+        query = """
+        select Tag_ID, Tag_Name
+        from Tags
+        """
+    )

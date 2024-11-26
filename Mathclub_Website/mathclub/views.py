@@ -350,3 +350,27 @@ class Tags_DeleteView(GenericDeleteView):
     table_name = "Tags"
     pk_field = "Tag_ID"
     redirect_to = "list_tags"
+
+# Blogs
+
+class Blogs_ListView(GenericListView):
+    table_name = "Blogs"
+    sql = """
+    select b.Post_ID, b.Title, b.Date_Created, u.Name as Author, t.Tag_Name
+    from Blogs b inner join Users u on u.User_ID = b.User_ID
+    inner join Tags t on t.Tag_ID = b.Tag_ID
+    """
+    pk_field = "Post_ID"
+
+class Blogs_PageView(GenericPageView):
+    table_name = "Blogs"
+    search_field = "Post_ID"
+    fields = ["Title", "Date_Created", "Content","User_ID","Tag_ID"]
+    pk_field = "Post_ID"
+    redirect_to = "list_blogs"
+    form_class = Blogs_form
+
+class Blogs_DeleteView(GenericDeleteView):
+    table_name = "Blogs"
+    pk_field = "Post_ID"
+    redirect_to = "list_blogs"
