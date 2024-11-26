@@ -26,6 +26,9 @@
         body {
             padding-top: 70px;
         }
+        .back-button {
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -39,29 +42,42 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/Tags/">Tags</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Majors/">Majors</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="/elections/">Elections</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/candidates/">Candidates</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/Products/">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Events/">Events</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
                         <a class="nav-link" href="/Blogs/">Blogs</a>
                     </li>
                     {% if has_privilege %}
+                    <!-- Admin-Specific Navigation -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Tags/">Tags</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Majors/">Majors</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/Locations/">Locations</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/Role_Types/">Role Types</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Club_Items/">Club Items</a>
+                    </li>
                     
                     {% endif %}
+                    <!-- Common Navigation -->
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item">
@@ -71,6 +87,15 @@
             </div>
         </div>
     </nav>
+
+    <!-- Back Button -->
+    <div class="container back-button">
+        {% if back_url %}
+            <a href="{{ back_url }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        {% endif %}
+    </div>
 
     <!-- Main Content -->
     <div class="container">

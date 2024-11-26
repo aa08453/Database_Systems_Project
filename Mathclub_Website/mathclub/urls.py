@@ -69,6 +69,28 @@ urlpatterns = [
     # delete constraint 
     # need to delete from tables where it is referred to as FK
     path('Tags/delete/<int:pk>/', Tags_DeleteView.as_view(), name='delete_tags'),
+    
+    #Products
+    path('Products/', Products_ListView.as_view(), name='list_products'),
+    path('Products/create/', Products_PageView.as_view(), name='create_products'),
+    path('Products/update/<int:pk>/', Products_PageView.as_view(), name='update_products'),
+    # delete constraint 
+    # need to delete from tables where it is referred to as FK
+    path('Products/delete/<int:pk>/', Products_DeleteView.as_view(), name='delete_products'),
+    
+    #Events
+    path('Events/', Events_ListView.as_view(), name='list_events'),
+    path('Events/create/', Events_PageView.as_view(), name='create_events'),
+    path('Events/update/<int:pk>/', Events_PageView.as_view(), name='update_events'),
+    # delete constraint 
+    # need to delete from tables where it is referred to as FK
+    path('Events/delete/<int:pk>/', Events_DeleteView.as_view(), name='delete_events'),
+    
+    #Club_Items
+    path('Club_Items/', Club_Items_ListView.as_view(), name='list_club_Items'),
+    path('Club_Items/create/', Club_Items_PageView.as_view(), name='create_club_Items'),
+    path('Club_Items/update/<int:pk>/', Club_Items_PageView.as_view(), name='update_club_Items'),
+    path('Club_Items/delete/<int:pk>/', Club_Items_DeleteView.as_view(), name='delete_club_Items'),
 
 
     #Blogs

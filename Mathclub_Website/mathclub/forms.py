@@ -117,6 +117,60 @@ class Tags_form(forms.Form):
         widget=forms.TextInput()
     )  
     
+class Products_form(forms.Form):
+    product = forms.CharField(
+        widget=forms.TextInput()
+    )  
+    price = forms.CharField(
+        widget = forms.IntegerField()
+    )
+    stock = forms.CharField(
+        widget = forms.IntegerField()
+    )
+
+class Events_form(forms.Form):
+    location = DynamicChoiceField(
+        query = """
+        select Location_ID, Location_Name
+        from Locations
+        """
+    )
+
+    lead = DynamicChoiceField(
+        query = """
+        select User_ID, Name
+        from Users
+        """
+    )
+
+    scale = forms.CharField(
+        widget=forms.TextInput()
+    )  
+    event = forms.CharField(
+        widget = forms.TextInput()
+    )
+    description = forms.CharField(
+        widget = forms.TextInput()
+    )
+    
+class Club_Items_form(forms.Form):
+    item = forms.CharField(
+        widget = forms.TextInput()
+    )
+    
+    storage = DynamicChoiceField(
+        query = """
+        select Location_ID, Location_Name
+        from Locations
+        """
+    )
+    
+class Transaction_Types_form(forms.Form):
+    transaction = forms.CharField(
+        widget = forms.TextInput()
+    )
+
+    
 from django import forms
 
 class Major_choice(forms.Form):
