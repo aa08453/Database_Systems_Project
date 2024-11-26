@@ -183,7 +183,8 @@ class GenericPageView(TemplateView): #Create/update in one go
         return context
 
     def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
+        form = self.form_class(request.POST, user_id =
+                               self.request.session.get("user_id", None))
         print(f"Current class: {self.__class__.__name__}")  # Debug the class name
         if form.is_valid(): #If valid do the thing
             data = form.cleaned_data
@@ -194,6 +195,10 @@ class GenericPageView(TemplateView): #Create/update in one go
                     sql = f"update {self.table_name} set {set_clause} where {self.pk_field} = %s"
                     cursor.execute(sql, list(data.values()) + [pk])
                 else:
+                    if "," in self.fields[0]:
+                        print("Before", self.fields)
+                        self.fields = self.fields[0].split(",")
+                        print("After", self.fields)
                     columns = ", ".join(self.fields)
                     placeholders = ", ".join(["%s"] * len(self.fields))
                     sql = f"insert into {self.table_name} ({columns}) values ({placeholders})"
@@ -596,7 +601,7 @@ class Team_Roles_DeleteView(GenericDeleteView):
 class VotingListView(GenericListView):
     table_name = "voting"
     sql = """
-    select Voter_ID, Candidate_ID
+    select Vote_ID, Voter_ID, Candidate_ID
     from voting
     """
     pk_field = "Vote_ID"
@@ -604,7 +609,7 @@ class VotingListView(GenericListView):
 class VotingPageView(GenericPageView):
     table_name = "voting"
     search_field = "Vote_ID"
-    fields = ["Vote_ID, Voter_ID, Candidate_ID"]
+    fields = ["Voter_ID, Candidate_ID"]
     pk_field = "Vote_ID"
     redirect_to = "list_voting"
     form_class = Voting_form

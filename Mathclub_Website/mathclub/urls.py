@@ -125,7 +125,7 @@ urlpatterns = [
 
 
     #Candidates
-    path('voting/', VotingListView.as_view(), name='list_votings'),
+    path('voting/', VotingListView.as_view(), name='list_voting'),
     path('voting/create/', VotingPageView.as_view(), name='create_voting'),
     path('voting/update/<int:pk>/', VotingPageView.as_view(), name='update_voting'),
     path('voting/delete/<int:pk>/', VotingDeleteView.as_view(), name='delete_voting'),

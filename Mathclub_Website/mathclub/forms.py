@@ -393,7 +393,6 @@ class Voting_form(Form_Custom):
                             SELECT * 
                             FROM elections 
                             WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
-                        )
                         (
                             SELECT R.Role_ID, R.Role_Name, CE.Start_Date,
                             CE.End_Date
