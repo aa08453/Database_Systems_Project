@@ -23,7 +23,7 @@ def register_page(request):
     return (register(request))
 
 def team_page(request):
-    return redirect('Math_club:register_page') 
+    return teams(request)
 
 
 def finance_page(request):
@@ -378,9 +378,36 @@ class Admins(GenericPageView):
     pk_field = "User_ID"
     redirect_to = "login_page"
     form_class = Admins
-    
-    
 
+class Teams(GenericPageView):
+    table_name = "Teams"
+    search_field = "Team_ID"
+    fields = ["Team_Name", "Team_Lead", "Date_Created"]
+    pk_field = "Team_ID"
+    redirect_to = "list_teams"
+    form_class = teams
+    
+    
+class List_Teams(GenericListView):
+    table_name = "Teams"
+    sql = """
+    select Team_ID, Team_Name, Team_Lead, Date_Created FROM Teams
+    """
+    
+class Finance(GenericPageView):
+    table_name = "Finances"
+    search_field = "Transaction_ID"
+    fields = ["Responsible_Officer","User_ID","Transaction_Type","Date","Description","Amount"]
+    pk_field = "Transaction_ID"
+    redirect_to = "finance_submit"
+    form_class = Finances
+   
+class Finance_List(GenericListView):
+    table_name = "Finances"
+    sql = """
+    select Transaction_ID, Responsible_Officer, User_ID, Transaction_Type, Date, Description, Amount FROM Finances
+    """ 
+    
 # Blogs
 
 class Blogs_ListView(GenericListView):
@@ -404,3 +431,4 @@ class Blogs_DeleteView(GenericDeleteView):
     table_name = "Blogs"
     pk_field = "Post_ID"
     redirect_to = "list_blogs"
+

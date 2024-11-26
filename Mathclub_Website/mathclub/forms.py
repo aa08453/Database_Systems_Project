@@ -243,6 +243,47 @@ class Admins(forms.Form):
         return cleaned_data 
 
 
+class teams(forms.Form):
+    team_name = forms.CharField(widget=forms.TextInput())
+    team_lead = DynamicChoiceField(
+        query = """
+        select User_ID, Name
+        from Users
+        """
+    )
+    creation_date = forms.DateTimeField(
+        widget=forms.widgets.DateTimeInput(attrs={'type': 'datetime-local'})
+    )
+
+class Finances(forms.Form):
+    Responsible = DynamicChoiceField(
+        query = """
+        select User_ID, Name
+        from Users
+        """
+    )
+    USER_ID = DynamicChoiceField(
+        query = """
+        select User_ID, Name
+        from Users
+        """
+    )
+    Transaction_type = DynamicChoiceField(
+        query = """
+        select Type_ID, Type_Name
+        from Transaction_Types
+        """
+    )
+    date = forms.DateTimeField(
+        widget=forms.widgets.DateTimeInput(attrs={'type': 'datetime-local'})
+    )
+    description = forms.CharField(widget=forms.TextInput())    
+    amount = forms.FloatField()
+    
+    
+    
+    
+
 class Blogs_form(forms.Form):
     title = forms.CharField(
         widget=forms.TextInput()

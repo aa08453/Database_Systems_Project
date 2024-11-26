@@ -10,13 +10,14 @@ def teams(request):
         team_name = request.POST.get("team-name")
         team_lead = request.POST.get("team-lead")
         date_created = request.POST.get("creation-date")
+        print(team_name)
         
         try:
             print("HI")
             cursor = connection.cursor()
             cursor.execute(
                     """
-                    INSERT INTO Team (Team_Name, Team_Lead, Date_Created) 
+                    INSERT INTO Teams (Team_Name, Team_Lead, Date_Created) 
                     VALUES (%s, %s, %s)
                     """,
                     [team_name, team_lead, date_created]

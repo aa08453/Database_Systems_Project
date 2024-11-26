@@ -265,13 +265,13 @@ END;
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Finances')
 BEGIN
     CREATE TABLE "Finances"(
-        "Transaction_ID" INT NOT NULL,
+        "Transaction_ID" INT IDENTITY(1,1) PRIMARY KEY,
         "Responsible_Officer" INT NOT NULL,
         "User_ID" INT NOT NULL,
         "Transaction_Type" INT NOT NULL,
         "Date" DATE NOT NULL,
         "Description" NVARCHAR(255) NOT NULL,
-        PRIMARY KEY ("Transaction_ID", "Responsible_Officer", "User_ID"),
+        "Amount" INT NOT NULL,
         FOREIGN KEY ("Responsible_Officer") REFERENCES "Users" ("User_ID"),
         FOREIGN KEY ("User_ID") REFERENCES "Users" ("User_ID"),
         FOREIGN KEY ("Transaction_Type") REFERENCES "Transaction_Types" ("Type_ID")
