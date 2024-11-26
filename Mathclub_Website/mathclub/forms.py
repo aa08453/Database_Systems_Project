@@ -437,9 +437,6 @@ def clean(self):
             # Optionally, you can raise a ValidationError here, but adding the error is sufficient
             return data  # You can return the cleaned data, even if errors were added
     return data
-        cleaned_data = super().clean()
-        self.check_for_duplicate_combination(table_name = "Tags", Tag_Name =
-                                             cleaned_data.get("Tag_Name"))
 
 
 class Voting_form(Form_Custom):
