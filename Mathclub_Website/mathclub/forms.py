@@ -30,6 +30,7 @@ class DynamicChoiceField(forms.ChoiceField):
                 rows = cursor.fetchall()
 
             result = [(row[0], row[1]) for row in rows]
+            result.insert(0, (None, "Select an option"))
             return result
         return []
 
@@ -72,38 +73,41 @@ class candidates_form(Form_Custom):
         query = """
         select Role_ID, Role_Name
         from Role_Types
-        """
+        """, required = True
     )
 
     elections = DynamicChoiceField(
         query = """
             select Election_ID, CONVERT(VARCHAR, Start_Date, 120) + ' to ' + CONVERT(VARCHAR, End_Date, 120)
             FROM Elections;
-        """
+        """, required = True
     )
 
     nominee = DynamicChoiceField(
         query = """
         select User_ID, Name
         from Users
-        """
+        """, required = True
     )
 
 class Role_Types_form(forms.Form):
     role = forms.CharField(
-        widget=forms.TextInput()
+        widget=forms.TextInput(),
+        required = True
     )
 
 
 
 class Locations_form(forms.Form):
     location = forms.CharField(
-        widget=forms.TextInput()
+        widget=forms.TextInput(),
+        required = True
     )
     
 class Majors_form(Form_Custom):
     Name = forms.CharField(
-        widget=forms.TextInput()
+        widget=forms.TextInput(),
+        required = True
     )   
 
     def clean(self):
@@ -114,7 +118,8 @@ class Majors_form(Form_Custom):
     
 class Tags_form(forms.Form):
     tag = forms.CharField(
-        widget=forms.TextInput()
+        widget=forms.TextInput(),
+        required = True
     )  
     
 class Products_form(forms.Form):
@@ -384,7 +389,8 @@ def clean(self):
 
 
 class Voting_form(Form_Custom):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user_id, *args, **kwargs):
+        self.user_id = user_id
         super().__init__(*args, **kwargs)  
         with connection.cursor() as cursor:
             cursor.execute(
@@ -427,21 +433,29 @@ class Voting_form(Form_Custom):
                                                 """
                                             )
 
-        def clean():
-            cleaned_data = super().clean()
-            sql = """
-            WITH current_elections AS (
-                SELECT * 
-                FROM elections 
-                WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
-            ) (
-            select V.Voter_ID, C.Role_ID, C.Election_ID, CASE WHEN count(1) >= 1 THEN 0 ELSE 1 END as Allowed
-            from voting V 
-            join candidates C on C.Candidate_ID = V.Candidate_ID
-            WHERE C.Election_ID in (select election_id from current_elections)
-            group by V.Voter_ID, C.Role_ID, C.Election_ID
-            )
-            """
+    def clean(self):
+        cleaned_data = super().clean()
+        sql = f"""
+        WITH current_elections AS (
+            SELECT * 
+            FROM elections 
+            WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
+        ) (
+        select V.Voter_ID, C.Role_ID, C.Election_ID, CASE WHEN count(1) >= 1 THEN 0 ELSE 1 END as Allowed
+        from voting V 
+        join candidates C on C.Candidate_ID = V.Candidate_ID
+        WHERE C.Election_ID in (select election_id from current_elections) and user
+        group by V.Voter_ID, C.Role_ID, C.Election_ID
+        where V.Voter_ID = {self.user_id}
+        )
+        """
 
-            #TODO: One election at a time
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            print("Cleaned data", cleaned_data)
+            print("How we are filtering it", rows)
+
+
+        #TODO: One election at a time
 

@@ -197,13 +197,6 @@ class GenericPageView(TemplateView): #Create/update in one go
                     sql = f"update {self.table_name} set {set_clause} where {self.pk_field} = %s"
                     cursor.execute(sql, list(data.values()) + [pk])
                 else:
-                    if "," in self.fields[0]:
-                        print("Before", self.fields)
-                        self.fields = self.fields[0].split(",")
-                        print("After", self.fields)
-                    print("The data I have is", data)
-
-
                     columns = ", ".join(self.fields)
                     placeholders = ", ".join(["%s"] * len(self.fields))
                     sql = f"insert into {self.table_name} ({columns}) values ({placeholders})"
@@ -631,7 +624,7 @@ class VotingPageView(GenericPageView):
     form_class = Voting_form
     def post(self, request, *args, **kwargs):
         user_id = self.request.session.get("user_id", None)
-        form = self.form_class(request.POST)
+        form = self.form_class(request.POST, user_id)
         print(f"Current class: {self.__class__.__name__}")  # Debug the class name
         if form.is_valid(): #If valid do the thing
             data = form.cleaned_data
