@@ -604,7 +604,7 @@ class VotingListView(GenericListView):
         FROM elections 
         WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
     ) (
-    select U.Name, RT.Role_Name, COALESCE(COUNT(V.Vote_ID), 0) as Votes
+    select U.Name as Name, RT.Role_Name as Role_Name, COALESCE(COUNT(V.Vote_ID), 0) as Votes
     from voting V 
     right join candidates C on V.Candidate_ID = C.Candidate_ID
     right join users U on C.User_ID = U.User_ID
@@ -613,6 +613,43 @@ class VotingListView(GenericListView):
     group by C.Candidate_ID, C.User_ID, RT.Role_Name, U.Name
     )
     """
+    def get_queryset(self, query=""):
+        search_field = self.get_search_field()
+        sql = self.sql
+        with connection.cursor() as cursor:
+            if query:
+                search_snip = f"{search_field} like %s"
+                sql = f"""
+                WITH current_elections AS (
+                    SELECT * 
+                    FROM elections 
+                    WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
+                ) (
+                select U.Name as Name, RT.Role_Name as Role_Name, COALESCE(COUNT(V.Vote_ID), 0) as Votes
+                from voting V 
+                right join candidates C on V.Candidate_ID = C.Candidate_ID
+                right join users U on C.User_ID = U.User_ID
+                join Role_Types RT on C.Role_ID = RT.Role_ID
+                where C.Election_ID in (select election_id from
+                current_elections) and {search_snip}
+                group by C.Candidate_ID, C.User_ID, RT.Role_Name, U.Name
+                )
+                """
+                print(sql)
+
+
+
+
+                cursor.execute(sql, [f"%{query}%"])
+            else:
+                cursor.execute(sql)
+
+            columns = [col[0] for col in cursor.description]
+            for x in range(0, len(columns)):
+                if columns[x] == self.pk_field:
+                    columns[x] = "pk_field"
+            rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            return columns, rows
     pk_field = "Vote_ID"
 
 class VotingPageView(GenericPageView):
@@ -691,6 +728,7 @@ class VotingPageView(GenericPageView):
             data = form.cleaned_data
             print("I've got data", data)
             pk = self.kwargs.get("pk")
+            self.fields = self.fields[0].split(",")
             with connection.cursor() as cursor:
                 biglist = []
                 print("Starting TRANSACTION SQL")
@@ -713,7 +751,6 @@ class VotingPageView(GenericPageView):
                         biglist += [vote[1], str(user_id), role_type]
                     else:
                         print(self.fields)
-                        self.fields = self.fields[0].split(",")
                         columns = ", ".join(self.fields)
                         placeholders = ", ".join(["%s"] * len(self.fields))
                         sql += f""" insert into {self.table_name} ({columns})
