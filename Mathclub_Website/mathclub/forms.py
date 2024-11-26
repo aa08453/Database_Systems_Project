@@ -389,8 +389,8 @@ def clean(self):
 
 
 class Voting_form(Form_Custom):
-    def __init__(self, user_id, *args, **kwargs):
-        self.user_id = user_id
+    def __init__(self, *args, **kwargs):
+        self.user_id = kwargs.pop('user_id', None)
         super().__init__(*args, **kwargs)  
         with connection.cursor() as cursor:
             cursor.execute(
@@ -444,17 +444,23 @@ class Voting_form(Form_Custom):
         select V.Voter_ID, C.Role_ID, C.Election_ID, CASE WHEN count(1) >= 1 THEN 0 ELSE 1 END as Allowed
         from voting V 
         join candidates C on C.Candidate_ID = V.Candidate_ID
-        WHERE C.Election_ID in (select election_id from current_elections) and user
+        WHERE C.Election_ID in (select election_id from current_elections) and V.Voter_ID = {self.user_id}
         group by V.Voter_ID, C.Role_ID, C.Election_ID
-        where V.Voter_ID = {self.user_id}
         )
         """
+        print(sql)
 
         with connection.cursor() as cursor:
             cursor.execute(sql)
             rows = cursor.fetchall()
-            print("Cleaned data", cleaned_data)
-            print("How we are filtering it", rows)
+            for row in rows:
+                if row[-1] == 0:
+                    self.add_error(None, f"You have already voted in this election")
+                    return cleaned_data
+                
+        return cleaned_data
+
+
 
 
         #TODO: One election at a time

@@ -622,9 +622,33 @@ class VotingPageView(GenericPageView):
     pk_field = "Vote_ID"
     redirect_to = "list_voting"
     form_class = Voting_form
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get("pk", None)
+        print("I've got pk", pk)
+        context["object"] = self.get_object(pk) if pk else None
+        context["fields"] = self.fields
+        user_privilege = self.request.session.get("privilege", None)
+        user_id = self.request.session.get("user_id", None)
+        print("The user id is ", user_id)
+        context["user_id"] = user_id
+        context["has_privilege"] = user_privilege == 1  # Only show actions if privilege is 1
+
+        obj = self.get_object(pk) if pk else None
+        initial_data = {key: value for key, value in obj.items() if key != self.pk_field} if obj else None
+        print(self.form_class)
+        context["form"] = self.form_class(initial=initial_data) if obj else self.form_class(user_id = user_id)
+        print("The form with context is ", context["form"].fields)
+        return context
+
+
+
+
     def post(self, request, *args, **kwargs):
         user_id = self.request.session.get("user_id", None)
-        form = self.form_class(request.POST, user_id)
+        form = self.form_class(request.POST, user_id = user_id)
         print(f"Current class: {self.__class__.__name__}")  # Debug the class name
         if form.is_valid(): #If valid do the thing
             data = form.cleaned_data
