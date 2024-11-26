@@ -181,14 +181,12 @@ class GenericPageView(TemplateView): #Create/update in one go
         obj = self.get_object(pk) if pk else None
         initial_data = {key: value for key, value in obj.items() if key != self.pk_field} if obj else None
         print(self.form_class)
-        context["form"] = self.form_class(initial=initial_data) if obj else self.form_class(user_id = user_id)
+        context["form"] = self.form_class(initial=initial_data) if obj else self.form_class()
         print("The form with context is ", context["form"].fields)
         return context
 
     def post(self, request, *args, **kwargs):
-        print("I've got it!", self.request.session.get("user_id", None))
-        form = self.form_class(request.POST, user_id =
-                               self.request.session.get("user_id", None))
+        form = self.form_class(request.POST)
         print(f"Current class: {self.__class__.__name__}")  # Debug the class name
         if form.is_valid(): #If valid do the thing
             data = form.cleaned_data
@@ -608,8 +606,19 @@ class Team_Roles_DeleteView(GenericDeleteView):
 class VotingListView(GenericListView):
     table_name = "voting"
     sql = """
-    select Vote_ID, Voter_ID, Candidate_ID
-    from voting
+    WITH current_elections AS (
+        SELECT * 
+        FROM elections 
+        WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
+    ) (
+    select U.Name, RT.Role_Name, COALESCE(COUNT(V.Vote_ID), 0) as Votes
+    from voting V 
+    right join candidates C on V.Candidate_ID = C.Candidate_ID
+    right join users U on C.User_ID = U.User_ID
+    join Role_Types RT on C.Role_ID = RT.Role_ID
+    where C.Election_ID in (select election_id from current_elections)
+    group by C.Candidate_ID, C.User_ID, RT.Role_Name, U.Name
+    )
     """
     pk_field = "Vote_ID"
 
@@ -620,7 +629,44 @@ class VotingPageView(GenericPageView):
     pk_field = "Vote_ID"
     redirect_to = "list_voting"
     form_class = Voting_form
+    def post(self, request, *args, **kwargs):
+        user_id = self.request.session.get("user_id", None)
+        form = self.form_class(request.POST)
+        print(f"Current class: {self.__class__.__name__}")  # Debug the class name
+        if form.is_valid(): #If valid do the thing
+            data = form.cleaned_data
+            print("I've got data", data)
+            pk = self.kwargs.get("pk")
+            with connection.cursor() as cursor:
+                if pk: #in this case we are updating
+                    set_clause = ", ".join([f"{field} = %s" for field in self.fields])
+                    sql = f"update {self.table_name} set {set_clause} where {self.pk_field} = %s"
+                    cursor.execute(sql, list(data.values()) + [pk])
+                else:
 
+                    sql = "BEGIN TRAN "
+                    self.fields = self.fields[0].split(",")
+                    columns = ", ".join(self.fields)
+                    placeholders = ", ".join(["%s"] * len(self.fields))
+
+                    biglist = []
+
+                    for vote in data.items():
+                        sql += f"insert into {self.table_name} ({columns}) values ({placeholders})"
+                        print(str(user_id), vote[1])
+                        print(sql)
+                        biglist += [str(user_id)]
+                        biglist += [vote[1]]
+
+                    sql += " COMMIT"
+
+                    print(biglist)
+
+
+                    cursor.execute(sql, biglist)
+
+            return redirect(self.redirect_to)
+        return render(request, self.template_name, {'form' : form}) #Otherwise ask again
     
 class VotingDeleteView(GenericDeleteView):
     table_name = "voting"

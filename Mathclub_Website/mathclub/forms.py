@@ -33,8 +33,6 @@ class DynamicChoiceField(forms.ChoiceField):
             return result
         return []
 
-
-
 class Form_Custom(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -387,7 +385,6 @@ def clean(self):
 
 class Voting_form(Form_Custom):
     def __init__(self, *args, **kwargs):
-        self.user_id = kwargs.pop('user_id', None)
         super().__init__(*args, **kwargs)  
         with connection.cursor() as cursor:
             cursor.execute(
@@ -420,7 +417,7 @@ class Voting_form(Form_Custom):
                                                     WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
                                                 )
                                                 (
-                                                    SELECT {self.user_id}, U.Name, U.User_ID
+                                                    SELECT C.Candidate_ID, U.Name
                                                     FROM current_elections CE 
                                                     join candidates C on CE.Election_ID = C.Election_ID
                                                     join users U on C.User_ID = U.User_ID
@@ -429,6 +426,22 @@ class Voting_form(Form_Custom):
                                                 )
                                                 """
                                             )
-        print("The self.fields I've got @ bottom", self.fields)
 
+        def clean():
+            cleaned_data = super().clean()
+            sql = """
+            WITH current_elections AS (
+                SELECT * 
+                FROM elections 
+                WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
+            ) (
+            select V.Voter_ID, C.Role_ID, C.Election_ID, CASE WHEN count(1) >= 1 THEN 0 ELSE 1 END as Allowed
+            from voting V 
+            join candidates C on C.Candidate_ID = V.Candidate_ID
+            WHERE C.Election_ID in (select election_id from current_elections)
+            group by V.Voter_ID, C.Role_ID, C.Election_ID
+            )
+            """
+
+            #TODO: One election at a time
 
