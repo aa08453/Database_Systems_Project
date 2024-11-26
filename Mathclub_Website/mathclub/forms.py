@@ -433,33 +433,6 @@ class Voting_form(Form_Custom):
                                                 """
                                             )
 
-    def clean(self):
-        cleaned_data = super().clean()
-        sql = f"""
-        WITH current_elections AS (
-            SELECT * 
-            FROM elections 
-            WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
-        ) (
-        select V.Voter_ID, C.Role_ID, C.Election_ID, CASE WHEN count(1) >= 1 THEN 0 ELSE 1 END as Allowed
-        from voting V 
-        join candidates C on C.Candidate_ID = V.Candidate_ID
-        WHERE C.Election_ID in (select election_id from current_elections) and V.Voter_ID = {self.user_id}
-        group by V.Voter_ID, C.Role_ID, C.Election_ID
-        )
-        """
-        print(sql)
-
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-            rows = cursor.fetchall()
-            for row in rows:
-                if row[-1] == 0:
-                    self.add_error(None, f"You have already voted in this election")
-                    return cleaned_data
-                
-        return cleaned_data
-
 
 
 

@@ -643,6 +643,42 @@ class VotingPageView(GenericPageView):
         print("The form with context is ", context["form"].fields)
         return context
 
+    def get_roles(self):
+        with connection.cursor() as cursor:
+            sql = """
+            select distinct role_id 
+            from candidates C 
+            """
+            cursor.execute(sql)
+            return cursor.fetchall()
+
+    def decide_update(self,role_type):
+        user_id = self.request.session.get("user_id", None)
+        sql = f"""
+        WITH current_elections AS (
+            SELECT * 
+            FROM elections 
+            WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
+        ) (
+        select V.Voter_ID, C.Role_ID, C.Election_ID, CASE WHEN count(1) >= 1 THEN 0 ELSE 1 END as Allowed
+        from voting V 
+        join candidates C on C.Candidate_ID = V.Candidate_ID
+        join Role_Types RT on C.Role_ID = RT.Role_ID
+        WHERE C.Election_ID in (select election_id from current_elections) and
+        V.Voter_ID = {user_id} and RT.Role_Name = '{role_type}'
+        group by V.Voter_ID, C.Role_ID, C.Election_ID
+        )
+        """
+        print(sql)
+
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            for row in rows:
+                if row[-1] == 0:
+                    return True #Basically we need to update here
+                
+        return False #If never voted for this role we have to add this guy
 
 
 
@@ -650,37 +686,45 @@ class VotingPageView(GenericPageView):
         user_id = self.request.session.get("user_id", None)
         form = self.form_class(request.POST, user_id = user_id)
         print(f"Current class: {self.__class__.__name__}")  # Debug the class name
+
         if form.is_valid(): #If valid do the thing
             data = form.cleaned_data
             print("I've got data", data)
             pk = self.kwargs.get("pk")
             with connection.cursor() as cursor:
-                if pk: #in this case we are updating
-                    set_clause = ", ".join([f"{field} = %s" for field in self.fields])
-                    sql = f"update {self.table_name} set {set_clause} where {self.pk_field} = %s"
-                    cursor.execute(sql, list(data.values()) + [pk])
-                else:
+                biglist = []
+                print("Starting TRANSACTION SQL")
+                sql = "BEGIN TRAN "
 
-                    sql = "BEGIN TRAN "
-                    self.fields = self.fields[0].split(",")
-                    columns = ", ".join(self.fields)
-                    placeholders = ", ".join(["%s"] * len(self.fields))
+                print("Got the roles", self.get_roles())
 
-                    biglist = []
+                for vote in data.items():
+                    role_type = vote[0].split(" ")[0]
+                    if self.decide_update(role_type): #in this case we are updating
+                        set_clause = ", ".join([f"{field} = %s" for field in self.fields])
+                        sql += f""" 
+                        update voting 
+                        set candidate_id = %s 
+                        from voting V
+                        join candidates C on V.candidate_id = C.candidate_id
+                        join Role_Types RT on C.role_id = RT.role_id
+                        where voter_id = %s and RT.role_name = %s\n
+                        """
+                        biglist += [vote[1], str(user_id), role_type]
+                    else:
+                        print(self.fields)
+                        self.fields = self.fields[0].split(",")
+                        columns = ", ".join(self.fields)
+                        placeholders = ", ".join(["%s"] * len(self.fields))
+                        sql += f""" insert into {self.table_name} ({columns})
+                            values ({placeholders}) \n"""
+                        biglist += [str(user_id), vote[1]]
 
-                    for vote in data.items():
-                        sql += f"insert into {self.table_name} ({columns}) values ({placeholders})"
-                        print(str(user_id), vote[1])
-                        print(sql)
-                        biglist += [str(user_id)]
-                        biglist += [vote[1]]
+                sql += "\n COMMIT"
+                print(sql)
+                print(biglist)
+                cursor.execute(sql, biglist)
 
-                    sql += " COMMIT"
-
-                    print(biglist)
-
-
-                    cursor.execute(sql, biglist)
 
             return redirect(self.redirect_to)
         return render(request, self.template_name, {'form' : form}) #Otherwise ask again

@@ -33,7 +33,7 @@
                         {% for column in items.0.keys %}
                         <th class="fw-bold text-center">{{ column|title }}</th>
                         {% endfor %}
-                        {% if has_privilege %}
+                        {% if has_privilege and table_name != 'voting'%}
                         <th class="text-center">Actions</th>
                         {% endif %}
                     </tr>
@@ -44,7 +44,7 @@
                         {% for value in item.values %}
                         <td>{{ value }}</td>
                         {% endfor %}
-                        {% if has_privilege %}
+                        {% if has_privilege and table_name != 'voting' %}
                         <td class="text-center">
                             <a href="{{ update_url }}{{ item.pk_field }}" class="btn btn-warning btn-sm" 
                                data-bs-toggle="tooltip" title="Edit"><i class="bi bi-pencil"></i></a>
@@ -64,11 +64,20 @@
             </table>
 
             <!-- Add New Button -->
-            {% if has_privilege %}
+            {% if has_privilege  and table_name != 'voting' %}
             <div class="text-end mb-4">
                 <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add New</a>
             </div>
             {% endif %}
+
+            {% if table_name == 'voting' %}
+            <div class="text-end mb-4">
+                <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add/Change Vote</a>
+            </div>
+            {% endif %}
+
+
+
         </div>
     </div>
 </div>
