@@ -124,5 +124,10 @@ urlpatterns = [
     path('Blogs/delete/<int:pk>/', Blogs_DeleteView.as_view(), name='delete_blogs'),
 
 
+    #Candidates
+    path('voting/', VotingListView.as_view(), name='list_votings'),
+    path('voting/create/', VotingPageView.as_view(), name='create_voting'),
+    path('voting/update/<int:pk>/', VotingPageView.as_view(), name='update_voting'),
+    path('voting/delete/<int:pk>/', VotingDeleteView.as_view(), name='delete_voting'),
 ]
 

@@ -21,6 +21,7 @@ class DynamicChoiceField(forms.ChoiceField):
         self.argument_string = kwargs.pop('argument_string', '') #TODO: see if this is right
         super().__init__(*args, **kwargs)
         self.choices = self.prepare_choices()
+        print("Dynamic choices are: ", self.choices)
 
     def prepare_choices(self):
         if self.query:
@@ -29,7 +30,6 @@ class DynamicChoiceField(forms.ChoiceField):
                 rows = cursor.fetchall()
 
             result = [(row[0], row[1]) for row in rows]
-            print(result)
             return result
         return []
 
@@ -77,8 +77,8 @@ class candidates_form(Form_Custom):
 
     elections = DynamicChoiceField(
         query = """
-        select Election_ID, Start_Date
-        from Elections
+            select Election_ID, CONVERT(VARCHAR, Start_Date, 120) + ' to ' + CONVERT(VARCHAR, End_Date, 120)
+            FROM Elections;
         """
     )
 
@@ -108,8 +108,8 @@ class Majors_form(Form_Custom):
 
     def clean(self):
         cleaned_data = super().clean()
-        self.check_for_duplicate_combination(table_name = "Majors", Name = cleaned_data.get("Name"))
-
+        self.check_for_duplicate_combination(table_name = "Majors", Name =
+                                             cleaned_data.get("Name"))
 
     
 class Tags_form(forms.Form):
@@ -378,3 +378,55 @@ def clean(self):
             # Optionally, you can raise a ValidationError here, but adding the error is sufficient
             return data  # You can return the cleaned data, even if errors were added
     return data
+        cleaned_data = super().clean()
+        self.check_for_duplicate_combination(table_name = "Tags", Name =
+                                             cleaned_data.get("Tag_Name"))
+
+
+class Voting_form(Form_Custom):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)  
+        with connection.cursor() as cursor:
+            cursor.execute(
+                    """
+                        WITH current_elections AS (
+                            SELECT * 
+                            FROM elections 
+                            WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
+                        )
+                        (
+                            SELECT R.Role_ID, R.Role_Name, CE.Start_Date,
+                            CE.End_Date
+                            FROM current_elections CE 
+                            join candidates C on CE.Election_ID = C.Election_ID 
+                            join Role_Types R on C.Role_ID = R.Role_ID
+                            WHERE R.Role_ID is not NULL
+                        )
+                    """
+                ) 
+            roles = cursor.fetchall()
+        print("The roles are ", roles)
+
+        if roles:
+            for role in roles:
+                print("I'm printing roles", role[0]) #-2 corresponds to Role_ID
+                self.fields[f"{role[1]} (For election from {role[2]} to {role[3]})"] = DynamicChoiceField(
+                                                query = f"""
+                                                WITH current_elections AS (
+                                                    SELECT * 
+                                                    FROM elections 
+                                                    WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
+                                                )
+                                                (
+                                                    SELECT Candidate_ID, U.Name, R.Role_Name
+                                                    FROM current_elections CE 
+                                                    join candidates C on CE.Election_ID = C.Election_ID
+                                                    join users U on C.User_ID = U.User_ID
+                                                    join Role_Types R on C.Role_ID = R.Role_ID
+                                                    WHERE C.Role_ID = {role[0]} 
+                                                )
+                                                """
+                                            )
+        print("The self.fields I've got @ bottom", self.fields)
+
+

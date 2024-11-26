@@ -147,7 +147,6 @@ class GenericListView(ListView):
         context["has_privilege"] = user_privilege == 1  # Only show actions if privilege is 1
         return context
 
-#TODO: Check for privs in creation and deletion
 class GenericPageView(TemplateView): #Create/update in one go
     template_name = "form_page.html"
     table_name = None
@@ -160,7 +159,6 @@ class GenericPageView(TemplateView): #Create/update in one go
     def get_object(self, pk):
         with connection.cursor() as cursor:
             sql = f"select * from {self.table_name} where {self.pk_field} = %s"
-            #TODO: Select from fields here 
             cursor.execute(sql, [pk])
             row = cursor.fetchone()
             if (row is not None):
@@ -179,9 +177,9 @@ class GenericPageView(TemplateView): #Create/update in one go
 
         obj = self.get_object(pk) if pk else None
         initial_data = {key: value for key, value in obj.items() if key != self.pk_field} if obj else None
+        print(self.form_class)
         context["form"] = self.form_class(initial=initial_data) if obj else self.form_class()
-        print(context)
-        print(initial_data)
+        print("The form with context is ", context["form"].fields)
         return context
 
     def post(self, request, *args, **kwargs):
@@ -594,3 +592,25 @@ class Team_Roles_DeleteView(GenericDeleteView):
     redirect_to = "list_Roles"
     
     
+
+class VotingListView(GenericListView):
+    table_name = "voting"
+    sql = """
+    select Voter_ID, Candidate_ID
+    from voting
+    """
+    pk_field = "Vote_ID"
+
+class VotingPageView(GenericPageView):
+    table_name = "voting"
+    search_field = "Vote_ID"
+    fields = ["Vote_ID, Voter_ID, Candidate_ID"]
+    pk_field = "Vote_ID"
+    redirect_to = "list_voting"
+    form_class = Voting_form
+
+    
+class VotingDeleteView(GenericDeleteView):
+    table_name = "voting"
+    pk_field = "Vote_ID"
+    redirect_to = "list_voting"
