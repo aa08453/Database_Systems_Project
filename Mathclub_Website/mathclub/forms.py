@@ -77,7 +77,7 @@ class election_form(Form_Custom):
                                                       'datetime-local'}))
 
     def clean(self):
-        cleaned_data = super().cleaned_data
+        cleaned_data = super().clean()
         start_date = cleaned_data.get("Start_Date")
         end_date = cleaned_data.get("End_Date")
         with connection.cursor() as cursor:
@@ -125,16 +125,16 @@ class candidates_form(Form_Custom):
     def clean(self):
         cleaned_data = super().clean()
         self.check_for_duplicate_combination(table_name = "candidates", 
-                                             role = cleaned_data.get("Role_ID"),
-                                             elections = cleaned_data.get("Election_ID"),
-                                             nominee = cleaned_data.get("User_ID"))
+                                             role_id = cleaned_data.get("Role_ID"),
+                                             election_id = cleaned_data.get("Election_ID"),
+                                             user_id = cleaned_data.get("User_ID"))
 
 
 
     #TODO: check for dupes
 
 class Role_Types_form(Form_Custom):
-    role = forms.CharField(
+    Role_Name = forms.CharField(
         widget=forms.TextInput(),
         required = True
     )
@@ -142,21 +142,21 @@ class Role_Types_form(Form_Custom):
     def clean(self):
         cleaned_data = super().clean()
         self.check_for_duplicate_combination(table_name = "Role_Types", 
-                                             role = cleaned_data.get("Role_Name"))
+                                             Role_Name = cleaned_data.get("Role_Name"))
 
 
 
 
 
 class Locations_form(Form_Custom):
-    location = forms.CharField(
+    location_name = forms.CharField(
         widget=forms.TextInput(),
         required = True
     )
     def clean(self):
         cleaned_data = super().clean()
         self.check_for_duplicate_combination(table_name = "Locations", 
-                                             location = cleaned_data.get("Location_Name"))
+                                             location_name = cleaned_data.get("location_name"))
     
 class Majors_form(Form_Custom):
     Name = forms.CharField(
@@ -171,7 +171,7 @@ class Majors_form(Form_Custom):
 
     
 class Tags_form(Form_Custom):
-    tag = forms.CharField(
+    Tag_Name = forms.CharField(
         widget=forms.TextInput(),
         required = True
     )  
@@ -438,7 +438,7 @@ def clean(self):
             return data  # You can return the cleaned data, even if errors were added
     return data
         cleaned_data = super().clean()
-        self.check_for_duplicate_combination(table_name = "Tags", Name =
+        self.check_for_duplicate_combination(table_name = "Tags", Tag_Name =
                                              cleaned_data.get("Tag_Name"))
 
 
