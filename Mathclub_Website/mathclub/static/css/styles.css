@@ -1,0 +1,49 @@
+
+/* Global Styles for the Website */
+
+/* Body and Global Layout */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #111; /* Dark background for the entire page */
+    color: #fff; /* White text for contrast */
+    margin: 0;
+    padding: 0;
+}
+
+/* Header (Banner) Styling */
+.banner {
+    background-color: #222; /* Dark background for the header */
+    padding: 10px 0;
+    text-align: center;
+}
+
+.banner-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.banner-link {
+    color: #ff4d4d; /* Red color for the banner links */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.banner-link:hover {
+    color: #fff; /* White color on hover */
+}
+
+/* Footer Styling */
+.footer {
+    background-color: #222;
+    color: #ccc;
+    text-align: center;
+    padding: 20px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.content {
+    padding: 20px;
+}

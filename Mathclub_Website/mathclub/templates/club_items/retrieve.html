@@ -98,38 +98,6 @@
 <div class="container">
     <h1>Club Items Management</h1>
 
-    <!-- Form for adding/updating club items -->
-    <form id="clubItemForm">
-        <div class="form-group">
-            <label for="itemName">Item Name:</label>
-            <input type="text" id="itemName" placeholder="Enter item name">
-        </div>
-        
-        <div class="form-group">
-            <label for="quantity">Quantity:</label>
-            <input type="text" id="quantity" placeholder="Enter quantity">
-        </div>
-
-        <div class="form-group">
-            <label for="location">Location:</label>
-            <select id="location">
-                <option value="" disabled selected>Select location</option>
-                <!-- Populate locations dynamically -->
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="responsiblePerson">Responsible Person:</label>
-            <select id="responsiblePerson">
-                <option value="" disabled selected>Select person responsible</option>
-                <!-- Populate users dynamically -->
-            </select>
-        </div>
-
-        <button type="button" class="btn" onclick="submitClubItem()">Submit</button>
-    </form>
-
-    <!-- Club items table -->
     <table>
         <thead>
             <tr>

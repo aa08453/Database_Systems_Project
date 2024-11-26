@@ -1,6 +1,8 @@
 import pytest
 from django.db import connection
-import os 
+import os
+
+path = os.getcwd()
 
 cwd = os.getcwd() 
 population_path = os.path.join(cwd, 'mathclub', 'tests', 'create_db.sql')

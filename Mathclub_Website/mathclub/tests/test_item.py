@@ -15,10 +15,6 @@ def setup_driver():
     driver.quit()
 
 
-
-
-
-
 @pytest.mark.django_db
 def test_create_item(setup_driver):
 
@@ -36,6 +32,12 @@ def test_create_item(setup_driver):
         WHERE product_name = 'abc' AND price = 123 """
 
         cursor.execute(query)
-
         assert cursor.fetchone()
-    
+
+
+
+
+
+
+
+

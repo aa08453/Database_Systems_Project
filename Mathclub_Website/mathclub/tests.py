@@ -30,6 +30,12 @@ class CrudTest(LiveServerTestCase):
         product_exists = Product.objects.filter(product_name='Item_test', price=123).exists()
         assert(product_exists)
 
+    def test_election_create(self):
+        self.driver.get(f"{self.live_server_url}/election/create")
+        self.driver.find_element(By.NAME, "start_date").send_keys("2024-12-01T09:00AM")
+        self.driver.find_element(By.NAME, "end_date").send_keys("2024-12-01T10:00AM")
+        self.driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
+
 
 
 

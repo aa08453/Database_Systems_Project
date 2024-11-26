@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -82,12 +83,24 @@
         </div>
         <p class="user-id">Your User ID: {{ userid }}</p>
     </div>
+=======
+{% extends "base.html" %}
+>>>>>>> 98688809ac2114a98875aed9ef04bb635a5c5534
 
-    <script>
-        // Set today's date dynamically
-        const currentDate = new Date().toLocaleDateString();
-        document.getElementById('current-date').textContent = currentDate;
+{% block content %}
+<div class="container">
+    <h1>Math Club</h1>
+    <p class="welcome-message">Welcome, {{ request.session.username }}! We're glad to have you here.</p>
+    <p class="date">Today's Date: <span id="current-date"></span></p>
+    <!-- <div class="banner">
+        <p><a href="/merchandise/">Explore Merchandise</a></p>
+        <p><a href="/blogs/">Read Blogs</a></p>
+        <p><a href="/elections/">View Elections</a></p>
+    </div> -->
+    <p class="user-id">Your User ID: {{ request.session.user_id }}</p>
+</div>
 
+<<<<<<< HEAD
         // Redirect logic for buttons
         function redirectTo(page) {
             if (page === 'merchandise') {
@@ -107,3 +120,11 @@
     </script>
 </body>
 </html>
+=======
+<script>
+    // Set today's date dynamically
+    const currentDate = new Date().toLocaleDateString();
+    document.getElementById('current-date').textContent = currentDate;
+</script>
+{% endblock %}
+>>>>>>> 98688809ac2114a98875aed9ef04bb635a5c5534

@@ -1,0 +1,257 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elections</title>
+
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #111; /* Dark background for the entire page */
+            color: #fff; /* White text for contrast */
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Container holding the election list */
+        .elections-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #1a1a1a; /* Dark background for container */
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Election list (table-like layout with grid) */
+        .election-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Header for the election data */
+        .election-header, .election-item {
+            display: grid;
+            grid-template-columns: 1fr 2fr 2fr; /* Columns for ID, Start Date, and End Date */
+            gap: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        .election-header {
+            background-color: #222; /* Darker background for the header */
+            border-radius: 8px 8px 0 0; /* Rounded top corners */
+        }
+
+        .election-item {
+            background-color: #2a2a2a; /* Slightly lighter background for rows */
+            border-radius: 0 0 8px 8px; /* Rounded bottom corners */
+        }
+
+        /* Column Styling */
+        .election-header .column, .election-item .column {
+            padding: 10px;
+            text-align: left;
+            color: #ccc; /* Light grey text for normal data */
+        }
+
+        /* Highlight header column text with red */
+        .election-header .column {
+            font-weight: bold;
+            color: #ff4d4d; /* Red header text */
+        }
+
+        /* Action buttons styling */
+        .election-item .column a, .election-item .column button {
+            margin-right: 10px;
+            text-align: center;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Create New Election Button */
+        .elections-container .btn {
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        /* Popup styles */
+        .popup {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4); /* Background overlay */
+            padding-top: 60px;
+        }
+
+        .popup-content {
+            background-color: #222;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 10px;
+            color: #fff;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Form input styles inside the popup */
+        .popup-content form input[type="date"] {
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: #fff;
+        }
+
+        .popup-content form input[type="submit"],
+        .popup-content form button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .popup-content form input[type="submit"]:hover,
+        .popup-content form button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="elections-container">
+        <h2>Elections</h2>
+        <div class="election-list">
+            <div class="election-header">
+                <div class="column">ID</div>
+                <div class="column">Start Date</div>
+                <div class="column">End Date</div>
+                {% if user_has_permission %}
+                    <div class="column">Actions</div>
+                {% endif %}
+            </div>
+
+            {% for election in elections %}
+                <div class="election-item">
+                    <div class="column">{{ election.id }}</div>
+                    <div class="column">{{ election.start_date }}</div>
+                    <div class="column">{{ election.end_date }}</div>
+                    {% if user_has_permission %}
+                        <div class="column">
+                            <a href="{% url 'election_update' election.id %}" class="btn">Edit</a>
+                            <button class="btn btn-danger" onclick="openDeletePopup('{{ election.id }}')">Delete</button>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if user_has_permission %}
+            <button class="btn" onclick="openCreatePopup()">Create New Election</button>
+        {% endif %}
+    </div>
+
+    <!-- Election Create Popup -->
+    <div id="createPopup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closeCreatePopup()">&times;</span>
+            <h2>Create Election</h2>
+            <form action="{% url 'election_create' %}" method="POST">
+                {% csrf_token %}
+                <label for="start_date">Start Date:</label>
+                <input type="date" name="start_date" required><br>
+
+                <label for="end_date">End Date:</label>
+                <input type="date" name="end_date" required><br>
+
+                <input type="submit" value="Create Election">
+            </form>
+        </div>
+    </div>
+
+    <!-- Election Delete Popup -->
+    <div id="deletePopup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closeDeletePopup()">&times;</span>
+            <h2>Confirm Deletion</h2>
+            <p>Are you sure you want to delete this election?</p>
+            <form id="deleteForm" action="" method="POST">
+                {% csrf_token %}
+                <input type="submit" value="Delete Election">
+            </form>
+            <button onclick="closeDeletePopup()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Show create popup
+        function openCreatePopup() {
+            document.getElementById('createPopup').style.display = 'block';
+        }
+
+        function closeCreatePopup() {
+            document.getElementById('createPopup').style.display = 'none';
+        }
+
+        // Show delete popup
+        function openDeletePopup(electionId) {
+            document.getElementById('deletePopup').style.display = 'block';
+            // Update the form action to the correct delete URL
+            document.getElementById('deleteForm').action = "/elections/" + electionId + "/delete/";
+        }
+
+        function closeDeletePopup() {
+            document.getElementById('deletePopup').style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>

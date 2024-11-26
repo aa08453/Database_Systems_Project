@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Election{% endblock %}
+
+{% block content %}
+    <h2>Create Election</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="start_date">Start Date</label>
+            <input type="datetime-local" id="start_date" name="start_date" required>
+        </div>
+
+        <div class="form-group">
+            <label for="end_date">End Date</label>
+            <input type="datetime-local" id="end_date" name="end_date" required>
+        </div>
+
+        <button type="submit" name="create_button" class="btn">Create</button>
+    </form>
+{% endblock %}
