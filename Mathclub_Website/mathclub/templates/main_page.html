@@ -1,91 +1,4 @@
-<<<<<<< HEAD
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Math Club</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 350px;
-            text-align: center;
-        }
-        h1 {
-            color: #007BFF;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        .welcome-message {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        .date {
-            font-size: 1em;
-            color: #555;
-            margin-bottom: 20px;
-        }
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .options button {
-            font-size: 1em;
-            padding: 10px;
-            color: #fff;
-            background-color: #007BFF;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .options button:hover {
-            background-color: #0056b3;
-        }
-        .logout-btn {
-            background-color: #FF5733;
-        }
-        .logout-btn:hover {
-            background-color: #C70039;
-        }
-        .user-id {
-            font-size: 1.1em;
-            font-style: italic;
-            color: #555;
-            margin-top: 15px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Math Club</h1>
-        <p class="welcome-message">Welcome, {{ username }}! We're glad to have you here.</p>
-        <p class="date">Today's Date: <span id="current-date"></span></p>
-        <div class="options">
-            <button onclick="redirectTo('merchandise')">Explore Merchandise</button>
-            <button onclick="redirectTo('blogs')">Read Blogs</button>
-            <button onclick="redirectTo('teams')">Create Team</button>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
-        <p class="user-id">Your User ID: {{ userid }}</p>
-    </div>
-=======
 {% extends "base.html" %}
->>>>>>> 98688809ac2114a98875aed9ef04bb635a5c5534
 
 {% block content %}
 <div class="container">
@@ -100,31 +13,9 @@
     <p class="user-id">Your User ID: {{ request.session.user_id }}</p>
 </div>
 
-<<<<<<< HEAD
-        // Redirect logic for buttons
-        function redirectTo(page) {
-            if (page === 'merchandise') {
-                window.location.href = '/merchandise/'; // Update this with the correct URL
-            } else if (page === 'blogs') {
-                window.location.href = '/blogs/'; // Update this with the correct URL
-            } else if (page === 'teams') {
-                window.location.href = '/teams/'; // Update this with the correct URL
-            }
-        }
-
-        // Logout function
-        function logout() {
-            // Redirect to the login page (update the URL as needed)
-            window.location.href = '/logout/'; // Ensure the backend handles this route
-        }
-    </script>
-</body>
-</html>
-=======
 <script>
     // Set today's date dynamically
     const currentDate = new Date().toLocaleDateString();
     document.getElementById('current-date').textContent = currentDate;
 </script>
 {% endblock %}
->>>>>>> 98688809ac2114a98875aed9ef04bb635a5c5534
