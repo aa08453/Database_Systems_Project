@@ -2,37 +2,6 @@
 from django import forms
 from django.db import connection
 
-class BlogForm(forms.Form):
-    author = forms.CharField(label="Author Name", max_length=100)
-    title = forms.CharField(label="Title", max_length=255)
-    content = forms.CharField(label="Blog Content", widget=forms.Textarea)
-
-class election_form(forms.Form):
-    Start_Date = forms.DateTimeField(
-            widget=forms.widgets.DateTimeInput(attrs={'type':
-                                                      'datetime-local'}))
-    End_Date = forms.DateTimeField(
-            widget=forms.widgets.DateTimeInput(attrs={'type':
-                                                      'datetime-local'}))
-
-class DynamicChoiceField(forms.ChoiceField):
-    def __init__(self, *args, **kwargs):
-        self.query = kwargs.pop('query', None)
-        self.argument_string = kwargs.pop('argument_string', '') #TODO: see if this is right
-        super().__init__(*args, **kwargs)
-        self.choices = self.prepare_choices()
-        print("Dynamic choices are: ", self.choices)
-
-    def prepare_choices(self):
-        if self.query:
-            with connection.cursor() as cursor:
-                cursor.execute(self.query, self.argument_string) 
-                rows = cursor.fetchall()
-
-            result = [(row[0], row[1]) for row in rows]
-            result.insert(0, (None, "Select an option"))
-            return result
-        return []
 
 class Form_Custom(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -67,6 +36,69 @@ class Form_Custom(forms.Form):
                     if field != 'table_name':  # Avoid adding error for 'table_name'
                         self.add_error(field, f"This combination of {field} already exists.")
 
+
+
+
+class BlogForm(Form_Custom):
+    author = forms.CharField(label="Author Name", max_length=100)
+    title = forms.CharField(label="Title", max_length=255)
+    content = forms.CharField(label="Blog Content", widget=forms.Textarea)
+
+
+
+
+class DynamicChoiceField(forms.ChoiceField):
+    def __init__(self, *args, **kwargs):
+        self.query = kwargs.pop('query', None)
+        self.argument_string = kwargs.pop('argument_string', '') #TODO: see if this is right
+        super().__init__(*args, **kwargs)
+        self.choices = self.prepare_choices()
+        print("Dynamic choices are: ", self.choices)
+
+    def prepare_choices(self):
+        if self.query:
+            with connection.cursor() as cursor:
+                cursor.execute(self.query, self.argument_string) 
+                rows = cursor.fetchall()
+
+            result = [(row[0], row[1]) for row in rows]
+            result.insert(0, (None, "Select an option"))
+            return result
+        return []
+
+
+
+class election_form(Form_Custom):
+    Start_Date = forms.DateTimeField(
+            widget=forms.widgets.DateTimeInput(attrs={'type':
+                                                      'datetime-local'}))
+    End_Date = forms.DateTimeField(
+            widget=forms.widgets.DateTimeInput(attrs={'type':
+                                                      'datetime-local'}))
+
+    def clean(self):
+        cleaned_data = super().cleaned_data
+        start_date = cleaned_data.get("Start_Date")
+        end_date = cleaned_data.get("End_Date")
+        with connection.cursor() as cursor:
+            cursor.execute(
+                    """
+                        SELECT * 
+                        FROM elections 
+                        WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
+                    """)
+            active_elections = cursor.fetchall()
+
+        if len(active_elections) > 0:
+            self.add_error(None, f"An active election is already occurring")
+
+        if start_date > end_date:
+            self.add_error(None, f"Please use a valid timespan")
+
+        return cleaned_data
+
+
+
 class candidates_form(Form_Custom):
 
     role = DynamicChoiceField(
@@ -90,19 +122,41 @@ class candidates_form(Form_Custom):
         """, required = True
     )
 
-class Role_Types_form(forms.Form):
+    def clean(self):
+        cleaned_data = super().clean()
+        self.check_for_duplicate_combination(table_name = "candidates", 
+                                             role = cleaned_data.get("Role_ID"),
+                                             elections = cleaned_data.get("Election_ID"),
+                                             nominee = cleaned_data.get("User_ID"))
+
+
+
+    #TODO: check for dupes
+
+class Role_Types_form(Form_Custom):
     role = forms.CharField(
         widget=forms.TextInput(),
         required = True
     )
 
+    def clean(self):
+        cleaned_data = super().clean()
+        self.check_for_duplicate_combination(table_name = "Role_Types", 
+                                             role = cleaned_data.get("Role_Name"))
 
 
-class Locations_form(forms.Form):
+
+
+
+class Locations_form(Form_Custom):
     location = forms.CharField(
         widget=forms.TextInput(),
         required = True
     )
+    def clean(self):
+        cleaned_data = super().clean()
+        self.check_for_duplicate_combination(table_name = "Locations", 
+                                             location = cleaned_data.get("Location_Name"))
     
 class Majors_form(Form_Custom):
     Name = forms.CharField(
@@ -116,7 +170,7 @@ class Majors_form(Form_Custom):
                                              cleaned_data.get("Name"))
 
     
-class Tags_form(forms.Form):
+class Tags_form(Form_Custom):
     tag = forms.CharField(
         widget=forms.TextInput(),
         required = True
@@ -436,5 +490,4 @@ class Voting_form(Form_Custom):
 
 
 
-        #TODO: One election at a time
 
