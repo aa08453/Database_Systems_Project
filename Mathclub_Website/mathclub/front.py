@@ -71,9 +71,10 @@ def main_view(request):
         return redirect('Math_club:login_page')
 
     print(f"UserID: {user_id}, Username: {username}")
+    has_privilege = request.session.get('privilege') == 1
 
     # Pass session data to the template
-    return render(request, 'main_page.html', {'user_id': user_id, 'username': username})
+    return render(request, 'main_page.html', {'user_id': user_id, 'username': username, 'has_privilege': has_privilege}) 
 
 
 def register(request):

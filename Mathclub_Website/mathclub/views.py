@@ -97,6 +97,10 @@ def election_update_page(request):
 def election_delete_page(request):
     return
 
+
+def finance_update_page(request):
+    return
+
 class GenericListView(ListView):
     template_name = "list_page.html" 
     sql = None
@@ -202,16 +206,37 @@ class GenericPageView(TemplateView): #Create/update in one go
 
 
 
+from django.http import HttpResponse, HttpResponseNotFound
+from django.shortcuts import redirect
+from django.db import IntegrityError
+
 class GenericDeleteView(View):
     table_name = None
     pk_field = ""
     redirect_to = ""
 
-    def post(self, request, pk):
-        with connection.cursor() as cursor:
-            sql = f"delete from {self.table_name} where {self.pk_field} = %s"
-            cursor.execute(sql, [pk])
-        return redirect(self.redirect_to)
+    def post(self, request, pk=None):
+        if not pk:
+            return HttpResponseNotFound("Record not found: Missing primary key.")
+
+        try:
+            with connection.cursor() as cursor:
+                # Perform the delete operation
+                sql = f"DELETE FROM {self.table_name} WHERE {self.pk_field} = %s"
+                cursor.execute(sql, [pk])
+            return redirect(self.redirect_to)
+        except IntegrityError as e:
+            # Handle foreign key constraint violations or other database integrity issues
+            return HttpResponse(
+                f"Cannot delete record due to related data: {e}",
+                status=400,
+            )
+        except Exception as e:
+            # Catch all other exceptions
+            return HttpResponse(
+                f"An error occurred while deleting the record: {e}",
+                status=500,
+            )
 
 # Elections
     
@@ -223,18 +248,6 @@ select Election_ID, Start_Date, End_Date from Elections
     pk_field = "Election_ID"
 
 
-class ElectionsPageView(GenericPageView):
-    table_name = "elections"
-    search_field = "start_date"
-    fields = ["start_date", "end_date"]
-    pk_field = "Election_ID"
-    redirect_to = "list_elections"
-    form_class = election_form
-
-class ElectionsDeleteView(GenericDeleteView):
-    table_name = "elections"
-    pk_field = "Election_ID"
-    redirect_to = "list_elections"
 
 # Candidates
 
@@ -379,35 +392,10 @@ class Admins(GenericPageView):
     redirect_to = "login_page"
     form_class = Admins
 
-class Teams(GenericPageView):
-    table_name = "Teams"
-    search_field = "Team_ID"
-    fields = ["Team_Name", "Team_Lead", "Date_Created"]
-    pk_field = "Team_ID"
-    redirect_to = "list_teams"
-    form_class = teams
-    
-    
-class List_Teams(GenericListView):
-    table_name = "Teams"
-    sql = """
-    select Team_ID, Team_Name, Team_Lead, Date_Created FROM Teams
-    """
-    
-class Finance(GenericPageView):
-    table_name = "Finances"
-    search_field = "Transaction_ID"
-    fields = ["Responsible_Officer","User_ID","Transaction_Type","Date","Description","Amount"]
-    pk_field = "Transaction_ID"
-    redirect_to = "finance_submit"
-    form_class = Finances
-   
-class Finance_List(GenericListView):
-    table_name = "Finances"
-    sql = """
-    select Transaction_ID, Responsible_Officer, User_ID, Transaction_Type, Date, Description, Amount FROM Finances
-    """ 
-    
+
+
+
+
 # Blogs
 
 class Blogs_ListView(GenericListView):
@@ -432,3 +420,85 @@ class Blogs_DeleteView(GenericDeleteView):
     pk_field = "Post_ID"
     redirect_to = "list_blogs"
 
+class ElectionsPageView(GenericPageView):
+    table_name = "elections"
+    search_field = "start_date"
+    fields = ["start_date", "end_date"]
+    pk_field = "Election_ID"
+    redirect_to = "list_elections"
+    form_class = election_form
+
+class ElectionsDeleteView(GenericDeleteView):
+    table_name = "elections"
+    pk_field = "Election_ID"
+    redirect_to = "list_elections"
+
+
+
+class Finance_PageView(GenericPageView):
+    table_name = "Finances"
+    search_field = "Transaction_ID"
+    fields = ["Responsible_Officer","User_ID","Transaction_Type","Date","Description","Amount"]
+    pk_field = "Transaction_ID"
+    redirect_to = "list_Finance"
+    form_class = Finances
+   
+class Finance_ListView(GenericListView):
+    table_name = "Finances"
+    sql = """
+    select Transaction_ID, Responsible_Officer, User_ID, Transaction_Type, Date, Description, Amount FROM Finances
+    """ 
+    pk_field = "Transaction_ID"
+    
+
+class Finance_DeleteView(GenericDeleteView):
+    table_name = "Finances"
+    pk_field = "Transaction_ID"
+    redirect_to = "list_Finance"
+    
+    
+
+class Teams(GenericPageView):
+    table_name = "Teams"
+    search_field = "Team_ID"
+    fields = ["Team_Name", "Team_Lead", "Date_Created"]
+    pk_field = "Team_ID"
+    redirect_to = "list_Teams"
+    form_class = teams
+    
+    
+class Teams_ListView(GenericListView):
+    table_name = "Teams"
+    sql = """
+    select Team_ID, Team_Name, Team_Lead, Date_Created FROM Teams
+    """
+    pk_field = "Team_ID"
+    
+    
+class Teams_DeleteView(GenericDeleteView):
+    table_name = "Teams"
+    pk_field = "Team_ID"
+    redirect_to = "list_Teams"
+    
+    
+class Team_Roles(GenericPageView):
+    table_name = "Team_Roles"
+    search_field = "Role_ID"
+    fields = ["Role_Name","Role_Description"]
+    pk_field = "Role_ID"
+    redirect_to = "list_Roles"
+    form_class = Team_Roles_form
+
+class List_Roles(GenericListView):
+    table_name = "Team_Roles"
+    sql = """
+    select Role_ID, Role_Name, Role_Description FROM Team_Roles
+    """
+    pk_field = "Role_ID"
+    
+class Team_Roles_DeleteView(GenericDeleteView):
+    table_name = "Team_Roles"
+    pk_field = "Role_ID"
+    redirect_to = "list_Roles"
+    
+    

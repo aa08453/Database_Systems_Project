@@ -282,7 +282,9 @@ class Finances(forms.Form):
     
     
     
-    
+class Team_Roles_form(forms.Form):
+    Role_Name = forms.CharField(widget=forms.TextInput())
+    Role_Description = forms.CharField(widget=forms.TextInput())
 
 class Blogs_form(forms.Form):
     title = forms.CharField(

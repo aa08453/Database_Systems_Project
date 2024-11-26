@@ -9,14 +9,35 @@ urlpatterns = [
     path('member_registration_page', Members.as_view(), name='member_registration_page'),
     path('outsider_registartion_page', Outsiders.as_view(), name='outsider_registration_page'),
     path('admin_registartion_page', Admins.as_view(), name='admin_registration_page'),
-    path('teams/',Teams.as_view(), name='teams_page'),
-    path('list_teams/',List_Teams.as_view(), name='list_teams'),
-    path ('finance',Finance.as_view(), name='finance_page'),
-    path('finance_list', Finance_List.as_view(), name='finance_submit'),  # Add this line
+    
+
     path('voting', views.voting_poll, name='voting_poll'),  # Add this line
     # path('submit_blog', views.submit_blog, name='submit_blog'),  # Add this line
     path('additem', views.add_product_page, name='add_product'),  # Add this line
     path('main', views.main_page, name='main_page'),  # Add this line
+
+    
+    path('Roles/create/', Team_Roles.as_view(), name='create_Roles'),
+    path('Roles/',List_Roles.as_view(),name="list_Roles"),# Add this line
+    path('Team_Roles/update/<int:pk>/', Team_Roles.as_view(), name='update_Roles'),  # Add this line
+    path('Team_Roles/delete/<int:pk>/', Team_Roles_DeleteView.as_view(), name='delete_Roles'),  # Add this line
+    
+    
+
+    path('Teams/',Teams_ListView.as_view(), name='list_Teams'),    
+    path('Teams/create/',Teams.as_view(), name='create_Teams'),
+    path('Teams/update/<int:pk>/',Teams.as_view(), name='update_Teams'),
+    path('Teams/delete/<int:pk>/',Teams_DeleteView.as_view(), name='delete_Teams'),
+    
+
+
+
+
+
+    path ('Finances/',Finance_ListView.as_view(), name='list_Finance'),
+    path('Finances/create/', Finance_PageView.as_view(), name='create_Finance'),  # Add this line
+    path('Finances/delete/<int:pk>/', Finance_DeleteView.as_view(), name='delete_Finance'),
+    path('Finances/update/<int:pk>/', Finance_PageView.as_view(), name='update_Finance'),  # Add this line
 
 
 
