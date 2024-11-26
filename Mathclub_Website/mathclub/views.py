@@ -314,7 +314,8 @@ class Locations_PageView(GenericPageView):
     redirect_to = "list_locations"
     form_class = Locations_form
 
-class Locations_DeleteView(GenericDeleteView):
+class Locations_DeleteView(GenericDeleteView):    # delete constraint 
+    # need to delete from tables where it is referred to as FK
     table_name = "Locations"
     pk_field = "Location_ID"
     redirect_to = "list_locations"
@@ -365,6 +366,97 @@ class Tags_PageView(GenericPageView):
 
 class Tags_DeleteView(GenericDeleteView):
     table_name = "Tags"
+    pk_field = "Tag_ID"
+    redirect_to = "list_tags"
+    
+# Products
+class Products_ListView(GenericListView):
+    table_name = "Products"
+    sql = """
+    select Product_ID, Product_Name, Price, Items_In_Stock
+    from Products
+    """
+    pk_field = "Product_ID"
+
+# add an option to add to cart/order for users without privilege 
+class Products_PageView(GenericPageView):
+    table_name = "Products"
+    search_field = "Product_ID"
+    fields = ["Product_Name", "Price", "Items_In_Stock"]
+    pk_field = "Product_ID"
+    redirect_to = "list_products"
+    form_class = Products_form
+
+class Products_DeleteView(GenericDeleteView):
+    table_name = "Products"
+    pk_field = "Products_ID"
+    redirect_to = "list_products"
+    
+# Events
+class Events_ListView(GenericListView):
+    table_name = "Events"
+    sql = """
+    select E.Event_ID, U.Name, E.Event_Name, E.Start_Date, E.End_Date, L.Location_Name, E.Scale, E.Description
+    from Events E join Users U on E.Event_Lead = U.User_ID join Locations L on E.Location = L.Location_ID
+    """
+    pk_field = "Event_ID"
+
+class Events_PageView(GenericPageView):
+    table_name = "Events"
+    search_field = "Event_ID"
+    fields = ["Event_Name", "Event_Lead", "Start_Date", "End_Date", "Location", "Scale", "Description"]
+    pk_field = "Event_ID"
+    redirect_to = "list_events"
+    form_class = Events_form
+
+class Events_DeleteView(GenericDeleteView):
+    table_name = "Events"
+    pk_field = "Event_ID"
+    redirect_to = "list_events"
+    
+# Club_Items
+
+class Club_Items_ListView(GenericListView):
+    table_name = "Club_Items"
+    sql = """
+    select C.Item_ID, C.Item_Name, L.Location_Name as Storage
+    from Club_Items C join Locations L on C.Storage = L.Location_ID
+    """
+    pk_field = "Item_ID"
+
+class Club_Items_PageView(GenericPageView):
+    table_name = "Club_Items"
+    search_field = "Item_ID"
+    fields = ["Item_Name", "Storage"]
+    pk_field = "Item_ID"
+    redirect_to = "list_club_Items"
+    form_class = Club_Items_form
+
+class Club_Items_DeleteView(GenericDeleteView):
+    table_name = "Club_Items"
+    pk_field = "Item_ID"
+    redirect_to = "list_club_Items"
+    
+# Transaction_Types
+
+class Transaction_Types_ListView(GenericListView):
+    table_name = "Transaction_Types"
+    sql = """
+    select Type_ID, Type_Name
+    from Transaction_Types
+    """
+    pk_field = "Type_ID"
+
+class Transaction_Types_PageView(GenericPageView):
+    table_name = "Transaction_Types"
+    search_field = "Type_ID"
+    fields = ["Type_Name"]
+    pk_field = "Type_ID"
+    redirect_to = "list_tags"
+    form_class = Transaction_Types_form
+
+class Transaction_Types_DeleteView(GenericDeleteView):
+    table_name = "Transaction_Types"
     pk_field = "Tag_ID"
     redirect_to = "list_tags"
     

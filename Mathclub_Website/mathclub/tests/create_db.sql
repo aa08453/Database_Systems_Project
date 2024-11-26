@@ -7,7 +7,7 @@ GO
 USE CLUBS_DATABASE
 GO
 
--- Check and create "Majors" table if it doesn'xxt exist
+-- Check and create "Majors" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Majors')
 BEGIN
     CREATE TABLE "Majors"(
@@ -202,30 +202,6 @@ BEGIN
     );
 END;
 
--- Check and create "Blog" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Blog')
-BEGIN
-    CREATE TABLE "Blog"(
-        "Post_ID" INT IDENTITY(1,1) PRIMARY KEY,
-        "Title" VARCHAR(255) NOT NULL,
-        "Date_Created" DATE NOT NULL,
-        "User_ID" INT NOT NULL,
-        FOREIGN KEY ("User_ID") REFERENCES "Users"("User_ID")
-    );
-END;
-
--- Check and create "Blog_Content" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Blog_Content')
-BEGIN
-    CREATE TABLE "Blog_Content"(
-        "Post_ID" INT NOT NULL,
-        "File_ID" INT NOT NULL,
-        "File_Name" NVARCHAR(255) NOT NULL,
-        PRIMARY KEY ("Post_ID", "File_ID"),
-        FOREIGN KEY ("Post_ID") REFERENCES "Blog"("Post_ID")        
-    );
-END;
-
 -- Check and create "Tags" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Tags')
 BEGIN
@@ -235,18 +211,20 @@ BEGIN
     );
 END;
 
--- Check and create "Blog_Tags" table if it doesn't exist
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Blog_Tags')
+-- Check and create "Blogs" table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Blogs')
 BEGIN
-    CREATE TABLE "Blog_Tags"(
-        "Post_ID" INT NOT NULL,
+    CREATE TABLE "Blogs"(
+        "Post_ID" INT IDENTITY(1,1) PRIMARY KEY,
+        "Title" VARCHAR(255) NOT NULL,
+        "Date_Created" DATE NOT NULL,
+        "Content" NVARCHAR(255) NOT NULL,
+        "User_ID" INT NOT NULL,
         "Tag_ID" INT NOT NULL,
-        PRIMARY KEY ("Post_ID", "Tag_ID"),
-        FOREIGN KEY ("Post_ID") REFERENCES "Blog"("Post_ID"),
+        FOREIGN KEY ("User_ID") REFERENCES "Users"("User_ID"),
         FOREIGN KEY ("Tag_ID") REFERENCES "Tags"("Tag_ID")
     );
 END;
-
 
 
 select CAST(GETDATE() AS DATE);
@@ -424,26 +402,17 @@ INSERT INTO Responsibility (Item_ID, Person_Responsible, StartDate, EndDate) VAL
 (1, 1, '2024-02-01', '2024-06-30'),
 (2, 2, '2024-02-05', NULL);
 
--- Populating Blog table
-INSERT INTO Blog (Title, Date_Created, User_ID) VALUES
-('Welcome to the Club', '2024-01-15', 1),
-('Upcoming Events', '2024-02-20', 2);
-
--- Populating Blog_Content table
-INSERT INTO Blog_Content (Post_ID, File_ID, File_Name) VALUES
-(1, 1, 'welcome.pdf'),
-(2, 2, 'events.pdf');
-
 -- Populating Tags table
 INSERT INTO Tags (Tag_Name) VALUES
 ('Announcement'),
 ('Event'),
 ('General');
 
--- Populating Blog_Tags table
-INSERT INTO Blog_Tags (Post_ID, Tag_ID) VALUES
-(1, 1),
-(2, 2);
+-- Populating Blogs table
+INSERT INTO Blogs (Title, Date_Created, Content, User_ID, Tag_ID) VALUES
+('Welcome to the Club', '2024-01-15', 'dummy text',1,1),
+('Upcoming Events', '2024-02-20', 'dummy text lorem epsum',2,2);
+
 
 -- Populating Transaction_Types table
 INSERT INTO Transaction_Types (Type_Name) VALUES
@@ -478,4 +447,3 @@ INSERT INTO Leadership (User_ID, Role_ID, Start_Date, End_Date) VALUES
 INSERT INTO Voting (Voter_ID, Candidate_ID) VALUES
 (2, 1),
 (3, 2);
-
