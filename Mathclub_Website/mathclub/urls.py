@@ -70,5 +70,15 @@ urlpatterns = [
     # need to delete from tables where it is referred to as FK
     path('Tags/delete/<int:pk>/', Tags_DeleteView.as_view(), name='delete_tags'),
 
+
+    #Blogs
+    path('Blogs/', Blogs_ListView.as_view(), name='list_blogs'),
+    path('Blogs/create/', Blogs_PageView.as_view(), name='create_blogs'),
+    path('Blogs/update/<int:pk>/', Blogs_PageView.as_view(), name='update_blogs'),
+    # delete constraint 
+    # need to delete from tables where it is referred to as FK
+    path('Blogs/delete/<int:pk>/', Blogs_DeleteView.as_view(), name='delete_blogs'),
+
+
 ]
 

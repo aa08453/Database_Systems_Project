@@ -106,6 +106,7 @@ class GenericListView(ListView):
     #TODO: Make cascade deletion 
     #TODO: Make error messages
 
+
     def get_search_field(self):
         return self.request.GET.get("search_field", "name")
 
@@ -151,6 +152,7 @@ class GenericPageView(TemplateView): #Create/update in one go
     redirect_to = ""
     form_class = None
 
+
     def get_object(self, pk):
         with connection.cursor() as cursor:
             sql = f"select * from {self.table_name} where {self.pk_field} = %s"
@@ -180,7 +182,7 @@ class GenericPageView(TemplateView): #Create/update in one go
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
-
+        print(f"Current class: {self.__class__.__name__}")  # Debug the class name
         if form.is_valid(): #If valid do the thing
             data = form.cleaned_data
             pk = self.kwargs.get("pk")
@@ -193,8 +195,6 @@ class GenericPageView(TemplateView): #Create/update in one go
                     columns = ", ".join(self.fields)
                     placeholders = ", ".join(["%s"] * len(self.fields))
                     sql = f"insert into {self.table_name} ({columns}) values ({placeholders})"
-                    print(sql)
-                    print(data.values())
                     cursor.execute(sql, list(data.values()))
 
             return redirect(self.redirect_to)
@@ -308,12 +308,16 @@ class Locations_DeleteView(GenericDeleteView):
     
 # Majors
 class Majors_ListView(GenericListView):
+    def __init__(self):
+        super().__init__()
+
     table_name = "Majors"
     sql = """
     select Major_ID, Name
     from Majors
     """
     pk_field = "Major_ID"
+
 
 class Majors_PageView(GenericPageView):
     table_name = "Majors"
@@ -376,3 +380,27 @@ class Admins(GenericPageView):
     form_class = Admins
     
     
+
+# Blogs
+
+class Blogs_ListView(GenericListView):
+    table_name = "Blogs"
+    sql = """
+    select b.Post_ID, b.Title, b.Date_Created, u.Name as Author, t.Tag_Name
+    from Blogs b inner join Users u on u.User_ID = b.User_ID
+    inner join Tags t on t.Tag_ID = b.Tag_ID
+    """
+    pk_field = "Post_ID"
+
+class Blogs_PageView(GenericPageView):
+    table_name = "Blogs"
+    search_field = "Post_ID"
+    fields = ["Title", "Date_Created", "Content","User_ID","Tag_ID"]
+    pk_field = "Post_ID"
+    redirect_to = "list_blogs"
+    form_class = Blogs_form
+
+class Blogs_DeleteView(GenericDeleteView):
+    table_name = "Blogs"
+    pk_field = "Post_ID"
+    redirect_to = "list_blogs"
