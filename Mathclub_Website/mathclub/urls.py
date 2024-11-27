@@ -53,7 +53,7 @@ urlpatterns = [
     path('elections/update/<int:pk>/', ElectionsPageView.as_view(), name='update_election'),
     path('elections/delete/<int:pk>/', ElectionsDeleteView.as_view(), name='delete_election'),
 
-    path('voting/evaluate/', EvaluateElection.as_view(), name='evaluate_election'),
+    path('voting/evaluate/evaluate_election.html', EvaluateElection.as_view(), name='evaluate_election'),
 
 
     #Products
@@ -149,5 +149,11 @@ urlpatterns = [
     path('Orders/create/', Orders_PageView.as_view(), name='create_orders'),
     path('Orders/update/<str:pk>/', Orders_PageView.as_view(), name='update_orders'),
     path('Orders/delete/<str:pk>/', Orders_DeleteView.as_view(), name='delete_orders'),
+    
+    #Leadership
+    path('Leadership/', Leadership_ListView.as_view(), name='list_leaders'),
+    path('Leadership/create/', Leadership_PageView.as_view(), name='create_leaders'),
+    path('Leadership/update/<int:pk>/', Leadership_PageView.as_view(), name='update_leaders'),
+    path('Leadership/delete/<int:pk>/', Leadership_DeleteView.as_view(), name='delete_leaders'),
 ]
 

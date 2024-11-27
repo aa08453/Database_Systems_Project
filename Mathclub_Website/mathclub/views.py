@@ -204,6 +204,7 @@ class GenericPageView(TemplateView): #Create/update in one go
                     columns = ", ".join(self.fields)
                     placeholders = ", ".join(["%s"] * len(self.fields))
                     sql = f"insert into {self.table_name} ({columns}) values ({placeholders})"
+                    print(sql)
                     cursor.execute(sql, list(data.values()))
 
             return redirect(self.redirect_to)
@@ -905,6 +906,31 @@ class Orders_DeleteView(GenericDeleteView):
     pk_field = "Order_ID"
     redirect_to = "list_orders"
     
+# Leadership  
+    
+class Leadership_ListView(GenericListView):
+    table_name = "Leadership"
+    sql = """
+    select Leader_ID, Name, Role_Name as Role, Start_Date as [Start Date], End_Date as [End Date]
+    from Leadership L join Users U on L.User_ID = U.User_ID
+    join Role_Types R on R.Role_ID = L.Role_ID
+    """
+    pk_field = "Leader_ID"
+
+class Leadership_PageView(GenericPageView):
+    table_name = "Leadership"
+    fields = ["User_ID", "Role_ID", "Start_Date", "End_Date"]
+    pk_field = "Leader_ID"
+    redirect_to = "list_leaders"
+    form_class = Leadership_form
+
+
+
+class Leadership_DeleteView(GenericDeleteView):
+    table_name = "Leadership"
+    pk_field = "Leader_ID"
+    redirect_to = "list_leaders"
+    
 
 class EvaluateElection(View):
     redirect_to = "list_voting"
@@ -967,10 +993,21 @@ class EvaluateElection(View):
 
         if self.has_duplicates(winners):
             print("Duplicates exist")
-            messages.error(request, "There was an error processing your order. Please try again.")
+            return render(request, "evaluate_election.html", {"duplicates_exist": True})
+
         else:
             print("No duplicates")
             messages.success(request, "Order placed successfully!")
         # Log the results for debugging
         print("Leaders in Election:", winners)
+        for winner in winners:
+            sql = f""" INSERT INTO Leadership (User_ID, Role_ID, Start_Date, End_Date)
+            SELECT U.User_ID, R.Role_ID, GETDATE() AS Start_Date, NULL AS End_Date
+            FROM Users U
+            JOIN Role_Types R ON R.Role_Name = '{winner[1]}'
+            WHERE U.Name = '{winner[0]}';
+            """
+            cursor.execute(sql)
         return redirect(self.redirect_to)
+
+    

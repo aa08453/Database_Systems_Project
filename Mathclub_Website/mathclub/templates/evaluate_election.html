@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluate Election</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            {% if duplicates_exist %}
+                alert("Duplicates exist in the election results. Please resolve the issue.");
+            {% endif %}
+        });
+    </script>
+</head>
+<body>
+    <h1>Evaluate Election</h1>
+    <!-- Render additional details here if necessary -->
+</body>
+</html>
