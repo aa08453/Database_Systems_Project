@@ -25,6 +25,8 @@
     </div>
 
     <!-- Table Section -->
+    <form method="POST" >
+    {% csrf_token %}
     <div class="card shadow-sm">
         <div class="card-body">
             <table class="table table-hover table-bordered">
@@ -74,13 +76,18 @@
 
                         </td>
                         {% endif %}
-
-
-
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            {% if table_name == 'Products'%}
+            <div class="text-end mb-4">
+                <button type="submit" name="action" value="check_out" class="btn btn-gradient-success">
+                    Check Out
+                </button>
+            </div>
+            {% endif %}
+    </form>
 
             <!-- Add New Button -->
             {% if has_privilege and table_name != 'voting' or table_name == 'Produts'%}
@@ -89,11 +96,6 @@
             </div>
             {% endif %}
 
-            {% if table_name == 'Products'%}
-            <div class="text-end mb-4">
-                <a href="{{ create_url }}" class="btn btn-gradient-success">+ Check_Out</a>
-            </div>
-            {% endif %}
 
             {% if table_name == 'voting' %}
             <div class="text-end mb-4">
@@ -104,6 +106,7 @@
             {% if has_privilege and table_name == 'voting' %}
             <div class="text-end mb-4">
                 <a href="{{ create_url }}" class="btn btn-gradient-success">Evaluate Election</a>
+
             </div>
             {% endif %}
 

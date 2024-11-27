@@ -130,6 +130,8 @@ class GenericListView(ListView):
         context = super().get_context_data(**kwargs)
         query = self.request.GET.get("q", "")
 
+        products = self.request.GET.getlist('products')
+        print(products)
         columns,items = self.get_queryset(query)
         context["items"] = items
         context["columns"] = columns
@@ -366,6 +368,14 @@ class Products_ListView(GenericListView):
     from Products
     """
     pk_field = "Product_ID"
+
+    def post(self, request, *args, **kwargs):
+        print(request.POST)
+        products = request.POST.getlist('products')
+        print("I've got products", products)
+
+
+
 
 # add an option to add to cart/order for users without privilege 
 class Products_PageView(GenericPageView):
@@ -778,6 +788,32 @@ class Order_Details_PageView(GenericPageView):
     redirect_to = "list_order_details"
     form_class = OrderDetails_form
 
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        products = request.POST.getlist('products')
+        print("I've got products", products)
+        # print(f"Current class: {self.__class__.__name__}")  # Debug the class name
+        # if form.is_valid(): #If valid do the thing
+        #     data = form.cleaned_data
+        #     pk = self.kwargs.get("pk")
+        #     with connection.cursor() as cursor:
+        #         if pk: #in this case we are updating
+        #             set_clause = ", ".join([f"{field} = %s" for field in self.fields])
+        #             sql = f"update {self.table_name} set {set_clause} where {self.pk_field} = %s"
+        #             cursor.execute(sql, list(data.values()) + [pk])
+        #         else:
+        #             columns = ", ".join(self.fields)
+        #             placeholders = ", ".join(["%s"] * len(self.fields))
+        #             sql = f"insert into {self.table_name} ({columns}) values ({placeholders})"
+        #             cursor.execute(sql, list(data.values()))
+            #
+            # return redirect(self.redirect_to)
+        return render(request, self.template_name, {'form' : form}) #Otherwise ask again
+
+
+
+
+
 class Order_Details_DeleteView(GenericDeleteView):
     table_name = "Order_Details"
     pk_field = "Details_ID"
@@ -786,6 +822,7 @@ class Order_Details_DeleteView(GenericDeleteView):
 
 class EvaluateElection(View):
     pass
+
 
 
 
