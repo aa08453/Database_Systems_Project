@@ -53,8 +53,6 @@ urlpatterns = [
     path('elections/update/<int:pk>/', ElectionsPageView.as_view(), name='update_election'),
     path('elections/delete/<int:pk>/', ElectionsDeleteView.as_view(), name='delete_election'),
 
-    path('elections/evaluate/<int:pk>/', ElectionsDeleteView.as_view(), name='delete_election'), #TODO: Make this pk be election_id
-
 
     #Products
     path('Products/', Products_ListView.as_view(), name='list_products'),

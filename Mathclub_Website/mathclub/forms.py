@@ -11,8 +11,6 @@ class Form_Custom(forms.Form):
         
         if not table_name:
             raise ValueError("Table name must be provided in kwargs")
-
-
         where_clause = " AND ".join([f"{field} = %s" for field in kwargs if field != 'table_name'])
         values = [value for key, value in kwargs.items() if key != 'table_name']
 

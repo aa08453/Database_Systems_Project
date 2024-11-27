@@ -120,9 +120,9 @@ class GenericListView(ListView):
                 cursor.execute(sql)
 
             columns = [col[0] for col in cursor.description]
-            # for x in range(0, len(columns)):
-            #     if columns[x] == self.pk_field:
-            #         columns[x] = "pk_field"
+            for x in range(0, len(columns)):
+                if columns[x] == self.pk_field:
+                    columns[x] = "pk_field"
             rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
             return columns, rows
     
@@ -141,6 +141,7 @@ class GenericListView(ListView):
         context["delete_url"] = f"/{self.table_name}/delete/"
         user_privilege = self.request.session.get("privilege", None)
         context["has_privilege"] = user_privilege == 1  # Only show actions if privilege is 1
+        print("I have context currently", context)
         return context
 
 class GenericPageView(TemplateView): #Create/update in one go
@@ -206,10 +207,13 @@ class GenericDeleteView(View):
     pk_field = ""
     redirect_to = ""
 
+    def get(self, request, pk=None):
+        self.post(request, pk=None)
+
     def post(self, request, pk=None):
+        print("I'm here")
         if not pk:
             return HttpResponseNotFound("Record not found: Missing primary key.")
-
         try:
             with connection.cursor() as cursor:
                 # Perform the delete operation
@@ -691,9 +695,6 @@ class VotingListView(GenericListView):
                 """
                 print(sql)
 
-
-
-
                 cursor.execute(sql, [f"%{query}%"])
             else:
                 cursor.execute(sql)
@@ -703,6 +704,7 @@ class VotingListView(GenericListView):
                 if columns[x] == self.pk_field:
                     columns[x] = "pk_field"
             rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            print("I have rows", rows)
             return columns, rows
     pk_field = "Vote_ID"
 
