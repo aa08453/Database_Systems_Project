@@ -44,16 +44,15 @@
                         {% for value in item.values %}
                         <td>{{ value }}</td>
                         {% endfor %}
-                        {% if has_privilege and table_name != 'voting' %}
+                        {% if has_privilege and table_name != 'voting' or table_name == 'Products' %}
                         <td class="d-flex align-items-center
                             justify-content-center ">
+                            {% if has_privilege and table_name != 'voting' %}
                             <a href="{{ update_url }}{{ item.pk_field }}"
                                 class="btn btn-warning btn-sm me-2" 
                                data-bs-toggle="tooltip" title="Edit"><i class="bi bi-pencil"></i></a>
                             <form method="POST" action="{{ delete_url }}{{ item.pk_field }}/" style="display:inline;">
                                 {% csrf_token %}
-
-
 
                                 <button type="submit" class="btn btn-danger btn-sm me-2" 
                                         onclick="return confirm('Are you sure you want to delete this item?');"
@@ -61,20 +60,13 @@
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </form>
-
-
-                            {% if table_name == 'Products' %}
-
-                            <div>
-                                <input type="checkbox" name="products" value="{{ item.Product_ID }}" 
-                                       class="form-check-input me">
-                            </div>
-
                             {% endif %}
 
-
-
-
+                            {% if table_name == 'Products' %}
+                            <div>
+                                <input type="checkbox" name="products" value="{{ item.Product_ID }}" class="form-check-input me">
+                            </div>
+                            {% endif %}
                         </td>
                         {% endif %}
 
@@ -89,6 +81,12 @@
             {% if has_privilege and table_name != 'voting' or table_name == 'Produts'%}
             <div class="text-end mb-4">
                 <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add New</a>
+            </div>
+            {% endif %}
+
+            {% if table_name == 'Products'%}
+            <div class="text-end mb-4">
+                <a href="{{ create_url }}" class="btn btn-gradient-success">+ Check_Out</a>
             </div>
             {% endif %}
 

@@ -101,14 +101,15 @@ def election_delete_page(request):
 def finance_update_page(request):
     return
 
+#TODO: Make a insertion check hook
+#TODO: Make cascade deletion 
+#TODO: Make error messages
+
 class GenericListView(ListView):
     template_name = "list_page.html" 
     sql = None
     pk_field = ""
 
-    #TODO: Make a insertion check hook
-    #TODO: Make cascade deletion 
-    #TODO: Make error messages
 
 
     def get_search_field(self):
