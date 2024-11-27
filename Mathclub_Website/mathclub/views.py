@@ -383,7 +383,6 @@ class Products_ListView(GenericListView):
         redirect_url = self.redirect_to  # The URL to redirect after success
 
         if not product_ids:
-            # Handle case where no products were selected
             messages.error(request, "No products selected for checkout.")
             return redirect(redirect_url)
 
@@ -391,7 +390,7 @@ class Products_ListView(GenericListView):
             biglist = []
             sql = "BEGIN TRANSACTION\n"
 
-            # Insert a new order and get the inserted Order_ID
+            #Get last inserted ID
             sql += f"""
             DECLARE @OrderID INT;
 
@@ -404,11 +403,15 @@ class Products_ListView(GenericListView):
             """
             biglist += [user_id]
 
-            # Insert order details for each selected product
+
+            # Default Quantity we take is 1
             for product_id in product_ids:
                 sql += f"""
+
             INSERT INTO Order_Details (Order_ID, Product_ID, Quantity)
-            VALUES (@OrderID, %s, 1);  
+            SELECT @OrderID, Product_ID, 1
+            FROM Products
+            WHERE Product_ID = %s AND Items_In_Stock > 0;
 
 
             UPDATE Products
@@ -940,8 +943,10 @@ class EvaluateElection(View):
 
         if self.has_duplicates(winners):
             print("Duplicates exist")
+            messages.error(request, "There was an error processing your order. Please try again.")
         else:
             print("No duplicates")
+            messages.success(request, "Order placed successfully!")
         # Log the results for debugging
         print("Leaders in Election:", winners)
         return redirect(self.redirect_to)
