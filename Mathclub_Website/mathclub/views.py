@@ -564,6 +564,27 @@ class Admins(GenericPageView):
 
 
 
+class Team_Members(GenericPageView):
+    table_name = "Team_Members"
+    search_field = "Member_ID"
+    fields = ["Team_ID", "User_ID", "Role", "Date_Started"]
+    pk_field = "Member_ID"
+    redirect_to = "list_Members"
+    form_class = Team_Members_form
+    
+class Team_Members_DeleteView(GenericDeleteView):
+    table_name = "Team_Members"
+    pk_field = "Member_ID"
+    redirect_to = "list_Members"
+    
+class List_Team_Members(GenericListView):
+    table_name = "Team_Members"
+    sql = """
+    select Member_ID, Team_ID, User_ID, Role, Date_Started
+    from Team_Members
+    """
+    pk_field = "Member_ID"
+
 
 
 # Blogs

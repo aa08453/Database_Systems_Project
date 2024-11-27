@@ -404,7 +404,33 @@ class Finances(forms.Form):
     )
     description = forms.CharField(widget=forms.TextInput())    
     amount = forms.FloatField()
+ 
+ 
+ 
     
+    
+class Team_Members_form(forms.Form):
+    team = DynamicChoiceField(
+        query = """
+        select Team_ID, Team_Name
+        from Teams
+        """
+    )
+    member = DynamicChoiceField(
+        query = """
+        select User_ID, Name
+        from Users
+        """
+    )
+    role = DynamicChoiceField(
+        query = """
+        select Role_ID, Role_Name
+        from Role_Types
+        """
+    )
+    Start_Date = forms.DateTimeField(
+        widget=forms.widgets.DateTimeInput(attrs={'type': 'datetime-local'})
+    )
     
     
 class Team_Roles_form(forms.Form):

@@ -31,7 +31,10 @@ urlpatterns = [
     
 
 
-
+    path('Members/',List_Team_Members.as_view(), name='list_Members'),
+    path('Team_Members/create/',Team_Members.as_view(), name='create_Members'),
+    path('Team_Members/update/<int:pk>/',Team_Members.as_view(), name='update_Members'),
+    path('Team_Members/delete/<int:pk>/',Team_Members_DeleteView.as_view(), name='delete_Members'),
 
 
     path ('Finances/',Finance_ListView.as_view(), name='list_Finance'),
