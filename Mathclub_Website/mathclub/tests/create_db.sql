@@ -328,6 +328,435 @@ BEGIN
     );
 END;
 
+
+
+------------------------------------------------------------------------------
+--triggers--
+Go
+CREATE TRIGGER trg_Events_Delete
+ON Events
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Delete from dependent table: Event_Teams
+        DELETE FROM Event_Teams
+        WHERE Event_ID IN (SELECT Event_ID FROM DELETED);
+
+        -- Delete from dependent table: Attendees
+        DELETE FROM Attendees
+        WHERE Event_ID IN (SELECT Event_ID FROM DELETED);
+
+        -- Finally, delete from the Events table
+        DELETE FROM Events
+        WHERE Event_ID IN (SELECT Event_ID FROM DELETED);
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+CREATE TRIGGER trg_Teams_Delete
+ON Teams
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Delete from dependent table: Team_Members
+        DELETE FROM Team_Members
+        WHERE Team_ID IN (SELECT Team_ID FROM DELETED);
+
+        -- Delete from dependent table: Event_Teams
+        DELETE FROM Event_Teams
+        WHERE Team_ID IN (SELECT Team_ID FROM DELETED);
+
+        -- Finally, delete from the Teams table
+        DELETE FROM Teams
+        WHERE Team_ID IN (SELECT Team_ID FROM DELETED);
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+
+
+
+	CREATE TRIGGER trg_Users_Delete
+	ON Users
+	INSTEAD OF DELETE
+	AS
+	BEGIN
+		BEGIN TRY
+			BEGIN TRANSACTION;
+
+			-- Delete from dependent table: Team_Members
+			DELETE FROM Team_Members
+			WHERE User_ID IN (SELECT User_ID FROM DELETED);
+
+			-- Delete from dependent table: Orders
+			DELETE FROM Orders
+			WHERE Customer_ID IN (SELECT User_ID FROM DELETED);
+
+			-- Delete from dependent table: Candidates
+			DELETE FROM Candidates
+			WHERE User_ID IN (SELECT User_ID FROM DELETED);
+
+			-- Delete from dependent table: Attendees
+			DELETE FROM Attendees
+			WHERE Attendee IN (SELECT User_ID FROM DELETED);
+
+			-- Finally, delete from the Users table
+			DELETE FROM Users
+			WHERE User_ID IN (SELECT User_ID FROM DELETED);
+
+			COMMIT TRANSACTION;
+		END TRY
+		BEGIN CATCH
+			ROLLBACK TRANSACTION;
+			THROW;
+		END CATCH
+	END;
+	GO
+
+
+
+CREATE TRIGGER trg_Candidates_Delete
+ON Candidates
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Delete from dependent table: Voting
+        DELETE FROM Voting
+        WHERE Candidate_ID IN (SELECT Candidate_ID FROM DELETED);
+
+        -- Delete from dependent table: Leadership
+        DELETE FROM Leadership
+        WHERE User_ID IN (SELECT Candidate_ID FROM DELETED);
+
+        -- Finally, delete from the Candidates table
+        DELETE FROM Candidates
+        WHERE Candidate_ID IN (SELECT Candidate_ID FROM DELETED);
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+
+
+CREATE TRIGGER trg_Locations_Delete
+ON Locations
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Delete from dependent table: Events
+        DELETE FROM Events
+        WHERE Location IN (SELECT Location_ID FROM DELETED);
+
+        -- Delete from dependent table: Club_Items
+        DELETE FROM Club_Items
+        WHERE Storage IN (SELECT Location_ID FROM DELETED);
+
+        -- Finally, delete from the Locations table
+        DELETE FROM Locations
+        WHERE Location_ID IN (SELECT Location_ID FROM DELETED);
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+
+
+CREATE TRIGGER trg_Products_Delete
+ON Products
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Delete from dependent table: Order_Details
+        DELETE FROM Order_Details
+        WHERE Product_ID IN (SELECT Product_ID FROM DELETED);
+
+        -- Finally, delete from the Products table
+        DELETE FROM Products
+        WHERE Product_ID IN (SELECT Product_ID FROM DELETED);
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+
+CREATE TRIGGER trg_Orders_Delete
+ON Orders
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Delete from dependent table: Order_Details
+        DELETE FROM Order_Details
+        WHERE Order_ID IN (SELECT Order_ID FROM DELETED);
+
+        -- Finally, delete from the Orders table
+        DELETE FROM Orders
+        WHERE Order_ID IN (SELECT Order_ID FROM DELETED);
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+
+CREATE TRIGGER trg_Finances_Delete
+ON Finances
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Handle any additional dependencies if applicable (currently none).
+
+        -- Finally, delete from the Finances table
+        DELETE FROM Finances
+        WHERE Transaction_ID IN (SELECT Transaction_ID FROM DELETED);
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+
+
+
+
+CREATE TRIGGER trg_Majors_Delete
+ON Majors
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        -- Start a transaction
+        BEGIN TRANSACTION;
+
+        -- Handle dependencies in the Users table
+        DELETE FROM Users
+        WHERE Major IN (SELECT Major_ID FROM DELETED);
+
+        -- Finally, delete from the Majors table
+        DELETE FROM Majors
+        WHERE Major_ID IN (SELECT Major_ID FROM DELETED);
+
+        -- Commit the transaction
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        -- Rollback in case of errors
+        ROLLBACK TRANSACTION;
+        -- Re-throw the error
+        THROW;
+    END CATCH
+END;
+GO
+
+CREATE TRIGGER trg_Role_Types_Delete
+ON Role_Types
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        -- Start a transaction
+        BEGIN TRANSACTION;
+
+        -- Handle dependencies in the Leadership table
+        DELETE FROM Leadership
+        WHERE Role_ID IN (SELECT Role_ID FROM DELETED);
+
+        -- Handle dependencies in the Voting table
+        DELETE FROM Voting
+        WHERE Candidate_ID IN (
+            SELECT Candidate_ID
+            FROM Candidates
+            WHERE Role_ID IN (SELECT Role_ID FROM DELETED)
+        );
+
+        -- Handle dependencies in the Candidates table
+        DELETE FROM Candidates
+        WHERE Role_ID IN (SELECT Role_ID FROM DELETED);
+
+        -- Finally, delete the Role_Type itself
+        DELETE FROM Role_Types
+        WHERE Role_ID IN (SELECT Role_ID FROM DELETED);
+
+        -- Commit the transaction
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        -- Rollback in case of errors
+        ROLLBACK TRANSACTION;
+        -- Re-throw the error
+        THROW;
+    END CATCH
+END;
+GO
+
+
+
+
+
+CREATE TRIGGER trg_Tags_Delete
+ON Tags
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Set Tag_ID to NULL in Blogs
+        UPDATE Blogs
+        SET Tag_ID = NULL
+        WHERE Tag_ID IN (SELECT Tag_ID FROM DELETED);
+
+        DELETE FROM Tags WHERE Tag_ID IN (SELECT Tag_ID FROM DELETED);
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+
+
+
+
+CREATE TRIGGER trg_Locations_Delete
+ON Locations
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Debug: Check which rows are being deleted
+        PRINT 'Deleting Locations: ';
+        SELECT * FROM DELETED;
+
+        -- Delete dependent rows in Events table
+        DELETE FROM Events
+        WHERE Location IN (SELECT Location_ID FROM DELETED);
+
+        -- Delete dependent rows in Club_Items table
+        DELETE FROM Club_Items
+        WHERE Storage IN (SELECT Location_ID FROM DELETED);
+
+        -- Delete rows in Locations table
+        DELETE FROM Locations
+        WHERE Location_ID IN (SELECT Location_ID FROM DELETED);
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        PRINT 'Error occurred while deleting Locations.';
+        THROW;
+    END CATCH
+END;
+GO
+
+
+
+CREATE TRIGGER trg_Club_Items_Delete
+ON Club_Items
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Debug: Check which rows are being deleted
+        PRINT 'Deleting Club_Items: ';
+        SELECT * FROM DELETED;
+
+        -- Delete dependent rows in Responsibility table
+        DELETE FROM Responsibility
+        WHERE Item_ID IN (SELECT Item_ID FROM DELETED);
+
+        -- Finally, delete rows in Club_Items table
+        DELETE FROM Club_Items
+        WHERE Item_ID IN (SELECT Item_ID FROM DELETED);
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        PRINT 'Error occurred while deleting Club_Items.';
+        THROW;
+    END CATCH
+END;
+GO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ------------------------------------------------------------------------------
 -- Populating Majors table
 INSERT INTO Majors (Name) VALUES
