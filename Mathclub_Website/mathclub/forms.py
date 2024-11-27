@@ -2,7 +2,6 @@
 from django import forms
 from django.db import connection
 
-
 class Form_Custom(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -229,8 +228,6 @@ class Transaction_Types_form(forms.Form):
         widget = forms.TextInput()
     )
 
-    
-from django import forms
 
 class Major_choice(forms.Form):
     privilege = 0
@@ -487,4 +484,19 @@ class Voting_form(Form_Custom):
 
 
 
+class OrderDetails_form(forms.Form):
+    orders =  DynamicChoiceField(
+        query = """
+        select Order_ID, Customer_ID
+        from Orders
+        """
+    )
+    products = DynamicChoiceField(
+        query = """
+        select Product_ID, Product_Name
+        from Products
+        """
+    )
+    
+    quantity = forms.IntegerField()
 

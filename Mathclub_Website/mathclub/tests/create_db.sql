@@ -68,12 +68,12 @@ END;
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Team_Members')
 BEGIN
     CREATE TABLE "Team_Members"(
+        "Member_ID" INT IDENTITY(1,1) PRIMARY KEY,
         "User_ID" INT NOT NULL,
         "Team_ID" INT NOT NULL,
         "Role" INT NOT NULL,
         "Date_Started" DATE NOT NULL,
         "Date_Ended" DATE,
-        PRIMARY KEY ("User_ID", "Team_ID"),
         FOREIGN KEY ("User_ID") REFERENCES "Users"("User_ID"),
         FOREIGN KEY ("Team_ID") REFERENCES "Teams"("Team_ID"),
         FOREIGN KEY ("Role") REFERENCES "Team_Roles"("Role_ID")
@@ -119,13 +119,14 @@ END;
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Attendees')
 BEGIN
     CREATE TABLE "Attendees"(
+        "Attendee_ID" INT IDENTITY(1,1) PRIMARY KEY,
         "Event_ID" INT NOT NULL,
         "Attendee" INT NOT NULL,
-        "Type_ID" INT NOT NULL
-        PRIMARY KEY ("Event_ID", "Attendee"),
+        "Type_ID" INT NOT NULL,
         FOREIGN KEY ("Type_ID") REFERENCES "Attendee_Type" ("Type_ID"),
         FOREIGN KEY ("Event_ID") REFERENCES "Events"("Event_ID"),
-        FOREIGN KEY ("Attendee") REFERENCES "Users"("User_ID")
+        FOREIGN KEY ("Attendee") REFERENCES "Users"("User_ID"),
+        CONSTRAINT event_attendee UNIQUE ("Event_ID", "Attendee")
     );
 END;
 
@@ -133,11 +134,12 @@ END;
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Event_Teams')
 BEGIN
     CREATE TABLE "Event_Teams"(
+        "Event_Team_ID" INT IDENTITY(1,1) PRIMARY KEY,
         "Event_ID" INT NOT NULL,
         "Team_ID" INT NOT NULL,
-        PRIMARY KEY ("Event_ID", "Team_ID"),
         FOREIGN KEY ("Team_ID") REFERENCES "Teams"("Team_ID"),
-        FOREIGN KEY ("Event_ID") REFERENCES "Events"("Event_ID")
+        FOREIGN KEY ("Event_ID") REFERENCES "Events"("Event_ID"),
+        CONSTRAINT event_team UNIQUE ("Event_ID", "Team_ID")
     );
 END;
 
@@ -168,12 +170,13 @@ END;
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Order_Details')
 BEGIN
     CREATE TABLE "Order_Details"(
+        "Details_ID" INT IDENTITY(1,1) PRIMARY KEY,
         "Order_ID" INT NOT NULL,
         "Product_ID" INT NOT NULL,
         "Quantity" INT NOT NULL,
-        PRIMARY KEY ("Order_ID", "Product_ID"),
+        FOREIGN KEY ("Product_ID") REFERENCES "Products"("Product_ID"),
         FOREIGN KEY ("Order_ID") REFERENCES "Orders"("Order_ID"),
-        FOREIGN KEY ("Product_ID") REFERENCES "Products"("Product_ID")
+        CONSTRAINT order_product UNIQUE ("Order_ID", "Product_ID")
     );
 END;
 
@@ -192,13 +195,14 @@ END;
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Responsibility')
 BEGIN
     CREATE TABLE "Responsibility"(
+        "Responsibilty_ID" INT IDENTITY(1,1) PRIMARY KEY,
         "Item_ID" INT NOT NULL,
         "Person_Responsible" INT NOT NULL,
         "StartDate" DATE NOT NULL,
         "EndDate" DATE NULL,
-        PRIMARY KEY ("Item_ID", "Person_Responsible"),
         FOREIGN KEY ("Person_Responsible") REFERENCES "Users" ("User_ID"),
-        FOREIGN KEY ("Item_ID") REFERENCES "Club_Items" ("Item_ID")
+        FOREIGN KEY ("Item_ID") REFERENCES "Club_Items" ("Item_ID"),
+        CONSTRAINT item_person UNIQUE ("Item_ID", "Person_Responsible")
     );
 END;
 
@@ -296,13 +300,14 @@ END;
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Leadership')
 BEGIN
     CREATE TABLE "Leadership"(
+        "Leader_ID" INT IDENTITY(1,1) PRIMARY KEY,
         "User_ID" INT NOT NULL,
         "Role_ID" INT NOT NULL,
         "Start_Date" DATE NOT NULL,
         "End_Date" DATE NOT NULL,
-        PRIMARY KEY ("User_ID", "Role_ID", "Start_Date"),
         FOREIGN KEY ("Role_ID") REFERENCES "Role_Types" ("Role_ID"),
-        FOREIGN KEY ("User_ID") REFERENCES "Candidates" ("Candidate_ID")
+        FOREIGN KEY ("User_ID") REFERENCES "Candidates" ("Candidate_ID"),
+        CONSTRAINT user_role_date UNIQUE ("User_ID", "Role_ID", "Start_Date")        
     );
 END;
 
@@ -311,11 +316,12 @@ END;
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Voting')
 BEGIN
     CREATE TABLE "Voting"(
+        "Vote_ID" INT IDENTITY(1,1) PRIMARY KEY,
         "Voter_ID" INT NOT NULL,
         "Candidate_ID" INT NOT NULL,
-        PRIMARY KEY ("Voter_ID", "Candidate_ID"),
         FOREIGN KEY ("Voter_ID") REFERENCES "Users"("User_ID"),
-        FOREIGN KEY ("Candidate_ID") REFERENCES "Candidates"("Candidate_ID")
+        FOREIGN KEY ("Candidate_ID") REFERENCES "Candidates"("Candidate_ID"),
+        CONSTRAINT voter_candidate UNIQUE ("Voter_ID", "Candidate_ID")
     );
 END;
 
@@ -420,9 +426,9 @@ INSERT INTO Transaction_Types (Type_Name) VALUES
 ('Expense');
 
 -- Populating Finances table
-INSERT INTO Finances (Transaction_ID, Responsible_Officer, User_ID, Transaction_Type, Date, Description) VALUES
-(1, 1, 2, 1, '2024-01-10', 'Membership Fee'),
-(2, 2, 3, 2, '2024-01-20', 'Event Expense');
+INSERT INTO Finances (Responsible_Officer, User_ID, Transaction_Type, Date, Description, Amount) VALUES
+(1, 2, 1, '2024-01-10', 'Membership Fee', 50000),
+(2, 3, 2, '2024-01-20', 'Event Expense', 60000);
 
 -- Populating Elections table
 INSERT INTO Elections (Start_Date, End_Date) VALUES

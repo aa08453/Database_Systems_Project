@@ -3,18 +3,15 @@ from .front import *
 from django.contrib import messages
 from datetime import datetime
 from .myutils import *
-
+from .forms import *
 from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.views.generic import ListView, TemplateView, FormView, DeleteView, View
 from django.urls import reverse_lazy
-
-from .forms import *
-# Create your views here.
+from django.db import IntegrityError
 
 def main_page(request):
     return main_view(request)
-
 
 def login_page(request):
     return login_view(request)
@@ -101,6 +98,7 @@ def election_delete_page(request):
 def finance_update_page(request):
     return
 
+
 class GenericListView(ListView):
     template_name = "list_page.html" 
     sql = None
@@ -125,9 +123,9 @@ class GenericListView(ListView):
                 cursor.execute(sql)
 
             columns = [col[0] for col in cursor.description]
-            for x in range(0, len(columns)):
-                if columns[x] == self.pk_field:
-                    columns[x] = "pk_field"
+            # for x in range(0, len(columns)):
+            #     if columns[x] == self.pk_field:
+            #         columns[x] = "pk_field"
             rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
             return columns, rows
     
@@ -204,12 +202,6 @@ class GenericPageView(TemplateView): #Create/update in one go
 
             return redirect(self.redirect_to)
         return render(request, self.template_name, {'form' : form}) #Otherwise ask again
-
-
-
-from django.http import HttpResponse, HttpResponseNotFound
-from django.shortcuts import redirect
-from django.db import IntegrityError
 
 class GenericDeleteView(View):
     table_name = None
@@ -539,7 +531,9 @@ class Finance_PageView(GenericPageView):
 class Finance_ListView(GenericListView):
     table_name = "Finances"
     sql = """
-    select Transaction_ID, Responsible_Officer, User_ID, Transaction_Type, Date, Description, Amount FROM Finances
+    select Transaction_ID as Serial, [Responsible Person] = (select Name from Users V where V.User_ID = F.Responsible_Officer), [Participant] = (select Name from Users V where V.User_ID = F.User_ID), Type_Name as [Transaction Type], Date, Description, Amount 
+    FROM Finances F join Users U on F.User_ID = U.User_ID
+    join Transaction_Types T on F.Transaction_Type = T.Type_ID
     """ 
     pk_field = "Transaction_ID"
     
@@ -563,7 +557,8 @@ class Teams(GenericPageView):
 class Teams_ListView(GenericListView):
     table_name = "Teams"
     sql = """
-    select Team_ID, Team_Name, Team_Lead, Date_Created FROM Teams
+    select Team_ID as Serial, Team_Name as [Team Name], Team_Lead as [Team Lead], Date_Created as [Date Created] 
+    FROM Teams
     """
     pk_field = "Team_ID"
     
@@ -585,7 +580,7 @@ class Team_Roles(GenericPageView):
 class List_Roles(GenericListView):
     table_name = "Team_Roles"
     sql = """
-    select Role_ID, Role_Name, Role_Description FROM Team_Roles
+    select Role_ID as Serial, Role_Name as [Role Name], Role_Description as [Role Description] FROM Team_Roles
     """
     pk_field = "Role_ID"
     
@@ -770,3 +765,25 @@ class VotingDeleteView(GenericDeleteView):
     table_name = "voting"
     pk_field = "Vote_ID"
     redirect_to = "list_voting"
+    
+class Order_Details_ListView(GenericListView):
+    table_name = "Order_Details"
+    sql = """
+    select OD.Details_ID as Serial, O.Order_ID as [Order Number] , P.Product_Name as [Product Name], OD.Quantity
+    from Order_Details OD join Orders O on OD.Order_ID = O.Order_ID
+    join Products P on P.Product_ID = OD.Product_ID
+    """
+    pk_field = "Details_ID"
+
+class Order_Details_PageView(GenericPageView):
+    table_name = "Order_Details"
+    fields = ["Order_ID", "Product_ID", "Quantity"]
+    pk_field = "Details_ID"
+    redirect_to = "list_order_details"
+    form_class = OrderDetails_form
+
+class Order_Details_DeleteView(GenericDeleteView):
+    table_name = "Order_Details"
+    pk_field = "Details_ID"
+    redirect_to = "list_order_details"
+    

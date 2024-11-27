@@ -129,5 +129,10 @@ urlpatterns = [
     path('voting/create/', VotingPageView.as_view(), name='create_voting'),
     path('voting/update/<int:pk>/', VotingPageView.as_view(), name='update_voting'),
     path('voting/delete/<int:pk>/', VotingDeleteView.as_view(), name='delete_voting'),
+    #Order_Details
+    path('Order_Details/', Order_Details_ListView.as_view(), name='list_order_details'),
+    path('Order_Details/create/', Order_Details_PageView.as_view(), name='create_order_details'),
+    path('Order_Details/update/<str:pk>/', Order_Details_PageView.as_view(), name='update_order_details'),
+    path('Order_Details/delete/<str:pk>/', Order_Details_DeleteView.as_view(), name='delete_order_details'),
 ]
 
