@@ -31,18 +31,22 @@
                 <thead>
                     <tr class="text-white" style="background: linear-gradient(to right, #6a11cb, #2575fc);">
                         {% for column in items.0.keys %}
-                        <th class="fw-bold text-center">{{ column|title }}</th>
+                            {% if has_privilege or column != 'pk_field' %}
+                                <th class="fw-bold text-center">{{ column|title }}</th>
+                            {% endif %}
                         {% endfor %}
                         {% if has_privilege and table_name != 'voting' or table_name == 'Products'%}
-                        <th class="text-center">Actions</th>
+                            <th class="text-center">Actions</th>
                         {% endif %}
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in items %}
                     <tr>
-                        {% for value in item.values %}
-                        <td>{{ value }}</td>
+                        {% for key, value in item.items %}
+                            {% if has_privilege or key != 'pk_field' %}
+                                <td>{{ value }}</td>
+                            {% endif %}
                         {% endfor %}
                         {% if has_privilege and table_name != 'voting' or table_name == 'Products' %}
                         <td class="d-flex align-items-center
@@ -67,6 +71,7 @@
                                 <input type="checkbox" name="products" value="{{ item.Product_ID }}" class="form-check-input me">
                             </div>
                             {% endif %}
+
                         </td>
                         {% endif %}
 
@@ -96,6 +101,11 @@
             </div>
             {% endif %}
 
+            {% if has_privilege and table_name == 'voting' %}
+            <div class="text-end mb-4">
+                <a href="{{ create_url }}" class="btn btn-gradient-success">Evaluate Election</a>
+            </div>
+            {% endif %}
 
 
 

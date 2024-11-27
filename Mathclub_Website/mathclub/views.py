@@ -138,7 +138,6 @@ class GenericListView(ListView):
         context["update_url"] = f"/{self.table_name}/update/"
         context["delete_url"] = f"/{self.table_name}/delete/"
         user_privilege = self.request.session.get("privilege", None)
-
         context["has_privilege"] = user_privilege == 1  # Only show actions if privilege is 1
         return context
 
@@ -379,7 +378,7 @@ class Products_PageView(GenericPageView):
 
 class Products_DeleteView(GenericDeleteView):
     table_name = "Products"
-    pk_field = "Products_ID"
+    pk_field = "Product_ID"
     redirect_to = "list_products"
     
 # Events
@@ -784,3 +783,9 @@ class Order_Details_DeleteView(GenericDeleteView):
     pk_field = "Details_ID"
     redirect_to = "list_order_details"
     
+
+class EvaluateElection(View):
+    pass
+
+
+

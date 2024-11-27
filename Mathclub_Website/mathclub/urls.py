@@ -53,13 +53,24 @@ urlpatterns = [
     path('elections/update/<int:pk>/', ElectionsPageView.as_view(), name='update_election'),
     path('elections/delete/<int:pk>/', ElectionsDeleteView.as_view(), name='delete_election'),
 
+    path('elections/evaluate/<int:pk>/', ElectionsDeleteView.as_view(), name='delete_election'), #TODO: Make this pk be election_id
+
+
+    #Products
+    path('Products/', Products_ListView.as_view(), name='list_products'),
+    path('Products/create/', Products_PageView.as_view(), name='create_products'),
+    path('Products/update/<int:pk>/', Products_PageView.as_view(), name='update_products'),
+    path('Products/delete/<int:pk>/', Products_DeleteView.as_view(), name='delete_products'),
+
+    path('Products/check_out/<int:pk>/', Products_DeleteView.as_view(), name='delete_products'),
+
+
 
     #Candidates
     path('candidates/', CandidatesListView.as_view(), name='list_candidates'),
     path('candidates/create/', CandidatesPageView.as_view(), name='create_candidate'),
     path('candidates/update/<int:pk>/', CandidatesPageView.as_view(), name='update_candidate'),
     path('candidates/delete/<int:pk>/', CandidatesDeleteView.as_view(), name='delete_candidate'),
-
 
 
     #Roles
@@ -96,8 +107,6 @@ urlpatterns = [
     path('Products/', Products_ListView.as_view(), name='list_products'),
     path('Products/create/', Products_PageView.as_view(), name='create_products'),
     path('Products/update/<int:pk>/', Products_PageView.as_view(), name='update_products'),
-    # delete constraint 
-    # need to delete from tables where it is referred to as FK
     path('Products/delete/<int:pk>/', Products_DeleteView.as_view(), name='delete_products'),
     
     #Events
