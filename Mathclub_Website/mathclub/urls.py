@@ -17,8 +17,8 @@ urlpatterns = [
     path('main', views.main_page, name='main_page'),  # Add this line
 
     
-    path('Roles/create/', Team_Roles.as_view(), name='create_Roles'),
-    path('Roles/',List_Roles.as_view(),name="list_Roles"),# Add this line
+    path('Team_Roles/create/', Team_Roles.as_view(), name='create_Roles'),
+    path('Team_Roles/',List_Roles.as_view(),name="list_Roles"),# Add this line
     path('Team_Roles/update/<int:pk>/', Team_Roles.as_view(), name='update_Roles'),  # Add this line
     path('Team_Roles/delete/<int:pk>/', Team_Roles_DeleteView.as_view(), name='delete_Roles'),  # Add this line
     
@@ -81,6 +81,7 @@ urlpatterns = [
     path('Role_Types/create/', Role_TypesPageView.as_view(), name='create_Role_Type'),
     path('Role_Types/update/<int:pk>/', Role_TypesPageView.as_view(), name='update_Role_Type'),
     path('Role_Types/delete/<int:pk>/', Role_TypesDeleteView.as_view(), name='delete_Role_Type'),
+
     
     #Locations
     path('Locations/', Locations_ListView.as_view(), name='list_locations'),

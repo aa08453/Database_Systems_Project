@@ -261,7 +261,7 @@ select Election_ID, Start_Date as [Start Date], End_Date as [End Date] from Elec
 class CandidatesListView(GenericListView):
     table_name = "candidates"
     sql = """
-select Candidate_ID, R.Role_Name as [Role Name], E.Start_Date as [Start Date], E.End_Date as [End Date], U.Name as [Candidate Name]
+select Candidate_ID, R.Role_Name, E.Start_Date, E.End_Date, U.Name 
 from Candidates C 
 join Role_Types R on R.Role_ID = C.Role_ID 
 join Elections E on E.Election_ID = C.Election_ID
@@ -287,7 +287,7 @@ class CandidatesDeleteView(GenericDeleteView):
 class Role_TypesListView(GenericListView):
     table_name = "Role_Types"
     sql = """
-    select Role_ID as [Role ID], Role_Name as [Role]
+    select Role_ID, Role_Name 
     from Role_Types
     """
     pk_field = "Role_ID"
@@ -980,63 +980,71 @@ class EvaluateElection(View):
             seen.add(item[1])
         return False
 
-
     def get(self, request, pk=None):
         with connection.cursor() as cursor:
             sql = """
-            WITH current_elections AS (
-                SELECT * 
-                FROM elections 
-                WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
-            ), votes_per_candidate AS (
+                WITH current_elections AS (
+                    SELECT * 
+                    FROM elections 
+                    WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
+                ), votes_per_candidate AS (
+                    SELECT 
+                        U.Name AS Name, 
+                        C.User_ID, 
+                        RT.Role_Name AS Role_Name, 
+                        RT.Role_ID AS Role_ID,
+                        COALESCE(COUNT(V.Vote_ID), 0) AS Votes,
+                        C.Election_ID
+                    FROM voting V 
+                    RIGHT JOIN candidates C ON V.Candidate_ID = C.Candidate_ID
+                    RIGHT JOIN users U ON C.User_ID = U.User_ID
+                    JOIN Role_Types RT ON C.Role_ID = RT.Role_ID
+                    WHERE C.Election_ID IN (SELECT Election_ID FROM current_elections)
+                    GROUP BY C.Candidate_ID, C.User_ID, RT.Role_ID, RT.Role_Name, U.Name, C.Election_ID
+                ), max_votes_per_role AS (
+                    SELECT 
+                        Role_ID, 
+                        MAX(Votes) AS MaxVotes
+                    FROM votes_per_candidate
+                    GROUP BY Role_ID
+                )
                 SELECT 
-                    U.Name AS Name, 
-                    RT.Role_Name AS Role_Name, 
-                    RT.Role_ID AS Role_ID,
-                    COALESCE(COUNT(V.Vote_ID), 0) AS Votes,
-                    C.Election_ID
-                FROM voting V 
-                RIGHT JOIN candidates C ON V.Candidate_ID = C.Candidate_ID
-                RIGHT JOIN users U ON C.User_ID = U.User_ID
-                JOIN Role_Types RT ON C.Role_ID = RT.Role_ID
-                WHERE C.Election_ID IN (SELECT Election_ID FROM current_elections)
-                GROUP BY C.Candidate_ID, C.User_ID, RT.Role_ID, RT.Role_Name, U.Name, C.Election_ID
-            ), max_votes_per_role AS (
-                SELECT 
-                    Role_ID, 
-                    MAX(Votes) AS MaxVotes
-                FROM votes_per_candidate
-                GROUP BY Role_ID
-            )
-            SELECT 
-                VPC.Name, 
-                VPC.Role_Name, 
-                VPC.Votes
-            FROM votes_per_candidate VPC
-            JOIN max_votes_per_role MVR 
-                ON VPC.Role_ID = MVR.Role_ID AND VPC.Votes = MVR.MaxVotes
-            """
-            cursor.execute(sql)  # Pass the election ID as `pk`
+                    VPC.User_ID, 
+                    VPC.Role_Name, 
+                    VPC.Votes
+                FROM votes_per_candidate VPC
+                JOIN max_votes_per_role MVR 
+                    ON VPC.Role_ID = MVR.Role_ID AND VPC.Votes = MVR.MaxVotes
+                """
+            cursor.execute(sql)  # Pass the election ID as pk
             winners = cursor.fetchall()
+            print(winners)
 
 
-        if self.has_duplicates(winners):
-            print("Duplicates exist")
-            return render(request, "evaluate_election.html", {"duplicates_exist": True})
+            if self.has_duplicates(winners):
+                print("Duplicates exist")
+                return render(request, "evaluate_election.html", {"duplicates_exist": True})
 
-        else:
-            print("No duplicates")
-            messages.success(request, "Order placed successfully!")
-        # Log the results for debugging
-        print("Leaders in Election:", winners)
-        for winner in winners:
-            sql = f""" INSERT INTO Leadership (User_ID, Role_ID, Start_Date, End_Date)
-            SELECT U.User_ID, R.Role_ID, GETDATE() AS Start_Date, NULL AS End_Date
-            FROM Users U
-            JOIN Role_Types R ON R.Role_Name = '{winner[1]}'
-            WHERE U.Name = '{winner[0]}';
-            """
-            cursor.execute(sql)
-        return redirect(self.redirect_to)
+            else:
+                print("No duplicates")
+
+            # Log the results for debugging
+            print("Leaders in Election:", winners)
+            with connection.cursor() as cursor:
+                for winner in winners:
+                    print("I'm here")
+                    sql = f""" INSERT INTO Leadership (User_ID, Role_ID, Start_Date, End_Date)
+                    SELECT distinct {winner[0]}, R.Role_ID, GETDATE() AS Start_Date, NULL AS End_Date
+                    FROM Users U
+                    JOIN Role_Types R ON R.Role_Name = '{winner[1]}';
+                    """
+                    print(sql)
+                    cursor.execute(sql)
+            return redirect(self.redirect_to)
+
+
+
+
+
 
     
