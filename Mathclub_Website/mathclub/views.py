@@ -368,12 +368,32 @@ class Products_ListView(GenericListView):
     from Products
     """
     pk_field = "Product_ID"
+    redirect_to = "list_products"
 
     def post(self, request, *args, **kwargs):
-        print(request.POST)
-        products = request.POST.getlist('products')
-        print("I've got products", products)
+        product_ids = request.POST.getlist('products')
+        biglist = []
+        sql = "BEGIN TRAN "
+        for product_id in product_ids:
+            print(product_id)
+            pk = self.kwargs.get("pk")
+            with connection.cursor() as cursor:
+                sql += f"""
 
+                insert into Orders (Product_ID, User_ID) 
+                values (%s, %s)
+
+                """
+                biglist += [product_id, str(self.request.session.get('user_id'))]
+        sql += "\n COMMIT"
+        print(sql)
+        print(biglist)
+
+        with connection.cursor() as cursor:
+            cursor.execute(sql, biglist)
+        
+
+        return redirect(self.redirect_to)
 
 
 
