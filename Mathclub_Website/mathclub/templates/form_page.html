@@ -2,7 +2,146 @@
 
 {% block title %}Add/Update Form{% endblock %}
 
+
 {% block content %}
+
+<style>
+    /* General Page Styling */
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Center Card Styling */
+    .card {
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Card Body Styling */
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Heading Styling */
+    h2 {
+        font-size: 2rem;
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    /* Form Fields */
+    .form-label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .form-control {
+        padding: 10px 15px;
+        font-size: 1rem;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        outline: none;
+    }
+
+    /* Error Messages */
+    .text-danger {
+        font-size: 0.9rem;
+        color: #dc3545 !important;
+    }
+
+    .text-danger ul {
+        margin: 0;
+        padding-left: 1.25rem;
+    }
+
+    .text-danger li {
+        font-size: 0.875rem;
+    }
+
+    /* Buttons */
+    .btn {
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+
+    .btn-outline-secondary {
+        border-color: #6c757d;
+        color: #6c757d;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: #fff;
+    }
+
+    /* Form Layout */
+    .mb-4 {
+        margin-bottom: 1.5rem !important;
+    }
+
+    .d-flex.justify-content-between {
+        gap: 1rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .card {
+            padding: 1rem;
+        }
+
+        .btn-lg {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .d-flex.justify-content-between {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn:last-child {
+            margin-bottom: 0;
+        }
+    }
+</style>
+
+
 <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; padding-top: 50px;">
     <div class="card shadow-lg border-0" style="width: 100%; max-width: 800px; padding: 40px; border-radius: 12px;">
         <div class="card-body">
@@ -49,4 +188,8 @@
         </div>
     </div>
 </div>
+
+
+
 {% endblock %}
+
