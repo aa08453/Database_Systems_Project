@@ -527,3 +527,22 @@ class Orders_form(forms.Form):
     delivery_date = forms.DateTimeField(
             widget=forms.widgets.DateTimeInput(attrs={'type':
                                                       'datetime-local'}))
+class Leadership_form(forms.Form):
+    user =  DynamicChoiceField(
+        query = """
+        select User_ID, Name
+        from Users
+        """
+    )
+    role = DynamicChoiceField(
+        query = """
+        select Role_ID, Role_Name
+        from Role_Types
+        """
+    )
+    Start_Date = forms.DateTimeField(
+            widget=forms.widgets.DateTimeInput(attrs={'type':
+                                                      'datetime-local'}))
+    End_Date = forms.DateTimeField(
+            widget=forms.widgets.DateTimeInput(attrs={'type':
+                                                      'datetime-local'}))

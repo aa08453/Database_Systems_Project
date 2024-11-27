@@ -457,3 +457,5 @@ INSERT INTO Voting (Voter_ID, Candidate_ID) VALUES
 (2, 1),
 (3, 2);
 
+
+
