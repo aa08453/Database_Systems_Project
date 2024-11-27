@@ -278,6 +278,7 @@ class CandidatesDeleteView(GenericDeleteView):
     redirect_to = "list_candidates"
 
 # Role_Types
+#TODO: Come back here
 class Role_TypesListView(GenericListView):
     table_name = "Role_Types"
     sql = """
@@ -655,10 +656,9 @@ class Teams(GenericPageView):
 class Teams_ListView(GenericListView):
     table_name = "Teams"
     sql = """
-    select Team_ID as Serial, Team_Name, Team_Lead, Date_Created 
+    select Team_ID, Team_Name, Team_Lead, Date_Created 
     FROM Teams
     """
-    mapped_names = {"Serial" : "Transaction_ID"}
     pk_field = "Team_ID"
     
     
@@ -679,9 +679,8 @@ class Team_Roles(GenericPageView):
 class List_Roles(GenericListView):
     table_name = "Team_Roles"
     sql = """
-    select Role_ID as Serial, Role_Name, Role_Description FROM Team_Roles
+    select Role_ID, Role_Name, Role_Description FROM Team_Roles
     """
-    mapped_names = { "Serial" : "Role_ID" }
     pk_field = "Role_ID"
     
 class Team_Roles_DeleteView(GenericDeleteView):
