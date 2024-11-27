@@ -27,7 +27,7 @@ class Form_Custom(forms.Form):
             cursor.execute(check_sql, values)
             count = cursor.fetchone()[0]
             
-            if count > 0:
+            if count > 1:
                 # If the combination already exists, add an error to the form for each field involved
                 for field in kwargs:
                     if field != 'table_name':  # Avoid adding error for 'table_name'

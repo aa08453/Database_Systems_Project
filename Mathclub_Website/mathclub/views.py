@@ -377,6 +377,7 @@ class Products_ListView(GenericListView):
     
 
     def post(self, request, *args, **kwargs):
+        print("HEYY!!! I'm HERE")
         product_ids = request.POST.getlist('products')  # List of selected product IDs
         user_id = self.request.session.get('user_id')  # Fetch the user ID from the session
         redirect_url = self.redirect_to  # The URL to redirect after success
