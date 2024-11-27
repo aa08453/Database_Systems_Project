@@ -776,19 +776,9 @@ BEGIN
         ROLLBACK TRANSACTION;
         PRINT 'Error occurred while deleting Club_Items.';
         THROW;
-    END CATCH
+    END CATCH
 END;
 GO
-
-
-
-
-
-
-
-
-
-
 
 
 
