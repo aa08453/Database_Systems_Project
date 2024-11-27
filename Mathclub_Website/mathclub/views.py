@@ -122,6 +122,7 @@ class GenericListView(ListView):
                 # search_field = search_field.replace(" ", "_")
                 sql += f" where [{search_field}] like %s"
                 print(sql)
+                print(data)
                 cursor.execute(sql, [f"%{query}%"])
             else:
                 cursor.execute(sql)
@@ -132,7 +133,7 @@ class GenericListView(ListView):
                     columns[x] = "pk_field"
             rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
             return columns, rows
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         query = self.request.GET.get("q", "")
@@ -482,7 +483,7 @@ class Events_ListView(GenericListView):
 class Events_PageView(GenericPageView):
     table_name = "Events"
     search_field = "Event_ID"
-    fields = ["Event_Name", "Event_Lead", "Start_Date", "End_Date", "Location", "Scale", "Description"]
+    fields = ["Event_Lead", "Event_Name", "Start_Date", "End_Date", "Location", "Scale", "Description"]
     pk_field = "Event_ID"
     redirect_to = "list_events"
     form_class = Events_form

@@ -202,6 +202,22 @@ class Products_form(Form_Custom):
                                              cleaned_data.get("Product_Name"))
 
 class Events_form(forms.Form):
+    
+    lead = DynamicChoiceField(
+        query = """
+        select User_ID, Name
+        from Users
+        """
+    )
+    event = forms.CharField(
+        widget = forms.TextInput()
+    )
+    start_date = forms.DateTimeField(
+            widget=forms.widgets.DateTimeInput(attrs={'type':
+                                                      'datetime-local'}))
+    end_date = forms.DateTimeField(
+            widget=forms.widgets.DateTimeInput(attrs={'type':
+                                                      'datetime-local'}))
     location = DynamicChoiceField(
         query = """
         select Location_ID, Location_Name
@@ -209,19 +225,10 @@ class Events_form(forms.Form):
         """
     )
 
-    lead = DynamicChoiceField(
-        query = """
-        select User_ID, Name
-        from Users
-        """
-    )
-
     scale = forms.CharField(
         widget=forms.TextInput()
     )  
-    event = forms.CharField(
-        widget = forms.TextInput()
-    )
+    
     description = forms.CharField(
         widget = forms.TextInput()
     )
