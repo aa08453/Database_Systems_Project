@@ -421,7 +421,6 @@ class Products_ListView(GenericListView):
                 cursor.execute(sql, biglist)
 
             # Success message
-            messages.success(request, "Order placed successfully.")
         except Exception as e:
             # Rollback transaction in case of an error
             with connection.cursor() as cursor:
