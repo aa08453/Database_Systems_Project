@@ -139,9 +139,9 @@ class GenericListView(ListView):
         context["create_url"] = f"/{self.table_name}/create/"
         context["update_url"] = f"/{self.table_name}/update/"
         context["delete_url"] = f"/{self.table_name}/delete/"
+        context["extra_url"] = f"/{self.table_name}/evaluate/"
         user_privilege = self.request.session.get("privilege", None)
         context["has_privilege"] = user_privilege == 1  # Only show actions if privilege is 1
-        print("I have context currently", context)
         return context
 
 class GenericPageView(TemplateView): #Create/update in one go
@@ -399,16 +399,24 @@ class Products_ListView(GenericListView):
             VALUES (%s, GETDATE(), DATEADD(DAY, 7, GETDATE()));
 
             SET @OrderID = SCOPE_IDENTITY();  
+
+
             """
             biglist += [user_id]
 
             # Insert order details for each selected product
             for product_id in product_ids:
                 sql += f"""
-                INSERT INTO Order_Details (Order_ID, Product_ID, Quantity)
-                VALUES (@OrderID, %s, 1);  
+            INSERT INTO Order_Details (Order_ID, Product_ID, Quantity)
+            VALUES (@OrderID, %s, 1);  
+
+
+            UPDATE Products
+            SET Items_In_Stock = Items_In_Stock - 1
+            WHERE Product_ID = %s AND Items_In_Stock > 0;
+
                 """
-                biglist += [product_id]
+                biglist += [product_id, product_id]
 
             # Commit the transaction
             sql += "COMMIT;\n"
@@ -419,6 +427,7 @@ class Products_ListView(GenericListView):
             # Execute the complete SQL transaction
             with connection.cursor() as cursor:
                 cursor.execute(sql, biglist)
+            messages.success(request, "Order placed successfully!")
 
             # Success message
         except Exception as e:
@@ -704,7 +713,6 @@ class VotingListView(GenericListView):
                 if columns[x] == self.pk_field:
                     columns[x] = "pk_field"
             rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
-            print("I have rows", rows)
             return columns, rows
     pk_field = "Vote_ID"
 
@@ -720,20 +728,16 @@ class VotingPageView(GenericPageView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         pk = self.kwargs.get("pk", None)
-        print("I've got pk", pk)
         context["object"] = self.get_object(pk) if pk else None
         context["fields"] = self.fields
         user_privilege = self.request.session.get("privilege", None)
         user_id = self.request.session.get("user_id", None)
-        print("The user id is ", user_id)
         context["user_id"] = user_id
         context["has_privilege"] = user_privilege == 1  # Only show actions if privilege is 1
 
         obj = self.get_object(pk) if pk else None
         initial_data = {key: value for key, value in obj.items() if key != self.pk_field} if obj else None
-        print(self.form_class)
         context["form"] = self.form_class(initial=initial_data) if obj else self.form_class(user_id = user_id)
-        print("The form with context is ", context["form"].fields)
         return context
 
     def get_roles(self):
@@ -852,8 +856,68 @@ class Order_Details_DeleteView(GenericDeleteView):
     
 
 class EvaluateElection(View):
-    pass
+    redirect_to = "list_voting"
+    def get(self, request, pk=None):
+        print("I'm here")
 
 
 
+class EvaluateElection(View):
+    redirect_to = "list_voting"
 
+
+    def has_duplicates(self, lst):
+        seen = set()
+        for item in lst:
+            if item[1] in seen:
+                return True
+            seen.add(item[1])
+        return False
+
+
+    def get(self, request, pk=None):
+        with connection.cursor() as cursor:
+            sql = """
+            WITH current_elections AS (
+                SELECT * 
+                FROM elections 
+                WHERE Start_Date < GETDATE() AND GETDATE() < END_DATE
+            ), votes_per_candidate AS (
+                SELECT 
+                    U.Name AS Name, 
+                    RT.Role_Name AS Role_Name, 
+                    RT.Role_ID AS Role_ID,
+                    COALESCE(COUNT(V.Vote_ID), 0) AS Votes,
+                    C.Election_ID
+                FROM voting V 
+                RIGHT JOIN candidates C ON V.Candidate_ID = C.Candidate_ID
+                RIGHT JOIN users U ON C.User_ID = U.User_ID
+                JOIN Role_Types RT ON C.Role_ID = RT.Role_ID
+                WHERE C.Election_ID IN (SELECT Election_ID FROM current_elections)
+                GROUP BY C.Candidate_ID, C.User_ID, RT.Role_ID, RT.Role_Name, U.Name, C.Election_ID
+            ), max_votes_per_role AS (
+                SELECT 
+                    Role_ID, 
+                    MAX(Votes) AS MaxVotes
+                FROM votes_per_candidate
+                GROUP BY Role_ID
+            )
+            SELECT 
+                VPC.Name, 
+                VPC.Role_Name, 
+                VPC.Votes
+            FROM votes_per_candidate VPC
+            JOIN max_votes_per_role MVR 
+                ON VPC.Role_ID = MVR.Role_ID AND VPC.Votes = MVR.MaxVotes
+            """
+            cursor.execute(sql)  # Pass the election ID as `pk`
+            winners = cursor.fetchall()
+
+
+        if self.has_duplicates(winners):
+            print("Duplicates exist")
+        else:
+            print("No duplicates")
+        # Log the results for debugging
+        print("Leaders in Election:", winners)
+        return redirect(self.redirect_to)

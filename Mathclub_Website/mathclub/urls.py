@@ -53,6 +53,8 @@ urlpatterns = [
     path('elections/update/<int:pk>/', ElectionsPageView.as_view(), name='update_election'),
     path('elections/delete/<int:pk>/', ElectionsDeleteView.as_view(), name='delete_election'),
 
+    path('voting/evaluate/', EvaluateElection.as_view(), name='evaluate_election'),
+
 
     #Products
     path('Products/', Products_ListView.as_view(), name='list_products'),
