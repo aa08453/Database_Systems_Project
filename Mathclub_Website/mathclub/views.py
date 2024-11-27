@@ -614,7 +614,7 @@ class Finance_ListView(GenericListView):
     sql = """
 
     SELECT 
-        F.Transaction_ID AS Serial,
+        F.Transaction_ID ,
         RO.Name AS Responsible_Person,
         P.Name AS Participant,
         T.Type_Name AS [Transaction_Type],
@@ -632,7 +632,7 @@ class Finance_ListView(GenericListView):
     """ 
     pk_field = "Transaction_ID"
 
-    mapped_names = {"Serial" : "F.Transaction_ID", "Participant" : "P.Name",
+    mapped_names = {"Participant" : "P.Name",
                     "Responsible_Person" : "RO.Name" ,
                     "T.Type_Name" : "Transaction_Type", "Date" : "F.Date", "Description" : "F.Description", "Amount" : "F.Amount"}
     
