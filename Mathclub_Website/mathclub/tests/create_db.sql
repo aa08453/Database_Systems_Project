@@ -394,42 +394,42 @@ GO
 
 
 
-	CREATE TRIGGER trg_Users_Delete
-	ON Users
-	INSTEAD OF DELETE
-	AS
-	BEGIN
-		BEGIN TRY
-			BEGIN TRANSACTION;
+CREATE TRIGGER trg_Users_Delete
+ON Users
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
 
-			-- Delete from dependent table: Team_Members
-			DELETE FROM Team_Members
-			WHERE User_ID IN (SELECT User_ID FROM DELETED);
+        -- Delete from dependent table: Team_Members
+        DELETE FROM Team_Members
+        WHERE User_ID IN (SELECT User_ID FROM DELETED);
 
-			-- Delete from dependent table: Orders
-			DELETE FROM Orders
-			WHERE Customer_ID IN (SELECT User_ID FROM DELETED);
+        -- Delete from dependent table: Orders
+        DELETE FROM Orders
+        WHERE Customer_ID IN (SELECT User_ID FROM DELETED);
 
-			-- Delete from dependent table: Candidates
-			DELETE FROM Candidates
-			WHERE User_ID IN (SELECT User_ID FROM DELETED);
+        -- Delete from dependent table: Candidates
+        DELETE FROM Candidates
+        WHERE User_ID IN (SELECT User_ID FROM DELETED);
 
-			-- Delete from dependent table: Attendees
-			DELETE FROM Attendees
-			WHERE Attendee IN (SELECT User_ID FROM DELETED);
+        -- Delete from dependent table: Attendees
+        DELETE FROM Attendees
+        WHERE Attendee IN (SELECT User_ID FROM DELETED);
 
-			-- Finally, delete from the Users table
-			DELETE FROM Users
-			WHERE User_ID IN (SELECT User_ID FROM DELETED);
+        -- Finally, delete from the Users table
+        DELETE FROM Users
+        WHERE User_ID IN (SELECT User_ID FROM DELETED);
 
-			COMMIT TRANSACTION;
-		END TRY
-		BEGIN CATCH
-			ROLLBACK TRANSACTION;
-			THROW;
-		END CATCH
-	END;
-	GO
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
 
 
 
@@ -492,6 +492,44 @@ BEGIN
     END CATCH
 END;
 GO
+
+
+CREATE TRIGGER trg_Elections_Delete
+ON Elections
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        -- Start a transaction
+        BEGIN TRANSACTION;
+
+        -- Handle dependencies in the Voting table
+        DELETE FROM Voting
+        WHERE Candidate_ID IN (
+            SELECT Candidate_ID
+            FROM Candidates
+            WHERE Election_ID IN (SELECT Election_ID FROM DELETED)
+        );
+
+        -- Handle dependencies in the Candidates table
+        DELETE FROM Candidates
+        WHERE Election_ID IN (SELECT Election_ID FROM DELETED);
+
+        -- Finally, delete from the Elections table
+        DELETE FROM Elections
+        WHERE Election_ID IN (SELECT Election_ID FROM DELETED);
+
+        -- Commit the transaction
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        -- Rollback in case of an error
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
 
 
 
