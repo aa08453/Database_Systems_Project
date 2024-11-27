@@ -437,7 +437,6 @@ class Products_ListView(GenericListView):
             # Execute the complete SQL transaction
             with connection.cursor() as cursor:
                 cursor.execute(sql, biglist)
-            messages.success(request, "Order placed successfully!")
 
             # Success message
         except Exception as e:
@@ -446,7 +445,6 @@ class Products_ListView(GenericListView):
                 cursor.execute("ROLLBACK")
             # Log the error (or handle it appropriately)
             print(f"Error placing order: {e}")
-            messages.error(request, "There was an error processing your order. Please try again.")
 
         return redirect(redirect_url)
 
