@@ -531,13 +531,13 @@ class Transaction_Types_PageView(GenericPageView):
     search_field = "Type_ID"
     fields = ["Type_Name"]
     pk_field = "Type_ID"
-    redirect_to = "list_tags"
+    redirect_to = "list_Transaction_Types"
     form_class = Transaction_Types_form
 
 class Transaction_Types_DeleteView(GenericDeleteView):
     table_name = "Transaction_Types"
-    pk_field = "Tag_ID"
-    redirect_to = "list_tags"
+    pk_field = "Type_ID"
+    redirect_to = "list_Transaction_Types"
     
 class Members(GenericPageView):
     table_name = "Users"

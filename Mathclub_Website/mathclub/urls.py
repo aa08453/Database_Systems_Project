@@ -17,8 +17,8 @@ urlpatterns = [
     path('main', views.main_page, name='main_page'),  # Add this line
 
     
-    path('Roles/create/', Team_Roles.as_view(), name='create_Roles'),
-    path('Roles/',List_Roles.as_view(),name="list_Roles"),# Add this line
+    path('Team_Roles/create/', Team_Roles.as_view(), name='create_Roles'),
+    path('Team_Roles/',List_Roles.as_view(),name="list_Roles"),# Add this line
     path('Team_Roles/update/<int:pk>/', Team_Roles.as_view(), name='update_Roles'),  # Add this line
     path('Team_Roles/delete/<int:pk>/', Team_Roles_DeleteView.as_view(), name='delete_Roles'),  # Add this line
     
@@ -42,6 +42,11 @@ urlpatterns = [
     path('Finances/delete/<int:pk>/', Finance_DeleteView.as_view(), name='delete_Finance'),
     path('Finances/update/<int:pk>/', Finance_PageView.as_view(), name='update_Finance'),  # Add this line
 
+
+    path('Transaction_Types/',Transaction_Types_ListView.as_view(), name='list_Transaction_Types'),
+    path('Transaction_Types/create/',Transaction_Types_PageView.as_view(), name='create_Transaction_Types'),
+    path('Transaction_Types/update/<int:pk>/',Transaction_Types_PageView.as_view(), name='update_Transaction_Types'),
+    path('Transaction_Types/delete/<int:pk>/',Transaction_Types_DeleteView.as_view(), name='delete_Transaction_Types'),
 
 
     #elections. We delete through the update.
