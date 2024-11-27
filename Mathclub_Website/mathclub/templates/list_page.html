@@ -4,6 +4,28 @@
 {% block title %}List View{% endblock %}
 
 {% block content %}
+
+<style>
+    .table-container table {
+        table-layout: auto; /* Allow columns to adjust size automatically */
+        width: 100%; /* Ensure table spans full width */
+    }
+
+    .table-container td:last-child {
+        white-space: nowrap; /* Prevent buttons from wrapping */
+    }
+
+    .table-container th, .table-container td {
+        padding: 10px; /*Consistent padding for cells*/
+        text-align: center; /* Center align content */
+        vertical-align: middle; /* Align vertically to the middle */
+    }
+
+    .btn-sm {
+        font-size: 0.8rem; /* Smaller button size for better spacing */
+    }
+</style>
+
 <div class="container mt-4">
     <!-- Search Form Section -->
     <div class="card shadow-sm mb-4">
@@ -96,7 +118,7 @@
 
                 <!-- Actions Section -->
                 {% if has_privilege and table_name != 'voting' %}
-                <div class="actions-container ms-4" style="width: 250px;">
+                <div class="actions-container" style="width: 250px;">
                     <table class="table table-hover table-bordered"> <!-- Adjust the width here -->
                         <thead>
                             <tr class="text-white" style="background: linear-gradient(to right, #6a11cb, #2575fc);">
@@ -143,4 +165,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}

@@ -238,7 +238,7 @@ class GenericDeleteView(View):
 class ElectionsListView(GenericListView):
     table_name = "elections"
     sql = """
-select Election_ID, Start_Date, End_Date from Elections 
+select Election_ID, Start_Date as [Start Date], End_Date as [End Date] from Elections 
 """
     pk_field = "Election_ID"
 
@@ -249,7 +249,7 @@ select Election_ID, Start_Date, End_Date from Elections
 class CandidatesListView(GenericListView):
     table_name = "candidates"
     sql = """
-select Candidate_ID, R.Role_Name as Role_Name, E.Start_Date as Start_Date, E.End_Date as End_Date, U.Name as Name
+select Candidate_ID, R.Role_Name as [Role Name], E.Start_Date as [Start Date], E.End_Date as [End Date], U.Name as [Candidate Name]
 from Candidates C 
 join Role_Types R on R.Role_ID = C.Role_ID 
 join Elections E on E.Election_ID = C.Election_ID
@@ -274,7 +274,7 @@ class CandidatesDeleteView(GenericDeleteView):
 class Role_TypesListView(GenericListView):
     table_name = "Role_Types"
     sql = """
-    select Role_ID, Role_Name
+    select Role_ID as [Role ID], Role_Name as [Role]
     from Role_Types
     """
     pk_field = "Role_ID"
@@ -296,7 +296,7 @@ class Role_TypesDeleteView(GenericDeleteView):
 class Locations_ListView(GenericListView):
     table_name = "Locations"
     sql = """
-    select Location_ID, Location_Name
+    select Location_ID, Location_Name as [Location Name]
     from Locations
     """
     pk_field = "Location_ID"
@@ -464,7 +464,7 @@ class Products_DeleteView(GenericDeleteView):
 class Events_ListView(GenericListView):
     table_name = "Events"
     sql = """
-    select E.Event_ID, U.Name, E.Event_Name, E.Start_Date, E.End_Date, L.Location_Name, E.Scale, E.Description
+    select E.Event_ID, U.Name, E.Event_Name, E.Start_Date, E.End_Date, L.Location_Name, E.Scale
     from Events E join Users U on E.Event_Lead = U.User_ID join Locations L on E.Location = L.Location_ID
     """
     pk_field = "Event_ID"
