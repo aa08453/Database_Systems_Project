@@ -19,8 +19,6 @@ class Form_Custom(forms.Form):
         FROM {table_name}
         WHERE {where_clause}
         """
-        print(check_sql)
-        print(values)
 
         
         with connection.cursor() as cursor:
@@ -50,7 +48,6 @@ class DynamicChoiceField(forms.ChoiceField):
         self.argument_string = kwargs.pop('argument_string', '') #TODO: see if this is right
         super().__init__(*args, **kwargs)
         self.choices = self.prepare_choices()
-        print("Dynamic choices are: ", self.choices)
 
     def prepare_choices(self):
         if self.query:
@@ -445,7 +442,6 @@ def clean(self):
         check_sql = f"SELECT COUNT(1) FROM Majors WHERE Name = %s"
         cursor.execute(check_sql, [data["major"]])  # 'major' should match the field name
         count = cursor.fetchone()[0]
-        print("Got here")
         if count > 0:
             # Add error to the 'major' field
             self.add_error('major', 'This value already exists.')  # Correct way to add errors
@@ -476,11 +472,9 @@ class Voting_form(Form_Custom):
                     """
                 ) 
             roles = cursor.fetchall()
-        print("The roles are ", roles)
 
         if roles:
             for role in roles:
-                print("I'm printing roles", role[0]) #-2 corresponds to Role_ID
                 self.fields[f"{role[1]} (For election from {role[2]} to {role[3]})"] = DynamicChoiceField(
                                                 query = f"""
                                                 WITH current_elections AS (

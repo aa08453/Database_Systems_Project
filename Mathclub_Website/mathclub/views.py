@@ -103,6 +103,7 @@ class GenericListView(ListView):
     template_name = "list_page.html" 
     sql = None
     pk_field = ""
+    mapped_names = {}
 
 
 
@@ -111,10 +112,16 @@ class GenericListView(ListView):
 
     def get_queryset(self, query=""):
         search_field = self.get_search_field()
+        print(self.mapped_names)
+        print(search_field)
+        if (search_field in self.mapped_names.keys()):
+            search_field = self.mapped_names[search_field]
         sql = self.sql
         with connection.cursor() as cursor:
             if query:
-                sql += f"where {search_field} like %s"
+                # search_field = search_field.replace(" ", "_")
+                sql += f" where [{search_field}] like %s"
+                print(sql)
                 cursor.execute(sql, [f"%{query}%"])
             else:
                 cursor.execute(sql)
@@ -606,11 +613,29 @@ class Finance_PageView(GenericPageView):
 class Finance_ListView(GenericListView):
     table_name = "Finances"
     sql = """
-    select Transaction_ID as Serial, [Responsible Person] = (select Name from Users V where V.User_ID = F.Responsible_Officer), [Participant] = (select Name from Users V where V.User_ID = F.User_ID), Type_Name as [Transaction Type], Date, Description, Amount 
-    FROM Finances F join Users U on F.User_ID = U.User_ID
-    join Transaction_Types T on F.Transaction_Type = T.Type_ID
+
+    SELECT 
+        F.Transaction_ID AS Serial,
+        RO.Name AS Responsible_Person,
+        P.Name AS Participant,
+        T.Type_Name AS [Transaction_Type],
+        F.Date as Date,
+        F.Description as Description,
+        F.Amount as Amount
+    FROM 
+        Finances F
+    JOIN 
+        Users P ON F.User_ID = P.User_ID
+    JOIN 
+        Users RO ON F.Responsible_Officer = RO.User_ID
+    JOIN 
+        Transaction_Types T ON F.Transaction_Type = T.Type_ID
     """ 
     pk_field = "Transaction_ID"
+
+    mapped_names = {"Serial" : "F.Transaction_ID", "Participant" : "P.Name",
+                    "Responsible_Person" : "RO.Name" ,
+                    "T.Type_Name" : "Transaction_Type", "Date" : "F.Date", "Description" : "F.Description", "Amount" : "F.Amount"}
     
 
 class Finance_DeleteView(GenericDeleteView):
@@ -632,9 +657,10 @@ class Teams(GenericPageView):
 class Teams_ListView(GenericListView):
     table_name = "Teams"
     sql = """
-    select Team_ID as Serial, Team_Name as [Team Name], Team_Lead as [Team Lead], Date_Created as [Date Created] 
+    select Team_ID as Serial, Team_Name, Team_Lead, Date_Created 
     FROM Teams
     """
+    mapped_names = {"Serial" : "Transaction_ID"}
     pk_field = "Team_ID"
     
     
@@ -655,8 +681,9 @@ class Team_Roles(GenericPageView):
 class List_Roles(GenericListView):
     table_name = "Team_Roles"
     sql = """
-    select Role_ID as Serial, Role_Name as [Role Name], Role_Description as [Role Description] FROM Team_Roles
+    select Role_ID as Serial, Role_Name, Role_Description FROM Team_Roles
     """
+    mapped_names = { "Serial" : "Role_ID" }
     pk_field = "Role_ID"
     
 class Team_Roles_DeleteView(GenericDeleteView):
