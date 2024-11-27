@@ -80,6 +80,18 @@
                                 {% endif %}
                             </div>
                     </form>
+
+                    {% if table_name == 'voting' %}
+                    <div class="text-end mb-4">
+                        <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add/Change Vote</a>
+                    </div>
+                    {% endif %}
+
+                    {% if has_privilege and table_name == 'voting' %}
+                    <div class="text-end mb-4">
+                        <a href="{{ extra_url }}" class="btn btn-gradient-success">Evaluate Election</a>
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!-- Actions Section -->
@@ -125,17 +137,6 @@
                         <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add New</a>
                     </div>
 
-                    {% if table_name == 'voting' %}
-                    <div class="text-end mb-4">
-                        <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add/Change Vote</a>
-                    </div>
-                    {% endif %}
-
-                    {% if has_privilege and table_name == 'voting' %}
-                    <div class="text-end mb-4">
-                        <a href="{{ extra_url }}" class="btn btn-gradient-success">Evaluate Election</a>
-                    </div>
-                    {% endif %}
                 </div>
                 {% endif %}
             </div>

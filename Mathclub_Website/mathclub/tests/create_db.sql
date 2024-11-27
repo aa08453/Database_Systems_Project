@@ -1,11 +1,11 @@
-drop database clubs_database 
-go
 
 CREATE DATABASE CLUBS_DATABASE
 GO 
 
 USE CLUBS_DATABASE
 GO
+
+
 
 -- Check and create "Majors" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Majors')
@@ -169,17 +169,20 @@ END;
 -- Check and create "Order_Details" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Order_Details')
 BEGIN
-    CREATE TABLE "Order_Details"(
-        "Details_ID" INT IDENTITY(1,1) PRIMARY KEY,
-        "Order_ID" INT NOT NULL,
-        "Product_ID" INT NOT NULL,
-        "Quantity" INT NOT NULL,
-        FOREIGN KEY ("Product_ID") REFERENCES "Products"("Product_ID"),
-        FOREIGN KEY ("Order_ID") REFERENCES "Orders"("Order_ID"),
-        CONSTRAINT order_product UNIQUE ("Order_ID", "Product_ID")
-    );
+        CREATE TABLE "Order_Details"(
+            "Details_ID" INT IDENTITY(1,1) PRIMARY KEY,
+            "Order_ID" INT NOT NULL,
+            "Product_ID" INT NOT NULL,
+            "Quantity" INT NOT NULL,
+            FOREIGN KEY ("Product_ID") REFERENCES "Products"("Product_ID"),
+            FOREIGN KEY ("Order_ID") REFERENCES "Orders"("Order_ID"),
+            CONSTRAINT order_product UNIQUE ("Order_ID", "Product_ID")
+        );
 END;
 
+select * from Order_Details
+
+select * from orders 
 -- Check and create "Club_Items" table if it doesn't exist
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Club_Items')
 BEGIN
@@ -453,3 +456,4 @@ INSERT INTO Leadership (User_ID, Role_ID, Start_Date, End_Date) VALUES
 INSERT INTO Voting (Voter_ID, Candidate_ID) VALUES
 (2, 1),
 (3, 2);
+
