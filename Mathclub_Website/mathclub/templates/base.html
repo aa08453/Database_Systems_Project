@@ -35,89 +35,65 @@
     <!-- Top Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
+            <!-- Brand -->
             <a class="navbar-brand" href="/main">Math Club</a>
+    
+            <!-- Navbar Toggler -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+    
+            <!-- Navbar Links -->
             <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Public Links -->
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/elections/">Elections</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/candidates/">Candidates</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Products/">Products</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Events/">Events</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="/voting/">Voting</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Blogs/">Blogs</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/elections/">Elections</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/candidates/">Candidates</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Products/">Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Events/">Events</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/voting/">Voting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Blogs/">Blogs</a></li>
                 </ul>
-                <ul class="navbar-nav me-auto">
-
-                   
-
-                    {% if has_privilege %}
-                    <!-- Admin-Specific Navigation -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Tags/">Tags</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Majors/">Majors</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Locations/">Locations</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Finances/">Finance</a>
-                    </li>
-
-                    <li class = "nav-item">
-                        <a class="nav-link" href="/Teams/">Teams</a>
-                    </li>
-
-                    <li class = "nav-item">
-                        <a class="nav-link" href="/Roles/">Roles</a>
-                    </li>
-
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Role_Types/">Role Types</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Club_Items/">Club Items</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Order_Details/">Order Details</a>
-                        <!-- <a href="/Order_Details/" pk = "order_id={{item.order_id}},
-                        product_id={{item.product_id}}/">Update Order_Details</a> -->
-                        <!-- <a href="/Order_Details/delete/order_id=1,product_id=2/">Delete</a> -->
-
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Orders/">Orders</a>
-                    </li>
-                    {% endif %}
-                    <!-- Common Navigation -->
-                </ul>
+    
+                <!-- Admin Privilege Dropdown -->
+                {% if has_privilege %}
                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/ ">Logout</a>
+                    <li class="nav-item dropdown">
+                        <a
+                            class="nav-link dropdown-toggle btn btn-outline-light btn-sm"
+                            href="#"
+                            id="adminDropdown"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            Admin Pages
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="adminDropdown">
+                            <li><a class="dropdown-item" href="/Tags/">Tags</a></li>
+                            <li><a class="dropdown-item" href="/Majors/">Majors</a></li>
+                            <li><a class="dropdown-item" href="/Locations/">Locations</a></li>
+                            <li><a class="dropdown-item" href="/Finances/">Finance</a></li>
+                            <li><a class="dropdown-item" href="/Teams/">Teams</a></li>
+                            <li><a class="dropdown-item" href="/Roles/">Roles</a></li>
+                            <li><a class="dropdown-item" href="/Role_Types/">Role Types</a></li>
+                            <li><a class="dropdown-item" href="/Club_Items/">Club Items</a></li>
+                            <li><a class="dropdown-item" href="/Order_Details/">Order Details</a></li>
+                            <li><a class="dropdown-item" href="/Orders/">Orders</a></li>
+                        </ul>
                     </li>
+                </ul>
+                {% endif %}
+    
+                <!-- Logout -->
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Logout</a></li>
                 </ul>
             </div>
         </div>
     </nav>
+    
+    
 
     <!-- Back Button -->
     <div class="container back-button">
@@ -138,3 +114,62 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+<script>
+    function togglePrivilegedLinks() {
+        const privilegedLinks = document.getElementById('privilegedLinks');
+        if (privilegedLinks.style.display === 'none' || privilegedLinks.style.display === '') {
+            privilegedLinks.style.display = 'block'; // Show the privileged links
+        } else {
+            privilegedLinks.style.display = 'none'; // Hide the privileged links
+        }
+    }
+</script>
+
+<script>
+    // Add a fade-in effect for the dropdown menu
+    document.querySelectorAll('.dropdown-menu').forEach((menu) => {
+        menu.addEventListener('show.bs.dropdown', () => {
+            menu.classList.add('showing');
+            setTimeout(() => menu.classList.remove('showing'), 150);
+        });
+    });
+</script>
+
+
+<style>
+    /* Navbar Styling */
+    .navbar {
+        padding: 0.8rem 1rem;
+        background-color: #007BFF; /* Dark theme for the navbar */
+    }
+
+    .navbar-brand {
+        font-weight: bold;
+        font-size: 1.3rem;
+    }
+
+    .btn-outline-light {
+        font-size: 0.9rem;
+        border-color: #007BFF;
+    }
+
+    /* Dropdown Styling */
+    .dropdown-menu {
+        background-color: #007FFF; /* Darker dropdown */
+        border-radius: 0.3rem;
+    }
+
+    .dropdown-item {
+        /* color: #007BFF; */
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .dropdown-item:hover {
+        background-color: #6c757d;
+        color: #007BFF;
+    }
+</style>
+
+
