@@ -122,7 +122,6 @@ class GenericListView(ListView):
                 # search_field = search_field.replace(" ", "_")
                 sql += f" where [{search_field}] like %s"
                 print(sql)
-                print(data)
                 cursor.execute(sql, [f"%{query}%"])
             else:
                 cursor.execute(sql)
