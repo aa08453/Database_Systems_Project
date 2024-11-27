@@ -830,7 +830,8 @@ class VotingDeleteView(GenericDeleteView):
     table_name = "voting"
     pk_field = "Vote_ID"
     redirect_to = "list_voting"
-    
+
+#ORDER DETAILS VIEW    
 class Order_Details_ListView(GenericListView):
     table_name = "Order_Details"
     sql = """
@@ -853,6 +854,29 @@ class Order_Details_DeleteView(GenericDeleteView):
     table_name = "Order_Details"
     pk_field = "Details_ID"
     redirect_to = "list_order_details"
+
+#ORDERS VIEW
+class Orders_ListView(GenericListView):
+    table_name = "Orders"
+    sql = """
+    select o.Order_ID as [#Order], u.Name as [Customer Name], o.Order_Date as [Order Date], o.Delivery_Date as [Delivery Date] 
+    from Orders o join users u on u.user_ID = o.Customer_ID
+
+    """
+    pk_field = "Order_ID"
+
+class Orders_PageView(GenericPageView):
+    table_name = "Orders"
+    fields = ["Customer_ID", "Order_Date", "Delivery_Date"]
+    pk_field = "Order_ID"
+    redirect_to = "list_orders"
+    form_class = Orders_form
+
+
+class Orders_DeleteView(GenericDeleteView):
+    table_name = "Orders"
+    pk_field = "Order_ID"
+    redirect_to = "list_orders"
     
 
 class EvaluateElection(View):

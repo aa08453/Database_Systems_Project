@@ -143,5 +143,11 @@ urlpatterns = [
     path('Order_Details/create/', Order_Details_PageView.as_view(), name='create_order_details'),
     path('Order_Details/update/<str:pk>/', Order_Details_PageView.as_view(), name='update_order_details'),
     path('Order_Details/delete/<str:pk>/', Order_Details_DeleteView.as_view(), name='delete_order_details'),
+    
+    #Orders
+    path('Orders/', Orders_ListView.as_view(), name='list_orders'),
+    path('Orders/create/', Orders_PageView.as_view(), name='create_orders'),
+    path('Orders/update/<str:pk>/', Orders_PageView.as_view(), name='update_orders'),
+    path('Orders/delete/<str:pk>/', Orders_DeleteView.as_view(), name='delete_orders'),
 ]
 

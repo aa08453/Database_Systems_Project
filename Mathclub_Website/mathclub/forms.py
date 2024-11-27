@@ -518,3 +518,18 @@ class OrderDetails_form(forms.Form):
     
     quantity = forms.IntegerField()
 
+#Orders FORM
+class Orders_form(forms.Form):
+    customer =  DynamicChoiceField(
+        query = """
+        select User_ID, Name
+        from Users
+        """
+    )
+    order_date = forms.DateTimeField(
+            widget=forms.widgets.DateTimeInput(attrs={'type':
+                                                      'datetime-local'}))
+    
+    delivery_date = forms.DateTimeField(
+            widget=forms.widgets.DateTimeInput(attrs={'type':
+                                                      'datetime-local'}))
