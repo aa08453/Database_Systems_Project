@@ -278,7 +278,7 @@ class Major_choice(forms.Form):
         }
 
         # Dynamically set privilege based on role
-        cleaned_data["privilege"] = privilege_map.get(role, -1)
+        cleaned_data["privilege"] = privilege_map.get(role, 0)
 
         # Remove role from cleaned data (if needed)
         if "role" in cleaned_data:
@@ -359,7 +359,7 @@ class Admins(forms.Form):
         }
 
         # Dynamically set privilege based on role
-        cleaned_data["privilege"] = privilege_map.get(role, -1)
+        cleaned_data["privilege"] = privilege_map.get(role, 1)
 
         # Remove role from cleaned data (if needed)
         if "role" in cleaned_data:

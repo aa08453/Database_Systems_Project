@@ -227,7 +227,7 @@ BEGIN
         "Date_Created" DATE NOT NULL,
         "Content" NVARCHAR(255) NOT NULL,
         "User_ID" INT NOT NULL,
-        "Tag_ID" INT NOT NULL,
+        "Tag_ID" INT NULL,
         FOREIGN KEY ("User_ID") REFERENCES "Users"("User_ID"),
         FOREIGN KEY ("Tag_ID") REFERENCES "Tags"("Tag_ID")
     );

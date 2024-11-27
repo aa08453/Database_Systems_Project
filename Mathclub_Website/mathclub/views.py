@@ -205,6 +205,7 @@ class GenericPageView(TemplateView): #Create/update in one go
                     placeholders = ", ".join(["%s"] * len(self.fields))
                     sql = f"insert into {self.table_name} ({columns}) values ({placeholders})"
                     print(sql)
+                    print(data)
                     cursor.execute(sql, list(data.values()))
 
             return redirect(self.redirect_to)
@@ -226,6 +227,8 @@ class GenericDeleteView(View):
             with connection.cursor() as cursor:
                 # Perform the delete operation
                 sql = f"DELETE FROM {self.table_name} WHERE {self.pk_field} = %s"
+                print(sql)
+                print(pk)
                 cursor.execute(sql, [pk])
             return redirect(self.redirect_to)
         except IntegrityError as e:
@@ -554,7 +557,7 @@ class Outsiders(GenericPageView):
 class Admins(GenericPageView):
     table_name = "Users"
     search_field = "User_ID"
-    fields = ["Name", "Contact_Number", "Reg_Date", "CNIC", "Address","Privilege"]
+    fields = ["Major", "Name", "Contact_Number", "Reg_Date", "Password", "HUID", "Privilege"]
     pk_field = "User_ID"
     redirect_to = "login_page"
     form_class = Admins
