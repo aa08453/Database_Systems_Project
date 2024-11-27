@@ -370,30 +370,63 @@ class Products_ListView(GenericListView):
     pk_field = "Product_ID"
     redirect_to = "list_products"
 
+    
+
     def post(self, request, *args, **kwargs):
-        product_ids = request.POST.getlist('products')
-        biglist = []
-        sql = "BEGIN TRAN "
-        for product_id in product_ids:
-            print(product_id)
-            pk = self.kwargs.get("pk")
-            with connection.cursor() as cursor:
+        product_ids = request.POST.getlist('products')  # List of selected product IDs
+        user_id = self.request.session.get('user_id')  # Fetch the user ID from the session
+        redirect_url = self.redirect_to  # The URL to redirect after success
+
+        if not product_ids:
+            # Handle case where no products were selected
+            messages.error(request, "No products selected for checkout.")
+            return redirect(redirect_url)
+
+        try:
+            biglist = []
+            sql = "BEGIN TRANSACTION\n"
+
+            # Insert a new order and get the inserted Order_ID
+            sql += f"""
+            DECLARE @OrderID INT;
+
+            INSERT INTO Orders (Customer_ID, Order_Date, Delivery_Date)
+            VALUES (%s, GETDATE(), DATEADD(DAY, 7, GETDATE()));
+
+            SET @OrderID = SCOPE_IDENTITY();  
+            """
+            biglist += [user_id]
+
+            # Insert order details for each selected product
+            for product_id in product_ids:
                 sql += f"""
-
-                insert into Orders (Product_ID, User_ID) 
-                values (%s, %s)
-
+                INSERT INTO Order_Details (Order_ID, Product_ID, Quantity)
+                VALUES (@OrderID, %s, 1);  
                 """
-                biglist += [product_id, str(self.request.session.get('user_id'))]
-        sql += "\n COMMIT"
-        print(sql)
-        print(biglist)
+                biglist += [product_id]
 
-        with connection.cursor() as cursor:
-            cursor.execute(sql, biglist)
-        
+            # Commit the transaction
+            sql += "COMMIT;\n"
 
-        return redirect(self.redirect_to)
+            print(sql)
+            print(biglist)
+
+            # Execute the complete SQL transaction
+            with connection.cursor() as cursor:
+                cursor.execute(sql, biglist)
+
+            # Success message
+            messages.success(request, "Order placed successfully.")
+        except Exception as e:
+            # Rollback transaction in case of an error
+            with connection.cursor() as cursor:
+                cursor.execute("ROLLBACK")
+            # Log the error (or handle it appropriately)
+            print(f"Error placing order: {e}")
+            messages.error(request, "There was an error processing your order. Please try again.")
+
+        return redirect(redirect_url)
+
 
 
 
