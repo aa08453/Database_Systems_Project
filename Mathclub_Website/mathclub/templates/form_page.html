@@ -3,8 +3,8 @@
 {% block title %}Add/Update Form{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 100px);">
-    <div class="card shadow-lg border-0" style="width: 100%; max-width: 700px; padding: 30px; border-radius: 12px;">
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; padding-top: 50px;">
+    <div class="card shadow-lg border-0" style="width: 100%; max-width: 800px; padding: 40px; border-radius: 12px;">
         <div class="card-body">
             <h2 class="text-center mb-4 text-primary fw-bold">Add/Update</h2>
             <form method="post">
@@ -12,8 +12,10 @@
                 {% for field in form %}
                     <div class="mb-4">
                         <label for="{{ field.id_for_label }}" class="form-label fw-bold text-secondary">{{ field.label }}</label>
-                        <div class="d-flex justify-content-center">
-                            {{ field.as_widget|safe }}
+                        <div class="d-flex justify-content-between">
+                            <div style="flex: 1;">
+                                {{ field.as_widget|safe }}
+                            </div>
                         </div>
                         {% if field.errors %}
                             <div class="text-danger mt-2">
@@ -27,9 +29,9 @@
                     </div>
                 {% endfor %}
                 <div class="d-flex justify-content-between mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg px-5 py-2 fw-bold shadow-sm" style="border-radius: 8px;">Save</button>
+                    <button type="submit" class="btn btn-primary btn-lg px-5 py-2 fw-bold shadow-sm" style="border-radius: 8px; flex: 1;">Save</button>
                     <button type="button" class="btn btn-outline-secondary btn-lg px-5 py-2 shadow-sm" 
-                            style="border-radius: 8px;" onclick="history.back();">
+                            style="border-radius: 8px; flex: 1;" onclick="history.back();">
                         Go Back
                     </button>
                 </div>

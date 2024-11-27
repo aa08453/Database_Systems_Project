@@ -12,8 +12,6 @@
                 <input type="text" name="q" class="form-control form-control-lg me-3" placeholder="Search..." 
                        value="{{ request.GET.q|default:'' }}" aria-label="Search">
                 <select id="column" name="search_field" class="form-select me-3">
-
-
                     {% for column in columns %}
                         {% if column != 'pk_field' %}
                             <option value="{{ column }}" {% if request.GET.search_field == column %}selected{% endif %}>
@@ -21,8 +19,6 @@
                             </option>
                         {% endif %}
                     {% endfor %}
-
-
                 </select>
                 <button type="submit" class="btn btn-gradient-primary">Search</button>
             </form>
@@ -31,126 +27,117 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <!-- Create a flex container for the table and actions -->
-            <div class="d-flex">
+            <div class="d-flex justify-content-between">
                 <!-- Table Section -->
-                <form method="POST">
-                {% csrf_token %}
-                <div class="table-container" style="flex-grow: 1;">
-                    <table class="table table-hover table-bordered">
-                        <thead>
-                            <tr class="text-white" style="background: linear-gradient(to right, #6a11cb, #2575fc);">
-                                {% for column in items.0.keys %}
-                                    {% if has_privilege or column != 'pk_field' %}
-                                        <th class="fw-bold text-center">{{ column|title }}</th>
-                                    {% endif %}
-                                {% endfor %}
-                                {% if table_name == 'Products'%}
-                                    <th class="text-center">Actions</th>
-                                {% endif %}
-
-
-                    {% if column != 'pk_field' %}
-                        <option value="{{ column }}" {% if request.GET.search_field == column %}selected{% endif %}>
-                            {{ column }}
-                        </option>
-                    {% endif %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in items %}
-                            <tr>
-                                {% for key, value in item.items %}
-                                    {% if has_privilege or key != 'pk_field' %}
-                                        <td>{{ value }}</td>
-
-                                        {% endif %}
-
-                                {% endfor %}
-
-                                {% if table_name == 'Products' %}
-                                <td>
-                                <div>
-                                    <input type="checkbox" name="products" value="{{ item.pk_field }}" class="form-check-input me">
-                                </div>
-                                </td>
-                                {% endif %}
-
-                            </tr>
-
-                            {% endfor %}
-                        </tbody>
-                        {% if table_name == 'Products'%}
-                        <div class="text-end mb-4">
-                <button type="submit" name="action" value="check_out" class="btn btn-gradient-success">
-                    Check Out
-                </button>
-                        </div>
-                        {% endif %}
-
-                    </table>
-                    </form>
-                </div>
-
-                {% if has_privilege and table_name != 'voting' or table_name == 'Products'%}
-                        <!-- Action Buttons Section (Update/Delete) -->
-                        <div class="actions-container ms-4">
-                            <table class="table table-hover table-bordered">
+                <div style="flex-grow: 1;">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="table-container">
+                            <table class="table table-hover table-bordered"
+                                style="table-layout: fixed; width: 97%;"> <!-- Adjust the width here -->
                                 <thead>
                                     <tr class="text-white" style="background: linear-gradient(to right, #6a11cb, #2575fc);">
-                                        <th class="fw-bold text-center">Actions</th>
+                                        {% for column in items.0.keys %}
+                                            {% if has_privilege or column != 'pk_field' %}
+                                                <th class="fw-bold text-center">{{ column|title }}</th>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if table_name == 'Products' %}
+                                            <th class="text-center"
+                                            style="width: 100px;">Actions</th> <!-- Set fixed width for Actions column -->
+
+
+                                        {% endif %}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for item in items %}
                                     <tr>
-                                        <td class="d-flex align-items-center justify-content-center">
-                                            <!-- Update Form -->
-                                            <form method="GET" action="{{ update_url }}{{ item.pk_field }}" style="display:inline;">
-                                                <button type="submit" class="btn btn-warning btn-sm me-2" 
-                                                        data-bs-toggle="tooltip" title="Edit">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
-                                            </form>
-
-                                            <!-- Delete Form -->
-                                            <form method="POST" action="{{ delete_url }}{{ item.pk_field }}/" style="display:inline;">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-danger btn-sm me-2" 
-                                                        onclick="return confirm('Are you sure you want to delete this item?');" 
-                                                        data-bs-toggle="tooltip" title="Delete">
-                                                    <i class="bi bi-trash"></i> 
-                                                </button>
-                                            </form>
+                                        {% for key, value in item.items %}
+                                            {% if has_privilege or key != 'pk_field' %}
+                                                <td class="text-center" style="padding: 10px; vertical-align: middle;">{{ value }}</td>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if table_name == 'Products' %}
+                                        <td>
+                                            <div>
+                                                <input type="checkbox" name="products" value="{{ item.pk_field }}" class="form-check-input me">
+                                            </div>
                                         </td>
+                                        {% endif %}
                                     </tr>
                                     {% endfor %}
                                 </tbody>
+                                {% if table_name == 'Products' %}
+                                {% endif %}
                             </table>
 
-                            <!-- Add New Button -->
-                            {% if has_privilege and table_name != 'voting' or table_name == 'Produts'%}
-                            <div class="text-end mb-4">
-                                <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add New</a>
-                            </div>
-                            {% endif %}
 
-                            {% if table_name == 'voting' %}
+                        </div>
                             <div class="text-end mb-4">
-                                <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add/Change Vote</a>
+                                <button type="submit" name="action" value="check_out" class="btn btn-gradient-success">
+                                    Check Out
+                                </button>
                             </div>
-                            {% endif %}
+                    </form>
+                </div>
 
-                            {% if has_privilege and table_name == 'voting' %}
-                            <div class="text-end mb-4">
-                                <a href="{{ extra_url }}" class="btn btn-gradient-success">Evaluate Election</a>
-                            </div>
-                            {% endif %}
+                <!-- Actions Section -->
+                {% if has_privilege and table_name != 'voting' or table_name == 'Products' %}
+                <div class="actions-container ms-4" style="width: 250px;">
+                    <table class="table table-hover table-bordered"> <!-- Adjust the width here -->
+                        <thead>
+                            <tr class="text-white" style="background: linear-gradient(to right, #6a11cb, #2575fc);">
+                                <th class="fw-bold text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td class="d-flex align-items-center justify-content-center" style="padding: 10px; vertical-align: middle;">
+                                    <!-- Update Form -->
+                                    <form method="GET" action="{{ update_url }}{{ item.pk_field }}" style="display:inline;">
+                                        <button type="submit" class="btn btn-warning btn-sm me-2" 
+                                                data-bs-toggle="tooltip" title="Edit"
+                                            style="font-size: 0.6rem; ">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                    </form>
 
+                                    <!-- Delete Form -->
+                                    <form method="POST" action="{{ delete_url }}{{ item.pk_field }}/" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm me-2" 
+                                                onclick="return confirm('Are you sure you want to delete this item?');" 
+                                                data-bs-toggle="tooltip" title="Delete"
+                                            style="font-size: 0.6rem; ">
+                                            <i class="bi bi-trash"></i> 
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <!-- Add New Button -->
+                    <div class="text-end mb-4">
+                        <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add New</a>
+                    </div>
+
+                    {% if table_name == 'voting' %}
+                    <div class="text-end mb-4">
+                        <a href="{{ create_url }}" class="btn btn-gradient-success">+ Add/Change Vote</a>
+                    </div>
                     {% endif %}
 
-
+                    {% if has_privilege and table_name == 'voting' %}
+                    <div class="text-end mb-4">
+                        <a href="{{ extra_url }}" class="btn btn-gradient-success">Evaluate Election</a>
+                    </div>
+                    {% endif %}
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
