@@ -74,8 +74,7 @@
                     <form method="POST">
                         {% csrf_token %}
                         <div class="table-container">
-                            <table class="table table-hover table-bordered"
-                                   style="table-layout: fixed; width: 97%;">
+                            <table class="table table-hover table-bordered" style="table-layout: fixed; width: 97%;">
                                 <thead>
                                     <tr class="text-white" style="background: linear-gradient(to right, #6a11cb, #2575fc);">
                                         {% for column in items.0.keys %}

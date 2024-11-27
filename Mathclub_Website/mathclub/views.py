@@ -708,12 +708,13 @@ class VotingListView(GenericListView):
     group by C.Candidate_ID, C.User_ID, RT.Role_Name, U.Name
     )
     """
+
     def get_queryset(self, query=""):
         search_field = self.get_search_field()
         sql = self.sql
         with connection.cursor() as cursor:
             if query:
-                search_snip = f"{search_field} like %s"
+                search_snip = f" and {search_field} like %s"
                 sql = f"""
                 WITH current_elections AS (
                     SELECT * 
@@ -726,7 +727,7 @@ class VotingListView(GenericListView):
                 right join users U on C.User_ID = U.User_ID
                 join Role_Types RT on C.Role_ID = RT.Role_ID
                 where C.Election_ID in (select election_id from
-                current_elections) and {search_snip}
+                current_elections) {search_snip}
                 group by C.Candidate_ID, C.User_ID, RT.Role_Name, U.Name
                 )
                 """
@@ -734,9 +735,12 @@ class VotingListView(GenericListView):
 
                 cursor.execute(sql, [f"%{query}%"])
             else:
+                print(self.sql)
                 cursor.execute(sql)
 
             columns = [col[0] for col in cursor.description]
+            print(columns)
+            print(self.pk_field)
             for x in range(0, len(columns)):
                 if columns[x] == self.pk_field:
                     columns[x] = "pk_field"
