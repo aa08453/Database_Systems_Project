@@ -68,16 +68,16 @@
                                     </tr>
                                     {% endfor %}
                                 </tbody>
-                                {% if table_name == 'Products' %}
-                                {% endif %}
                             </table>
 
 
                         </div>
                             <div class="text-end mb-4">
+                                {% if table_name == 'Products' %}
                                 <button type="submit" name="action" value="check_out" class="btn btn-gradient-success">
                                     Check Out
                                 </button>
+                                {% endif %}
                             </div>
                     </form>
                 </div>
