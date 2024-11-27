@@ -104,9 +104,6 @@ class GenericListView(ListView):
     sql = None
     pk_field = ""
 
-    #TODO: Make a insertion check hook
-    #TODO: Make cascade deletion 
-    #TODO: Make error messages
 
 
     def get_search_field(self):

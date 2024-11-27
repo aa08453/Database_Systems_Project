@@ -175,16 +175,36 @@ class Tags_form(Form_Custom):
         required = True
     )  
     
-class Products_form(forms.Form):
-    product = forms.CharField(
-        widget=forms.TextInput()
-    )  
-    price = forms.CharField(
-        widget = forms.IntegerField()
+class Products_form(Form_Custom):
+    Product_Name = forms.CharField(
+        label="Product Name",
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter product name'
+        })
     )
-    stock = forms.CharField(
-        widget = forms.IntegerField()
+    price = forms.IntegerField(
+        label="Price",
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter product price'
+        })
     )
+    stock = forms.IntegerField(
+        label="Stock",
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter stock quantity'
+        })
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        self.check_for_duplicate_combination(table_name = "Products", Product_Name =
+                                             cleaned_data.get("Product_Name"))
 
 class Events_form(forms.Form):
     location = DynamicChoiceField(
