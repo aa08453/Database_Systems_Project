@@ -63,7 +63,7 @@ cd Mathclub_Website/
 ### 4. Install Dependencies
 Install required Python packages using `pip`:
 ```bash
-pip install django mssql-django django-mssql
+pip install django mssql-django django-mssql django-pytest
 ```
 
 ### 5. Apply Migrations
@@ -129,4 +129,4 @@ python3 manage.py runserver
 ---
 
 ## License
-This project is created by Abdullah Amir, Hamad Asif Khan, Ahmed MUjtaba, Umar Habib.
+This project is created by Abdullah Amir, Hamad Asif Khan, Ahmed Mujtaba, and Umar Habib.
